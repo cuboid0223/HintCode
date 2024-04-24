@@ -215,10 +215,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
       </div> */}
       <Tabs defaultValue="description" className="bg-dark-layer-2">
         <TabsList className="bg-dark-layer-2">
-          <TabsTrigger
-            value="description"
-            className="rounded-t-[5px] bg-dark-layer-2"
-          >
+          <TabsTrigger value="description" className="rounded-t-[5px]">
             問題描述
           </TabsTrigger>
           <TabsTrigger value="getHelp" className="rounded-t-[5px]">
@@ -354,7 +351,9 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
             </div>
           </div>
         </TabsContent>
-        <TabsContent value="getHelp">getHelp</TabsContent>
+        <TabsContent value="getHelp" className="text-white">
+          <p>hhhh</p>
+        </TabsContent>
       </Tabs>
     </div>
   );
