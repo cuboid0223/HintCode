@@ -26,6 +26,7 @@ export type Settings = {
   fontSize: string;
   settingsModalIsOpen: boolean;
   dropdownIsOpen: boolean;
+  selectedLang: string;
 };
 
 const Playground: React.FC<PlaygroundProps> = ({
@@ -42,6 +43,7 @@ const Playground: React.FC<PlaygroundProps> = ({
     fontSize: fontSize,
     settingsModalIsOpen: false,
     dropdownIsOpen: false,
+    selectedLang: "python",
   });
 
   const [user] = useAuthState(auth);
@@ -134,7 +136,9 @@ const Playground: React.FC<PlaygroundProps> = ({
             value={userCode}
             theme={vscodeDark}
             onChange={onChange}
-            extensions={[python()]}
+            extensions={[
+              settings.selectedLang === "py" ? python() : javascript(),
+            ]}
             style={{ fontSize: settings.fontSize }}
           />
         </div>

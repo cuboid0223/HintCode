@@ -51,15 +51,19 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
     }
   }, [isFullScreen]);
 
+  const handleSelectedLang = (lang: string) => {
+    setSettings({ ...settings, selectedLang: lang });
+  };
+
   return (
     <div className="flex items-center justify-between bg-dark-layer-2 h-11 w-full ">
-      <Select>
+      <Select onValueChange={handleSelectedLang}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Python" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="python">Python</SelectItem>
-          <SelectItem value="javascript">JavaScript</SelectItem>
+          <SelectItem value="py">Python</SelectItem>
+          <SelectItem value="js">JavaScript</SelectItem>
         </SelectContent>
       </Select>
 
