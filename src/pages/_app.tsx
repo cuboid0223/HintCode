@@ -4,6 +4,8 @@ import Head from "next/head";
 import { RecoilRoot } from "recoil";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { ThemeProvider } from "@/providers/ThemeProvider";
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <RecoilRoot>
@@ -17,7 +19,14 @@ export default function App({ Component, pageProps }: AppProps) {
         />
       </Head>
       <ToastContainer />
-      <Component {...pageProps} />
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <Component {...pageProps} />
+      </ThemeProvider>
     </RecoilRoot>
   );
 }
