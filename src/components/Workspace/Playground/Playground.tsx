@@ -35,7 +35,7 @@ const Playground: React.FC<PlaygroundProps> = ({
   setSolved,
 }) => {
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
-  let [userCode, setUserCode] = useState<string>(problem.starterCode);
+  let [userCode, setUserCode] = useState<string>(problem.starterCode.js);
 
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
 
@@ -43,32 +43,75 @@ const Playground: React.FC<PlaygroundProps> = ({
     fontSize: fontSize,
     settingsModalIsOpen: false,
     dropdownIsOpen: false,
-    selectedLang: "python",
+    selectedLang: "py",
   });
+  const { selectedLang } = settings;
 
   const [user] = useAuthState(auth);
   const {
     query: { pid },
   } = useRouter();
 
+  const checkStarterFunctionName = (userCode: string) => {
+    if (!userCode.includes(problem.starterFunctionName[selectedLang])) {
+      toast.error(
+        `函式名稱必須是 ${problem.starterFunctionName[selectedLang]} `,
+        {
+          position: "top-center",
+          autoClose: 3000,
+          theme: "dark",
+        }
+      );
+      return;
+    }
+  };
+
   const handleSubmit = async () => {
     if (!user) {
-      toast.error("Please login to submit your code", {
+      toast.error("登入後才能執行程式", {
         position: "top-center",
         autoClose: 3000,
         theme: "dark",
       });
       return;
     }
+    if (selectedLang === "js") {
+      // handle js testCase
+      const isPassed = handleJSTestCase();
+      if (isPassed) {
+        const userRef = doc(firestore, "users", user.uid);
+        await updateDoc(userRef, {
+          solvedProblems: arrayUnion(pid),
+        });
+        setSolved(true);
+      }
+    }
+    if (selectedLang === "py") {
+      checkStarterFunctionName(userCode);
+      // handle python testCase
+      userCode = userCode.slice(
+        userCode.indexOf(problem.starterFunctionName.py)
+      );
+
+      console.log(userCode);
+    }
+    console.log(selectedLang);
+  };
+
+  const handleJSTestCase = () => {
     try {
-      userCode = userCode.slice(userCode.indexOf(problem.starterFunctionName));
+      // 將 userCode 字串從該位置開始一直到結尾的部分截取出來
+      userCode = userCode.slice(
+        userCode.indexOf(problem.starterFunctionName.js)
+      );
+      checkStarterFunctionName(userCode);
       const cb = new Function(`return ${userCode}`)();
       const handler = problems[pid as string].handlerFunction;
 
       if (typeof handler === "function") {
-        const success = handler(cb);
-        if (success) {
-          toast.success("Congrats! All tests passed!", {
+        const isPassed = handler(cb);
+        if (isPassed) {
+          toast.success("恭喜! 通過所有測試資料!", {
             position: "top-center",
             autoClose: 3000,
             theme: "dark",
@@ -77,13 +120,8 @@ const Playground: React.FC<PlaygroundProps> = ({
           setTimeout(() => {
             setSuccess(false);
           }, 4000);
-
-          const userRef = doc(firestore, "users", user.uid);
-          await updateDoc(userRef, {
-            solvedProblems: arrayUnion(pid),
-          });
-          setSolved(true);
         }
+        return isPassed;
       }
     } catch (error: any) {
       console.log(error.message);
@@ -108,17 +146,17 @@ const Playground: React.FC<PlaygroundProps> = ({
   };
 
   useEffect(() => {
-    const code = localStorage.getItem(`code-${pid}`);
+    const code = localStorage.getItem(`${selectedLang}-code-${pid}`);
     if (user) {
-      setUserCode(code ? JSON.parse(code) : problem.starterCode);
+      setUserCode(code ? JSON.parse(code) : problem.starterCode.js);
     } else {
-      setUserCode(problem.starterCode);
+      setUserCode(problem.starterCode.js);
     }
-  }, [pid, user, problem.starterCode]);
+  }, [pid, user, problem.starterCode, selectedLang]);
 
   const onChange = (value: string) => {
     setUserCode(value);
-    localStorage.setItem(`code-${pid}`, JSON.stringify(value));
+    localStorage.setItem(`${selectedLang}-code-${pid}`, JSON.stringify(value));
   };
 
   return (
