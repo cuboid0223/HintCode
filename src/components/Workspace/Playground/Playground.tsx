@@ -66,7 +66,7 @@ const Playground: React.FC<PlaygroundProps> = ({
     }
   };
 
-  const handleSubmit = async () => {
+  const handleExecution = async (executionMode: "submit" | "run") => {
     if (!user) {
       toast.error("登入後才能執行程式", {
         position: "top-center",
@@ -78,24 +78,25 @@ const Playground: React.FC<PlaygroundProps> = ({
     if (selectedLang === "js") {
       // handle js testCase
       const isPassed = handleJSTestCase();
-      if (isPassed) {
+      if (isPassed && executionMode === "submit") {
         const userRef = doc(firestore, "users", user.uid);
         await updateDoc(userRef, {
           solvedProblems: arrayUnion(pid),
         });
         setSolved(true);
+        console.log("submit");
       }
     }
     if (selectedLang === "py") {
       checkStarterFunctionName(userCode);
-      // handle python testCase
+      // ***  handle python testCase
+      // 這裡需要後端服測試服務，看是要使用 flask 或是 django
       userCode = userCode.slice(
         userCode.indexOf(problem.starterFunctionName.py)
       );
 
       console.log(userCode);
     }
-    console.log(selectedLang);
   };
 
   const handleJSTestCase = () => {
@@ -223,7 +224,7 @@ const Playground: React.FC<PlaygroundProps> = ({
           </div>
         </div>
       </Split>
-      <EditorFooter handleSubmit={handleSubmit} />
+      <EditorFooter handleExecution={handleExecution} />
     </div>
   );
 };
