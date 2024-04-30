@@ -39,6 +39,9 @@ export type SubmissionData = {
   stdout: string;
   time: string;
   token: string;
+  stderr: string;
+  message: string;
+  compile_output: string;
 };
 
 const Playground: React.FC<PlaygroundProps> = ({
@@ -107,25 +110,14 @@ const Playground: React.FC<PlaygroundProps> = ({
         userCode.indexOf(problem.starterFunctionName.py)
       );
       try {
-        // const token = await testUserCode({
-        //   userCode: userCode,
-        //   expectedOutput: "cube",
-        // });
-        const data = await getSubmissionData(
-          "ca59b542-006d-4698-bf75-5af48a62db50"
-        );
+        const token = await testUserCode({
+          userCode: userCode,
+          expectedOutput: "cube",
+        });
+        const data = await getSubmissionData(token);
+        //  "ca59b542-006d-4698-bf75-5af48a62db50"
         console.log("here", data);
         setSubmissionData(data);
-        // let pyodide = await loadPyodide({
-        //   // fullStdLib: true,
-        //   stdout: (msg: string) => {
-        //     console.log(`Pyodide: ${msg}`);
-        //   },
-        // });
-
-        // console.log("pyodide loaded");
-        // let result = await pyodide.runPythonAsync(userCode);
-        // console.log(result);
       } catch (e) {
         if (e instanceof Error) {
           console.log(e.message);
@@ -237,7 +229,7 @@ const Playground: React.FC<PlaygroundProps> = ({
             <TabsContent value="testResult">
               {submissionData ? (
                 <>
-                  <div className="flex items-center ">
+                  <div className="flex items-center mb-3">
                     <h2
                       className={`font-bold  text-xl ${
                         isAccepted ? "text-green-600" : "text-red-600"
@@ -245,11 +237,21 @@ const Playground: React.FC<PlaygroundProps> = ({
                     >
                       {submissionData.status.description}
                     </h2>
-                    <pre className="text-gray-400 text-xs ml-3 ">
+                    <pre className="text-sm text-muted-foreground ml-3">
                       Runtime: {submissionData.time} ms
                     </pre>
                   </div>
-                  <TestCaseList problem={problem} />
+                  {submissionData.stderr && (
+                    <div className="bg-red-100  rounded-lg">
+                      <div
+                        className="text-rose-500 p-6"
+                        dangerouslySetInnerHTML={{
+                          __html: submissionData.stderr,
+                        }}
+                      />
+                    </div>
+                  )}
+                  {!submissionData.stderr && <TestCaseList problem={problem} />}
                 </>
               ) : (
                 <h2>沒有測試結果</h2>
@@ -264,6 +266,22 @@ const Playground: React.FC<PlaygroundProps> = ({
 };
 
 // --------------------------------記得移到新的 file--------------------------------
+/*
+{
+  stdout: undefined,
+  time: '0.008',
+  memory: 3164,
+  stderr: '  File "script.py", line 3\n' +
+    '    print("cubse")s\n' +
+    '                  ^\n' +
+    'SyntaxError: invalid syntax\n',
+  token: '2db0416c-ad4f-49bf-a60c-58096c9327cb',
+  compile_output: undefined,
+  message: 'Exited with error status 1',
+  status: { id: 11, description: 'Runtime Error (NZEC)' }
+}
+*/
+
 type TestCaseListProps = {
   problem: Problem;
 };

@@ -57,7 +57,7 @@ export const getSubmissionData = async (token: string) => {
     const data = {
       ...result,
       stdout: base64ToString(stdout),
-      stderr: base64ToString(stderr),
+      stderr: base64ToString(stderr).replace(/\n/g, "<br>"),
       compile_output: base64ToString(compile_output),
       message: base64ToString(message),
     };
@@ -70,13 +70,13 @@ export const getSubmissionData = async (token: string) => {
 };
 
 const stringToBase64 = (str: string) => {
-  if (!str) return;
+  if (!str) return "";
   //  Buffer.from("fuck").toString("base64"); <- 解決字串 "fuck " 與 "fuck" 不一樣(多一格空格)
   return Buffer.from(str).toString("base64");
 };
 
 const base64ToString = (str: string) => {
   // base64 encoded to decode
-  if (!str) return;
+  if (!str) return "";
   return Buffer.from(str, "base64").toString("ascii");
 };
