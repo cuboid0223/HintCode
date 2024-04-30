@@ -8,12 +8,12 @@ import { python } from "@codemirror/lang-python";
 import EditorFooter from "./EditorFooter";
 import { Problem } from "@/utils/types/problem";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, firestore } from "@/firebase/firebase";
+import { auth, firestore } from "../../../firebase/firebase";
 import { toast } from "react-toastify";
 import { problems } from "@/utils/problems";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useLocalStorage from "../../../hooks/useLocalStorage";
 import { StreamLanguage } from "@codemirror/language";
 
 type PlaygroundProps = {
@@ -26,7 +26,7 @@ export type Settings = {
   fontSize: string;
   settingsModalIsOpen: boolean;
   dropdownIsOpen: boolean;
-  selectedLang: string;
+  selectedLang: "py" | "js";
 };
 
 const Playground: React.FC<PlaygroundProps> = ({
@@ -34,6 +34,7 @@ const Playground: React.FC<PlaygroundProps> = ({
   setSuccess,
   setSolved,
 }) => {
+  const { id } = problem;
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
   let [userCode, setUserCode] = useState<string>(problem.starterCode.js);
 
@@ -48,9 +49,6 @@ const Playground: React.FC<PlaygroundProps> = ({
   const { selectedLang } = settings;
 
   const [user] = useAuthState(auth);
-  const {
-    query: { pid },
-  } = useRouter();
 
   const checkStarterFunctionName = (userCode: string) => {
     if (!userCode.includes(problem.starterFunctionName[selectedLang])) {
@@ -81,7 +79,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       if (isPassed && executionMode === "submit") {
         const userRef = doc(firestore, "users", user.uid);
         await updateDoc(userRef, {
-          solvedProblems: arrayUnion(pid),
+          solvedProblems: arrayUnion(id),
         });
         setSolved(true);
         console.log("submit");
@@ -90,12 +88,26 @@ const Playground: React.FC<PlaygroundProps> = ({
     if (selectedLang === "py") {
       checkStarterFunctionName(userCode);
       // ***  handle python testCase
-      // 這裡需要後端服測試服務，看是要使用 flask 或是 django
+      // 這裡需要後端測試服務，看是要使用 flask 或是 django
       userCode = userCode.slice(
         userCode.indexOf(problem.starterFunctionName.py)
       );
+      try {
+        let pyodide = await loadPyodide({
+          // fullStdLib: true,
+          stdout: (msg: string) => {
+            console.log(`Pyodide: ${msg}`);
+          },
+        });
 
-      console.log(userCode);
+        console.log("pyodide loaded");
+        let result = await pyodide.runPythonAsync(userCode);
+        console.log(result);
+      } catch (e) {
+        if (e instanceof Error) {
+          console.log(e.message);
+        }
+      }
     }
   };
 
@@ -107,7 +119,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       );
       checkStarterFunctionName(userCode);
       const cb = new Function(`return ${userCode}`)();
-      const handler = problems[pid as string].handlerFunction;
+      const handler = problems[id as string].handlerFunction;
 
       if (typeof handler === "function") {
         const isPassed = handler(cb);
@@ -147,17 +159,17 @@ const Playground: React.FC<PlaygroundProps> = ({
   };
 
   useEffect(() => {
-    const code = localStorage.getItem(`${selectedLang}-code-${pid}`);
+    const code = localStorage.getItem(`${selectedLang}-code-${id}`);
     if (user) {
       setUserCode(code ? JSON.parse(code) : problem.starterCode.js);
     } else {
       setUserCode(problem.starterCode.js);
     }
-  }, [pid, user, problem.starterCode, selectedLang]);
+  }, [id, user, problem.starterCode, selectedLang]);
 
   const onChange = (value: string) => {
     setUserCode(value);
-    localStorage.setItem(`${selectedLang}-code-${pid}`, JSON.stringify(value));
+    localStorage.setItem(`${selectedLang}-code-${id}`, JSON.stringify(value));
   };
 
   return (
