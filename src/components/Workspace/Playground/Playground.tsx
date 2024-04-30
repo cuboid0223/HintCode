@@ -14,8 +14,8 @@ import { problems } from "@/utils/problems";
 import { useRouter } from "next/navigation";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import useLocalStorage from "../../../hooks/useLocalStorage";
-import { StreamLanguage } from "@codemirror/language";
 import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -30,6 +30,17 @@ export type Settings = {
   selectedLang: "py" | "js";
 };
 
+export type SubmissionData = {
+  memory: number;
+  status: {
+    description: string;
+    id: number;
+  };
+  stdout: string;
+  time: string;
+  token: string;
+};
+
 const Playground: React.FC<PlaygroundProps> = ({
   problem,
   setSuccess,
@@ -40,7 +51,7 @@ const Playground: React.FC<PlaygroundProps> = ({
   let [userCode, setUserCode] = useState<string>(problem.starterCode.js);
 
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
-
+  const [submissionData, setSubmissionData] = useState<SubmissionData>();
   const [settings, setSettings] = useState<Settings>({
     fontSize: fontSize,
     settingsModalIsOpen: false,
@@ -99,10 +110,11 @@ const Playground: React.FC<PlaygroundProps> = ({
         //   userCode: userCode,
         //   expectedOutput: "cube",
         // });
-        const result = await getSubmissionData(
+        const data = await getSubmissionData(
           "ca59b542-006d-4698-bf75-5af48a62db50"
         );
-        console.log("here", result);
+        console.log("here", data);
+        setSubmissionData(data);
         // let pyodide = await loadPyodide({
         //   // fullStdLib: true,
         //   stdout: (msg: string) => {
@@ -204,47 +216,75 @@ const Playground: React.FC<PlaygroundProps> = ({
             style={{ fontSize: settings.fontSize }}
           />
         </div>
-        {/* Tabs: testcase */}
-        <div className="w-full px-5 overflow-auto">
-          <div className="flex h-10 items-center space-x-6">
-            <div className="relative flex h-full flex-col justify-center cursor-pointer">
-              <div className="text-sm font-medium leading-5 text-white">
-                測試資料
-              </div>
-              <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-white" />
-            </div>
-          </div>
 
-          <div className="flex">
-            {problem.examples.map((example, index) => (
-              <div
-                className="mr-2 items-start mt-2 "
-                key={example.id}
-                onClick={() => setActiveTestCaseId(index)}
-              >
-                <div className="flex flex-wrap items-center gap-y-4">
+        <div className="w-full px-5 overflow-auto">
+          {/* Tabs: testcase */}
+          <Tabs defaultValue="testcase" className="w-[400px]">
+            <TabsList>
+              <TabsTrigger value="testcase" className="relative">
+                <div className="text-sm font-medium ">測試資料</div>
+                <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-white" />
+              </TabsTrigger>
+              <TabsTrigger value="testResult" className="relative">
+                <div className="text-sm font-medium leading-5 text-white">
+                  測試結果
+                </div>
+                <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-white" />
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="testcase">
+              <div className="flex">
+                {problem.examples.map((example, index) => (
                   <div
-                    className={`font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
+                    className="mr-2 items-start mt-2 "
+                    key={example.id}
+                    onClick={() => setActiveTestCaseId(index)}
+                  >
+                    <div className="flex flex-wrap items-center gap-y-4">
+                      <div
+                        className={`font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
 										${activeTestCaseId === index ? "text-white" : "text-gray-500"}
 									`}
-                  >
-                    測資 {index + 1}
+                      >
+                        測資 {index + 1}
+                      </div>
+                    </div>
                   </div>
+                ))}
+              </div>
+
+              <div className="font-semibold my-4">
+                <p className="text-sm font-medium mt-4 text-white">Input:</p>
+                <div className="w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2">
+                  {problem.examples[activeTestCaseId].inputText}
+                </div>
+                <p className="text-sm font-medium mt-4 text-white">Output:</p>
+                <div className="w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2">
+                  {problem.examples[activeTestCaseId].outputText}
                 </div>
               </div>
-            ))}
-          </div>
-
-          <div className="font-semibold my-4">
-            <p className="text-sm font-medium mt-4 text-white">Input:</p>
-            <div className="w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2">
-              {problem.examples[activeTestCaseId].inputText}
-            </div>
-            <p className="text-sm font-medium mt-4 text-white">Output:</p>
-            <div className="w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2">
-              {problem.examples[activeTestCaseId].outputText}
-            </div>
-          </div>
+            </TabsContent>
+            <TabsContent value="testResult">
+              {submissionData ? (
+                <div className="flex items-center ">
+                  <h2
+                    className={`font-bold  text-xl ${
+                      submissionData.status.id === 3
+                        ? "text-green-600"
+                        : "text-red-600"
+                    } `}
+                  >
+                    {submissionData.status.description}
+                  </h2>
+                  <pre className="text-gray-400 text-xs ml-3 ">
+                    Runtime: {submissionData.time} ms
+                  </pre>
+                </div>
+              ) : (
+                <h2>沒有測試結果</h2>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </Split>
       <EditorFooter handleExecution={handleExecution} />

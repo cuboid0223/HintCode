@@ -9,7 +9,7 @@ type CodeInfo = {
 };
 export const testUserCode = async (codeInfo: CodeInfo) => {
   const { userCode, expectedOutput } = codeInfo;
-  // a85cca5a-0b28-4362-8cbd-5756724fd53b
+  // ca59b542-006d-4698-bf75-5af48a62db50
 
   const options = {
     method: "POST",
@@ -78,6 +78,5 @@ const stringToBase64 = (str: string) => {
 const base64ToString = (str: string) => {
   // base64 encoded to decode
   if (!str) return;
-  console.log(Buffer.from(str, "base64").toString("ascii"));
   return Buffer.from(str, "base64").toString("ascii");
 };
