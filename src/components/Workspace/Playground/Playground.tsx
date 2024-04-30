@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import { StreamLanguage } from "@codemirror/language";
-import { testUserCode } from "@/actions/testCodeAction";
+import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -95,8 +95,14 @@ const Playground: React.FC<PlaygroundProps> = ({
         userCode.indexOf(problem.starterFunctionName.py)
       );
       try {
-        const r = await testUserCode(userCode);
-        console.log("r from client:", r);
+        // const token = await testUserCode({
+        //   userCode: userCode,
+        //   expectedOutput: "cube",
+        // });
+        const result = await getSubmissionData(
+          "ca59b542-006d-4698-bf75-5af48a62db50"
+        );
+        console.log("here", result);
         // let pyodide = await loadPyodide({
         //   // fullStdLib: true,
         //   stdout: (msg: string) => {

@@ -1,12 +1,16 @@
 "use server";
 // https://ce.judge0.com/#statuses-and-languages-language
 // js -> id: 63
-// Python (3.8.1) -> "id": 71
-export const testUserCode = async (userCode: string) => {
-  //  Buffer.from("fuck").toString("base64"); <- 解決字串 "fuck " 與 "fuck" 不一樣(多一格空格)
-  const expectedOutput = Buffer.from("fuck").toString("base64");
-  const url =
-    "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*";
+const URL = `${process.env.JUDGE0_URL}/submissions?base64_encoded=true&fields=*`;
+
+type CodeInfo = {
+  userCode: string;
+  expectedOutput: string;
+};
+export const testUserCode = async (codeInfo: CodeInfo) => {
+  const { userCode, expectedOutput } = codeInfo;
+  // a85cca5a-0b28-4362-8cbd-5756724fd53b
+
   const options = {
     method: "POST",
     headers: {
@@ -16,16 +20,16 @@ export const testUserCode = async (userCode: string) => {
       "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
     },
     body: JSON.stringify({
-      language_id: 71,
-      source_code: btoa(userCode),
+      language_id: 71, // Python (3.8.1) -> "id": 71
+      source_code: stringToBase64(userCode),
       stdin: "",
       memory_limit: "10000",
-      expected_output: expectedOutput,
+      expected_output: stringToBase64(expectedOutput),
     }),
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetch(URL, options);
     const { token } = await response.json();
 
     // console.log("token:", token);
@@ -33,4 +37,47 @@ export const testUserCode = async (userCode: string) => {
   } catch (error) {
     console.error(error);
   }
+};
+
+export const getSubmissionData = async (token: string) => {
+  const url = `${process.env.JUDGE0_URL}/submissions/${token}?base64_encoded=true`;
+  const options = {
+    method: "GET",
+    headers: {
+      "X-RapidAPI-Key": process.env.X_RAPIDAPI_KEY,
+      "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+    },
+  };
+
+  try {
+    const response = await fetch(url, options);
+    const result = await response.json();
+    const { stdout, stderr, message, compile_output } = result;
+    console.log("base64ToString(stdout) ", base64ToString(stdout));
+    const data = {
+      ...result,
+      stdout: base64ToString(stdout),
+      stderr: base64ToString(stderr),
+      compile_output: base64ToString(compile_output),
+      message: base64ToString(message),
+    };
+    console.log("data", data);
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const stringToBase64 = (str: string) => {
+  if (!str) return;
+  //  Buffer.from("fuck").toString("base64"); <- 解決字串 "fuck " 與 "fuck" 不一樣(多一格空格)
+  return Buffer.from(str).toString("base64");
+};
+
+const base64ToString = (str: string) => {
+  // base64 encoded to decode
+  if (!str) return;
+  console.log(Buffer.from(str, "base64").toString("ascii"));
+  return Buffer.from(str, "base64").toString("ascii");
 };
