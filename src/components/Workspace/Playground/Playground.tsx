@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import { StreamLanguage } from "@codemirror/language";
+import { testUserCode } from "@/actions/testCodeAction";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -89,20 +90,23 @@ const Playground: React.FC<PlaygroundProps> = ({
       checkStarterFunctionName(userCode);
       // ***  handle python testCase
       // 這裡需要後端測試服務，看是要使用 flask 或是 django
+
       userCode = userCode.slice(
         userCode.indexOf(problem.starterFunctionName.py)
       );
       try {
-        let pyodide = await loadPyodide({
-          // fullStdLib: true,
-          stdout: (msg: string) => {
-            console.log(`Pyodide: ${msg}`);
-          },
-        });
+        const r = await testUserCode(userCode);
+        console.log("r from client:", r);
+        // let pyodide = await loadPyodide({
+        //   // fullStdLib: true,
+        //   stdout: (msg: string) => {
+        //     console.log(`Pyodide: ${msg}`);
+        //   },
+        // });
 
-        console.log("pyodide loaded");
-        let result = await pyodide.runPythonAsync(userCode);
-        console.log(result);
+        // console.log("pyodide loaded");
+        // let result = await pyodide.runPythonAsync(userCode);
+        // console.log(result);
       } catch (e) {
         if (e instanceof Error) {
           console.log(e.message);
@@ -182,6 +186,7 @@ const Playground: React.FC<PlaygroundProps> = ({
         sizes={[60, 40]}
         minSize={60}
       >
+        {/*　Playground */}
         <div className="w-full overflow-auto">
           <CodeMirror
             value={userCode}
@@ -193,8 +198,8 @@ const Playground: React.FC<PlaygroundProps> = ({
             style={{ fontSize: settings.fontSize }}
           />
         </div>
+        {/* Tabs: testcase */}
         <div className="w-full px-5 overflow-auto">
-          {/* testcase heading */}
           <div className="flex h-10 items-center space-x-6">
             <div className="relative flex h-full flex-col justify-center cursor-pointer">
               <div className="text-sm font-medium leading-5 text-white">
