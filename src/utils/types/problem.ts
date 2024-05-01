@@ -1,3 +1,5 @@
+import { TestCaseCode } from "./testcase";
+
 export type Example = {
   id: number;
   inputText: string;
@@ -27,14 +29,6 @@ export type Problem = {
   };
   testCaseCode: TestCaseCode;
 };
-
-type TestCase = {
-  id: string;
-  inputCode: string;
-  output: string;
-};
-
-type TestCaseCode = TestCase[];
 
 export type DBProblem = {
   id: string;

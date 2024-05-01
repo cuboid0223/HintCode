@@ -51,7 +51,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
     }
   }, [isFullScreen]);
 
-  const handleSelectedLang = (lang: string) => {
+  const handleSelectedLang = (lang: "py" | "js") => {
     setSettings({ ...settings, selectedLang: lang });
   };
 

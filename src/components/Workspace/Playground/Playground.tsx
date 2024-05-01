@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import PreferenceNav from "./PreferenceNav/PreferenceNav";
+import PreferenceNav from "./components/PreferenceNav";
 import Split from "react-split";
 import CodeMirror from "@uiw/react-codemirror";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
@@ -16,6 +16,8 @@ import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TestCaseList from "./components/TestCaseList";
+import { SubmissionData } from "@/utils/types/testcase";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -30,20 +32,6 @@ export type Settings = {
   selectedLang: "py" | "js";
 };
 
-export type SubmissionData = {
-  memory: number;
-  status: {
-    description: string;
-    id: number;
-  };
-  stdout: string;
-  time: string;
-  token: string;
-  stderr: string;
-  message: string;
-  compile_output: string;
-};
-
 const Playground: React.FC<PlaygroundProps> = ({
   problem,
   setSuccess,
@@ -55,7 +43,12 @@ const Playground: React.FC<PlaygroundProps> = ({
 
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
   const [submissionsData, setSubmissionsData] = useState<SubmissionData[]>([]);
-
+  const [submissionError, setSubmissionError] = useState<SubmissionData | null>(
+    null
+  );
+  const isAccepted = submissionsData.every(
+    (submission) => submission.status.id === 3
+  );
   const [testTab, setTestTab] = useState("testcase");
   const [settings, setSettings] = useState<Settings>({
     fontSize: fontSize,
@@ -90,43 +83,51 @@ const Playground: React.FC<PlaygroundProps> = ({
       });
       return;
     }
-    if (selectedLang === "js") {
-      // handle js testCase
-      const isPassed = handleJSTestCase();
-      if (isPassed && executionMode === "submit") {
-        const userRef = doc(firestore, "users", user.uid);
-        await updateDoc(userRef, {
-          solvedProblems: arrayUnion(id),
-        });
-        setSolved(true);
-        console.log("submit");
-      }
-    }
+    // if (selectedLang === "js") {
+    //   // handle js testCase
+    //   const isPassed = handleJSTestCase();
+    //   if (isPassed && executionMode === "submit") {
+    //     const userRef = doc(firestore, "users", user.uid);
+    //     await updateDoc(userRef, {
+    //       solvedProblems: arrayUnion(id),
+    //     });
+    //     setSolved(true);
+    //     console.log("submit");
+    //   }
+    // }
     if (selectedLang === "py") {
       checkStarterFunctionName(userCode);
       // handle python testCase
       userCode = userCode.slice(
         userCode.indexOf(problem.starterFunctionName.py)
       );
+      let temp: SubmissionData[] = [];
 
-      problem.testCaseCode.forEach(async (testCase) => {
-        try {
-          const token = await testUserCode({
-            userCode: userCode + testCase.inputCode, // inputCode 用來執行函式呼叫
-            expectedOutput: testCase.output,
-          });
-          const data = await getSubmissionData(token);
-          //  "ca59b542-006d-4698-bf75-5af48a62db50"
-          console.log("code: ", userCode + testCase.inputCode);
-          console.log("new submission", data);
-          setSubmissionsData([...submissionsData, data]);
-        } catch (e) {
-          if (e instanceof Error) {
-            console.log(e.message);
-          }
+      try {
+        await Promise.all(
+          problem.testCaseCode.map(async (testCase) => {
+            const token = await testUserCode({
+              userCode: userCode + testCase.inputCode, // inputCode 用來執行函式呼叫
+              expectedOutput: testCase.output,
+            });
+            const data = await getSubmissionData(token);
+            if (data.stderr) {
+              // 當語法錯誤時，在第一個 case 之後就要停止後續的 test case
+              setSubmissionError(data);
+              console.log("錯誤發生應停止後續的 test case");
+              return;
+            }
+            temp.push(data);
+          })
+        );
+
+        setSubmissionsData(temp);
+        setTestTab("testResult");
+      } catch (e) {
+        if (e instanceof Error) {
+          console.log(e.message);
         }
-      });
-      setTestTab("testResult");
+      }
     }
   };
 
@@ -245,35 +246,39 @@ const Playground: React.FC<PlaygroundProps> = ({
             </TabsContent>
             <TabsContent value="testResult">
               {/* 測試結果區 */}
-              {submissionsData?.map((data) => (
-                <>
-                  <div className="flex items-center mb-3">
-                    <h2
-                      className={`font-bold  text-xl ${
-                        // id: 3 是 Accepted
-                        data.status.id === 3 ? "text-green-600" : "text-red-600"
-                      } `}
-                    >
-                      {data.status.description}
-                    </h2>
-                    <pre className="text-sm text-muted-foreground ml-3">
-                      Runtime: {data.time} ms
-                    </pre>
-                  </div>
-                  {data.stderr && (
-                    <div className="bg-red-100  rounded-lg">
-                      <div
-                        className="text-rose-500 p-6"
-                        dangerouslySetInnerHTML={{
-                          __html: data.stderr,
-                        }}
-                      />
-                    </div>
-                  )}
-                  {!data.stderr && <TestCaseList problem={problem} />}
-                </>
-              ))}
+              <div className="flex items-center mb-3">
+                <h2
+                  className={`font-bold  text-xl ${
+                    // id: 3 是 Accepted
+                    isAccepted ? "text-green-600" : "text-red-600"
+                  } `}
+                >
+                  {isAccepted
+                    ? "Accepted"
+                    : submissionError?.status.description}
+                </h2>
+                {/* <pre className="text-sm text-muted-foreground ml-3">
+                  Runtime: {data.time} ms
+                </pre> */}
+              </div>
 
+              {submissionError && (
+                <div className="bg-red-100  rounded-lg">
+                  <div
+                    className="text-rose-500 p-6"
+                    dangerouslySetInnerHTML={{
+                      __html: submissionError.stderr,
+                    }}
+                  />
+                </div>
+              )}
+
+              {!submissionError && (
+                <TestCaseList
+                  problem={problem}
+                  submissionsData={submissionsData}
+                />
+              )}
               {!submissionsData && <h2>沒有測試結果</h2>}
             </TabsContent>
           </Tabs>
@@ -281,65 +286,6 @@ const Playground: React.FC<PlaygroundProps> = ({
       </Split>
       <EditorFooter handleExecution={handleExecution} />
     </div>
-  );
-};
-
-// --------------------------------記得移到新的 file--------------------------------
-/*
-{
-  stdout: undefined,
-  time: '0.008',
-  memory: 3164,
-  stderr: '  File "script.py", line 3\n' +
-    '    print("cubse")s\n' +
-    '                  ^\n' +
-    'SyntaxError: invalid syntax\n',
-  token: '2db0416c-ad4f-49bf-a60c-58096c9327cb',
-  compile_output: undefined,
-  message: 'Exited with error status 1',
-  status: { id: 11, description: 'Runtime Error (NZEC)' }
-}
-*/
-
-type TestCaseListProps = {
-  problem: Problem;
-};
-
-const TestCaseList: React.FC<TestCaseListProps> = ({ problem }) => {
-  const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
-  return (
-    <>
-      <div className="flex">
-        {problem.examples.map((example, index) => (
-          <div
-            className="mr-2 items-start mt-2 "
-            key={example.id}
-            onClick={() => setActiveTestCaseId(index)}
-          >
-            <div className="flex flex-wrap items-center gap-y-4">
-              <div
-                className={`font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
-										${activeTestCaseId === index ? "text-white" : "text-gray-500"}
-									`}
-              >
-                測資 {index + 1}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="font-semibold my-4">
-        <p className="text-sm font-medium mt-4 text-white">Input:</p>
-        <div className="w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2">
-          {problem.examples[activeTestCaseId].inputText}
-        </div>
-        <p className="text-sm font-medium mt-4 text-white">Output:</p>
-        <div className="w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2">
-          {problem.examples[activeTestCaseId].outputText}
-        </div>
-      </div>
-    </>
   );
 };
 
