@@ -54,8 +54,8 @@ const Playground: React.FC<PlaygroundProps> = ({
   let [userCode, setUserCode] = useState<string>(problem.starterCode.js);
 
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
-  const [submissionData, setSubmissionData] = useState<SubmissionData>();
-  const isAccepted = submissionData?.status.id === 3;
+  const [submissionsData, setSubmissionsData] = useState<SubmissionData[]>([]);
+
   const [testTab, setTestTab] = useState("testcase");
   const [settings, setSettings] = useState<Settings>({
     fontSize: fontSize,
@@ -108,23 +108,31 @@ const Playground: React.FC<PlaygroundProps> = ({
       userCode = userCode.slice(
         userCode.indexOf(problem.starterFunctionName.py)
       );
-      try {
-        const token = await testUserCode({
-          userCode: userCode,
-          expectedOutput: "[0, 1]\n",
-        });
-        const data = await getSubmissionData(token);
-        //  "ca59b542-006d-4698-bf75-5af48a62db50"
-        console.log("here", data);
-        setSubmissionData(data);
-        setTestTab("testResult");
-      } catch (e) {
-        if (e instanceof Error) {
-          console.log(e.message);
+
+      problem.testCaseCode.forEach(async (testCase) => {
+        try {
+          const token = await testUserCode({
+            userCode: userCode + testCase.inputCode, // inputCode 用來執行函式呼叫
+            expectedOutput: testCase.output,
+          });
+          const data = await getSubmissionData(token);
+          //  "ca59b542-006d-4698-bf75-5af48a62db50"
+          console.log("code: ", userCode + testCase.inputCode);
+          console.log("new submission", data);
+          setSubmissionsData([...submissionsData, data]);
+        } catch (e) {
+          if (e instanceof Error) {
+            console.log(e.message);
+          }
         }
-      }
+      });
+      setTestTab("testResult");
     }
   };
+
+  useEffect(() => {
+    console.log("submissionsData: ", submissionsData);
+  }, [submissionsData]);
 
   const handleJSTestCase = () => {
     try {
@@ -237,35 +245,36 @@ const Playground: React.FC<PlaygroundProps> = ({
             </TabsContent>
             <TabsContent value="testResult">
               {/* 測試結果區 */}
-              {submissionData ? (
+              {submissionsData?.map((data) => (
                 <>
                   <div className="flex items-center mb-3">
                     <h2
                       className={`font-bold  text-xl ${
-                        isAccepted ? "text-green-600" : "text-red-600"
+                        // id: 3 是 Accepted
+                        data.status.id === 3 ? "text-green-600" : "text-red-600"
                       } `}
                     >
-                      {submissionData.status.description}
+                      {data.status.description}
                     </h2>
                     <pre className="text-sm text-muted-foreground ml-3">
-                      Runtime: {submissionData.time} ms
+                      Runtime: {data.time} ms
                     </pre>
                   </div>
-                  {submissionData.stderr && (
+                  {data.stderr && (
                     <div className="bg-red-100  rounded-lg">
                       <div
                         className="text-rose-500 p-6"
                         dangerouslySetInnerHTML={{
-                          __html: submissionData.stderr,
+                          __html: data.stderr,
                         }}
                       />
                     </div>
                   )}
-                  {!submissionData.stderr && <TestCaseList problem={problem} />}
+                  {!data.stderr && <TestCaseList problem={problem} />}
                 </>
-              ) : (
-                <h2>沒有測試結果</h2>
-              )}
+              ))}
+
+              {!submissionsData && <h2>沒有測試結果</h2>}
             </TabsContent>
           </Tabs>
         </div>

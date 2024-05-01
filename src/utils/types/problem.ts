@@ -25,7 +25,16 @@ export type Problem = {
     js: string;
     [key: string]: string;
   };
+  testCaseCode: TestCaseCode;
 };
+
+type TestCase = {
+  id: string;
+  inputCode: string;
+  output: string;
+};
+
+type TestCaseCode = TestCase[];
 
 export type DBProblem = {
   id: string;

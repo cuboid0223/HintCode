@@ -19,6 +19,25 @@ const starterCode_js = `function twoSum(nums,target){
 
 const starterFunctionName_py = "def twoSum(";
 const starterFunctionName_js = "function twoSum(";
+
+const case1InputCode = `nums = [2,7,11,15]
+target = 9
+
+twoSum(nums, target)`;
+const case1Output = "[0, 1]\n";
+
+const case2InputCode = `nums = [3,2,4]
+target = 6
+
+twoSum(nums, target)`;
+const case2Output = "[1, 2]\n";
+
+const case3InputCode = `nums = [3,3]
+target = 6
+
+twoSum(nums, target)`;
+const case3Output = "[0, 1]\n";
+
 // checks if the user has the correct code
 const handlerTwoSum = (fn: any) => {
   // fn is the callback that user's code is passed into
@@ -94,10 +113,27 @@ export const twoSum: Problem = {
   starterCode: {
     py: starterCode_py,
     js: starterCode_js,
-  }, // 之後要實做兩個語言(js , py) ，需更改成物件 eg starterCodeTwoSum_py 和 starterCodeTwoSum_js
+  },
   order: 1,
   starterFunctionName: {
     py: starterFunctionName_py,
     js: starterFunctionName_js,
   },
+  testCaseCode: [
+    {
+      id: "1",
+      inputCode: case1InputCode,
+      output: case1Output,
+    },
+    {
+      id: "2",
+      inputCode: case2InputCode,
+      output: case2Output,
+    },
+    {
+      id: "3",
+      inputCode: case3InputCode,
+      output: case3Output,
+    },
+  ],
 };
