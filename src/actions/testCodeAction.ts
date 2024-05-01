@@ -22,7 +22,7 @@ export const testUserCode = async (codeInfo: CodeInfo) => {
     body: JSON.stringify({
       language_id: 71, // Python (3.8.1) -> "id": 71
       source_code: stringToBase64(userCode),
-      stdin: "",
+      //   stdin: "nums = [2,7,11,15], target = 9",
       memory_limit: "10000",
       expected_output: stringToBase64(expectedOutput),
     }),

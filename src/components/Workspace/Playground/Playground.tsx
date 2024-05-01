@@ -104,16 +104,14 @@ const Playground: React.FC<PlaygroundProps> = ({
     }
     if (selectedLang === "py") {
       checkStarterFunctionName(userCode);
-      // ***  handle python testCase
-      // 這裡需要後端測試服務，看是要使用 flask 或是 django
-
+      // handle python testCase
       userCode = userCode.slice(
         userCode.indexOf(problem.starterFunctionName.py)
       );
       try {
         const token = await testUserCode({
           userCode: userCode,
-          expectedOutput: "cube",
+          expectedOutput: "[0, 1]\n",
         });
         const data = await getSubmissionData(token);
         //  "ca59b542-006d-4698-bf75-5af48a62db50"
