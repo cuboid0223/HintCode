@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PreferenceNav from "./PreferenceNav/PreferenceNav";
 import Split from "react-split";
 import CodeMirror from "@uiw/react-codemirror";
@@ -56,6 +56,7 @@ const Playground: React.FC<PlaygroundProps> = ({
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
   const [submissionData, setSubmissionData] = useState<SubmissionData>();
   const isAccepted = submissionData?.status.id === 3;
+  const [testTab, setTestTab] = useState("testcase");
   const [settings, setSettings] = useState<Settings>({
     fontSize: fontSize,
     settingsModalIsOpen: false,
@@ -118,6 +119,7 @@ const Playground: React.FC<PlaygroundProps> = ({
         //  "ca59b542-006d-4698-bf75-5af48a62db50"
         console.log("here", data);
         setSubmissionData(data);
+        setTestTab("testResult");
       } catch (e) {
         if (e instanceof Error) {
           console.log(e.message);
@@ -187,6 +189,10 @@ const Playground: React.FC<PlaygroundProps> = ({
     localStorage.setItem(`${selectedLang}-code-${id}`, JSON.stringify(value));
   };
 
+  const handleTestTabChange = (value: string) => {
+    setTestTab(value);
+  };
+
   return (
     <div className="flex flex-col bg-dark-layer-1 relative overflow-x-hidden">
       <PreferenceNav settings={settings} setSettings={setSettings} />
@@ -212,7 +218,11 @@ const Playground: React.FC<PlaygroundProps> = ({
 
         <div className="w-full px-5 overflow-auto">
           {/* Tabs: testcase */}
-          <Tabs defaultValue="testcase" className="">
+          <Tabs
+            value={testTab}
+            defaultValue="testcase"
+            onValueChange={handleTestTabChange}
+          >
             <TabsList className="grid w-full grid-cols-2 ">
               <TabsTrigger value="testcase" className="relative">
                 <div className="text-sm font-medium ">測試資料</div>
@@ -224,9 +234,11 @@ const Playground: React.FC<PlaygroundProps> = ({
               </TabsTrigger>
             </TabsList>
             <TabsContent value="testcase">
+              {/* 測試資料區 */}
               <TestCaseList problem={problem} />
             </TabsContent>
             <TabsContent value="testResult">
+              {/* 測試結果區 */}
               {submissionData ? (
                 <>
                   <div className="flex items-center mb-3">
