@@ -22,6 +22,7 @@ import { BsCheck2Circle } from "react-icons/bs";
 import { TiStarOutline } from "react-icons/ti";
 import { toast } from "react-toastify";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ProblemHelp from "./ProblemHelp";
 type ProblemDescriptionProps = {
   problem: Problem;
   _solved: boolean;
@@ -202,7 +203,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
   };
 
   return (
-    <div className="bg-dark-layer-1">
+    <div className="">
       {/* TAB */}
       {/* <div className="flex h-11 w-full items-center pt-2 bg-dark-layer-2 text-white overflow-x-hidden">
         <div
@@ -213,8 +214,8 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
           Description
         </div>
       </div> */}
-      <Tabs defaultValue="description" className="bg-dark-layer-2">
-        <TabsList className="bg-dark-layer-2">
+      <Tabs defaultValue="description" className="">
+        <TabsList className="">
           <TabsTrigger value="description" className="rounded-t-[5px]">
             問題描述
           </TabsTrigger>
@@ -352,7 +353,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
           </div>
         </TabsContent>
         <TabsContent value="getHelp" className="text-white">
-          <p>hhhh</p>
+          <ProblemHelp />
         </TabsContent>
       </Tabs>
     </div>

@@ -248,10 +248,12 @@ const Playground: React.FC<PlaygroundProps> = ({
               {/* 測試結果區 */}
               <div className="flex items-center mb-3">
                 <h2
-                  className={`font-bold  text-xl ${
+                  className={`font-bold  text-xl 
+                  ${
                     // id: 3 是 Accepted
                     isAccepted ? "text-green-600" : "text-red-600"
-                  } `}
+                  }  
+                  ${submissionsData.length === 0 && "hidden"}`}
                 >
                   {isAccepted
                     ? "Accepted"
@@ -273,13 +275,15 @@ const Playground: React.FC<PlaygroundProps> = ({
                 </div>
               )}
 
-              {!submissionError && (
+              {!submissionError && submissionsData.length != 0 && (
                 <TestCaseList
                   problem={problem}
                   submissionsData={submissionsData}
                 />
               )}
-              {!submissionsData && <h2>沒有測試結果</h2>}
+              {submissionsData.length === 0 && (
+                <h2 className="text-white">沒有測試結果</h2>
+              )}
             </TabsContent>
           </Tabs>
         </div>

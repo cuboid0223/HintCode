@@ -84,7 +84,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
           </div>
         ))}
       </div>
-      <Card>
+      <Card className="mb-6">
         <CardContent>
           <CardDescription className="font-bold mb-2">輸入:</CardDescription>
           <div className="bg-gray-400 p-3 rounded-lg mb-2">
@@ -106,7 +106,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
                 你的輸出:
               </CardDescription>
               <div className="bg-gray-400 p-3 rounded-lg mb-2">
-                {submissionsData[activeTestCaseId].stdout}
+                {submissionsData[activeTestCaseId]?.stdout}
               </div>
               <CardDescription className="font-bold mb-2">
                 預期輸出:
