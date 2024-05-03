@@ -4,6 +4,8 @@ import { Metadata } from "next";
 import type { Viewport } from "next";
 
 import "@/styles/globals.css";
+import "@/styles/prism.css";
+
 import ToastProvider from "@/providers/ToastProvider";
 import Topbar from "@/components/Topbar/Topbar";
 
