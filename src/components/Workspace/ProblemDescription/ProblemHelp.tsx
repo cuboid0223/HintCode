@@ -55,7 +55,7 @@ print('It works!')
 
 function ProblemHelp() {
   return (
-    <main className="p-5 pb-52 grid justify-items-stretch  h-screen  overflow-y-auto ">
+    <section className="p-5 pb-52 grid justify-items-stretch  h-screen  overflow-y-auto ">
       {/* card list for GPT output */}
       <Card className="border-8  h-fit max-w-lg mb-6 p-2">
         <CardContent>
@@ -245,7 +245,7 @@ function ProblemHelp() {
           </Markdown>
         </CardContent>
       </Card>
-    </main>
+    </section>
   );
 }
 
