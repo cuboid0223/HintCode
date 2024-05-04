@@ -210,230 +210,158 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-auto">
-      {/* TAB */}
-      <Tabs defaultValue="description" className="overflow-hidden">
-        <TabsList className="">
-          <TabsTrigger value="description" className="rounded-t-lg">
-            問題描述
-          </TabsTrigger>
-          <TabsTrigger
-            value="getHelp"
-            className={`rounded-t-lg ${
-              resolvedTheme === "light" && "text-black"
-            }`}
-          >
-            求救
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="description">
-          <div className="flex px-5 py-4  overflow-y-auto">
-            <div className="">
-              {/* Problem heading */}
-              <div className="w-full">
-                <div className="flex space-x-4">
-                  <div className="flex-1 mr-2 text-lg  font-medium">
-                    {problem?.title}
-                  </div>
-                </div>
-                {/* Difficulty / likes / dislikes / star */}
-                {!loading && currentProblem && (
-                  <div className="flex items-center mt-3">
-                    <div
-                      className={`${problemDifficultyClass} inline-block rounded-[21px] bg-opacity-[.15] px-2.5 py-1 text-xs font-medium capitalize `}
-                    >
-                      {currentProblem.difficulty}
-                    </div>
-                    {(solved || _solved) && (
-                      <div className="rounded p-[3px] ml-4 text-lg transition-colors duration-200 text-green-s text-dark-green-s">
-                        <BsCheck2Circle />
-                      </div>
-                    )}
-                    <div
-                      className="flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px]  ml-4 text-lg transition-colors duration-200 text-dark-gray-6"
-                      onClick={handleLike}
-                    >
-                      {liked && !updating && (
-                        <AiFillLike className="text-dark-blue-s" />
-                      )}
-                      {!liked && !updating && <AiFillLike />}
-                      {updating && (
-                        <AiOutlineLoading3Quarters className="animate-spin" />
-                      )}
-
-                      <span className="text-xs">{currentProblem.likes}</span>
-                    </div>
-                    <div
-                      className="flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px]  ml-4 text-lg transition-colors duration-200 text-green-s text-dark-gray-6"
-                      onClick={handleDislike}
-                    >
-                      {disliked && !updating && (
-                        <AiFillDislike className="text-dark-blue-s" />
-                      )}
-                      {!disliked && !updating && <AiFillDislike />}
-                      {updating && (
-                        <AiOutlineLoading3Quarters className="animate-spin" />
-                      )}
-
-                      <span className="text-xs">{currentProblem.dislikes}</span>
-                    </div>
-                    <div
-                      className="cursor-pointer hover:bg-dark-fill-3  rounded p-[3px]  ml-4 text-xl transition-colors duration-200 text-green-s text-dark-gray-6 "
-                      onClick={handleStar}
-                    >
-                      {starred && !updating && (
-                        <AiFillStar className="text-dark-yellow" />
-                      )}
-                      {!starred && !updating && <TiStarOutline />}
-                      {updating && (
-                        <AiOutlineLoading3Quarters className="animate-spin" />
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {loading && (
-                  <div className="mt-3 flex space-x-2">
-                    <RectangleSkeleton />
-                    <CircleSkeleton />
-                    <RectangleSkeleton />
-                    <RectangleSkeleton />
-                    <CircleSkeleton />
-                  </div>
-                )}
-
-                {/* Problem Statement(paragraphs) */}
-                {/* <div className="text-sm">
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: problem.problemStatement,
-                    }}
-                  />
-                </div> */}
-                <Markdown
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    // markdown components integrated with shadcn UI
-                    h3({ className, ...rest }) {
-                      return (
-                        <h3
-                          className="scroll-m-20 text-2xl font-semibold tracking-tight"
-                          {...rest}
-                        ></h3>
-                      );
-                    },
-                    ul({ className, ...rest }) {
-                      return (
-                        <ul
-                          className="my-6 ml-6 list-disc [&>li]:mt-2"
-                          {...rest}
-                        ></ul>
-                      );
-                    },
-                    table({ className, ...rest }) {
-                      return <table className="w-full mb-6" {...rest}></table>;
-                    },
-                    tr({ className, ...rest }) {
-                      return (
-                        <tr
-                          className="m-0 border-t p-0 even:bg-muted"
-                          {...rest}
-                        ></tr>
-                      );
-                    },
-                    th({ className, ...rest }) {
-                      return (
-                        <th
-                          className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right"
-                          {...rest}
-                        ></th>
-                      );
-                    },
-                    td({ className, ...rest }) {
-                      return (
-                        <td
-                          className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right"
-                          {...rest}
-                        ></td>
-                      );
-                    },
-                    blockquote({ className, ...rest }) {
-                      return (
-                        <blockquote
-                          className="mt-6 border-l-2 pl-6 italic"
-                          {...rest}
-                        ></blockquote>
-                      );
-                    },
-                    code({ children, className, node, ...rest }) {
-                      const match = /language-(\w+)/.exec(className || "");
-                      return match ? (
-                        //  SyntaxHighlighter 沒有提供 Type
-                        <SyntaxHighlighter
-                          {...rest}
-                          language="python"
-                          style={resolvedTheme === "dark" ? a11yDark : docco}
-                          showLineNumbers
-                          wrapLongLines
-                        >
-                          {children}
-                        </SyntaxHighlighter>
-                      ) : (
-                        <code {...rest} className={className}>
-                          {children}
-                        </code>
-                      );
-                    },
-                  }}
-                >
-                  {problem.problemStatement}
-                </Markdown>
-
-                {/* Examples */}
-                {/* <div className="mt-4">
-                  {problem.examples.map((example, index) => (
-                    <div key={example.id}>
-                      <p className="font-medium ">Example {index + 1}: </p>
-                      {example.img && (
-                        <img src={example.img} alt="" className="mt-3" />
-                      )}
-                      <div className="example-card">
-                        <pre>
-                          <strong className="">Input: </strong>{" "}
-                          {example.inputText}
-                          <br />
-                          <strong>Output:</strong>
-                          {example.outputText} <br />
-                          {example.explanation && (
-                            <>
-                              <strong>Explanation:</strong>{" "}
-                              {example.explanation}
-                            </>
-                          )}
-                        </pre>
-                      </div>
-                    </div>
-                  ))}
-                </div> */}
-
-                {/* Constraints */}
-                {/* <div className="my-8 pb-4">
-                  <div className=" text-sm font-medium">Constraints:</div>
-                  <ul className=" ml-5 list-disc ">
-                    <div
-                      dangerouslySetInnerHTML={{ __html: problem.constraints }}
-                    />
-                  </ul>
-                </div> */}
-              </div>
+    <div className="flex px-5 py-4  overflow-y-auto">
+      <div>
+        {/* Problem heading */}
+        <div className="w-full">
+          <div className="flex space-x-4">
+            <div className="flex-1 mr-2 text-lg  font-medium">
+              {problem?.title}
             </div>
           </div>
-        </TabsContent>
-        <TabsContent value="getHelp">
-          {/* GPT 求救區 */}
-          <ProblemHelp />
-        </TabsContent>
-      </Tabs>
+          {/* Difficulty / likes / dislikes / star */}
+          {!loading && currentProblem && (
+            <div className="flex items-center mt-3">
+              <div
+                className={`${problemDifficultyClass} inline-block rounded-[21px] bg-opacity-[.15] px-2.5 py-1 text-xs font-medium capitalize `}
+              >
+                {currentProblem.difficulty}
+              </div>
+              {(solved || _solved) && (
+                <div className="rounded p-[3px] ml-4 text-lg transition-colors duration-200 text-green-s text-dark-green-s">
+                  <BsCheck2Circle />
+                </div>
+              )}
+              <div
+                className="flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px]  ml-4 text-lg transition-colors duration-200 text-dark-gray-6"
+                onClick={handleLike}
+              >
+                {liked && !updating && (
+                  <AiFillLike className="text-dark-blue-s" />
+                )}
+                {!liked && !updating && <AiFillLike />}
+                {updating && (
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                )}
+
+                <span className="text-xs">{currentProblem.likes}</span>
+              </div>
+              <div
+                className="flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px]  ml-4 text-lg transition-colors duration-200 text-green-s text-dark-gray-6"
+                onClick={handleDislike}
+              >
+                {disliked && !updating && (
+                  <AiFillDislike className="text-dark-blue-s" />
+                )}
+                {!disliked && !updating && <AiFillDislike />}
+                {updating && (
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                )}
+
+                <span className="text-xs">{currentProblem.dislikes}</span>
+              </div>
+              <div
+                className="cursor-pointer hover:bg-dark-fill-3  rounded p-[3px]  ml-4 text-xl transition-colors duration-200 text-green-s text-dark-gray-6 "
+                onClick={handleStar}
+              >
+                {starred && !updating && (
+                  <AiFillStar className="text-dark-yellow" />
+                )}
+                {!starred && !updating && <TiStarOutline />}
+                {updating && (
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                )}
+              </div>
+            </div>
+          )}
+
+          {loading && (
+            <div className="mt-3 flex space-x-2">
+              <RectangleSkeleton />
+              <CircleSkeleton />
+              <RectangleSkeleton />
+              <RectangleSkeleton />
+              <CircleSkeleton />
+            </div>
+          )}
+
+          <Markdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              // markdown components integrated with shadcn UI
+              h3({ className, ...rest }) {
+                return (
+                  <h3
+                    className="scroll-m-20 text-2xl font-semibold tracking-tight"
+                    {...rest}
+                  ></h3>
+                );
+              },
+              ul({ className, ...rest }) {
+                return (
+                  <ul
+                    className="my-6 ml-6 list-disc [&>li]:mt-2"
+                    {...rest}
+                  ></ul>
+                );
+              },
+              table({ className, ...rest }) {
+                return <table className="w-full mb-6" {...rest}></table>;
+              },
+              tr({ className, ...rest }) {
+                return (
+                  <tr className="m-0 border-t p-0 even:bg-muted" {...rest}></tr>
+                );
+              },
+              th({ className, ...rest }) {
+                return (
+                  <th
+                    className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right"
+                    {...rest}
+                  ></th>
+                );
+              },
+              td({ className, ...rest }) {
+                return (
+                  <td
+                    className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right"
+                    {...rest}
+                  ></td>
+                );
+              },
+              blockquote({ className, ...rest }) {
+                return (
+                  <blockquote
+                    className="mt-6 border-l-2 pl-6 italic"
+                    {...rest}
+                  ></blockquote>
+                );
+              },
+              code({ children, className, node, ...rest }) {
+                const match = /language-(\w+)/.exec(className || "");
+                return match ? (
+                  //  SyntaxHighlighter 沒有提供 Type
+                  <SyntaxHighlighter
+                    {...rest}
+                    language="python"
+                    style={resolvedTheme === "dark" ? a11yDark : docco}
+                    showLineNumbers
+                    wrapLongLines
+                  >
+                    {children}
+                  </SyntaxHighlighter>
+                ) : (
+                  <code {...rest} className={className}>
+                    {children}
+                  </code>
+                );
+              },
+            }}
+          >
+            {problem.problemStatement}
+          </Markdown>
+        </div>
+      </div>
     </div>
   );
 };

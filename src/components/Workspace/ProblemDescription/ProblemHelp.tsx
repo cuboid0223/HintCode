@@ -13,6 +13,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "next-themes";
+import { Problem } from "@/utils/types/problem";
 const markdown = `
 ### Hi, *Pluto*!
 Just a link: www.nasa.gov.
@@ -54,8 +55,15 @@ print('It works!')
 ~~~
 `;
 
-function ProblemHelp() {
+type ProblemHelpProps = {
+  problem: Problem;
+};
+
+const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
   const { resolvedTheme, setTheme } = useTheme();
+  // 題目敘述 problem.problemStatement
+  // 使用者程式碼 -> local storage 有 py-code-two-sum
+  // 使用者輸出
 
   return (
     <section className="light:bg-red-600 p-5 pb-52 grid justify-items-stretch  h-screen  overflow-y-auto ">
@@ -251,6 +259,6 @@ function ProblemHelp() {
       </Card>
     </section>
   );
-}
+};
 
 export default ProblemHelp;

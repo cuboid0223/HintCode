@@ -46,7 +46,8 @@ const Playground: React.FC<PlaygroundProps> = ({
   const [submissionError, setSubmissionError] = useState<SubmissionData | null>(
     null
   );
-  const isAccepted = submissionsData.every(
+  const isAllTestCasesAccepted = submissionsData.every(
+    // 全部測資都通過 isAllTestCasesAccepted 才會是 true
     (submission) => submission.status.id === 3
   );
   const [testTab, setTestTab] = useState("testcase");
@@ -251,11 +252,11 @@ const Playground: React.FC<PlaygroundProps> = ({
                   className={`font-bold  text-xl 
                   ${
                     // id: 3 是 Accepted
-                    isAccepted ? "text-green-600" : "text-red-600"
+                    isAllTestCasesAccepted ? "text-green-600" : "text-red-600"
                   }  
                   ${submissionsData.length === 0 && "hidden"}`}
                 >
-                  {isAccepted
+                  {isAllTestCasesAccepted
                     ? "Accepted"
                     : submissionError?.status.description}
                 </h2>
