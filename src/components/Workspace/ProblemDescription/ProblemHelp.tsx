@@ -12,6 +12,7 @@ import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useTheme } from "next-themes";
 const markdown = `
 ### Hi, *Pluto*!
 Just a link: www.nasa.gov.
@@ -54,10 +55,12 @@ print('It works!')
 `;
 
 function ProblemHelp() {
+  const { resolvedTheme, setTheme } = useTheme();
+
   return (
-    <section className="p-5 pb-52 grid justify-items-stretch  h-screen  overflow-y-auto ">
-      {/* card list for GPT output */}
-      <Card className="border-8  h-fit max-w-lg mb-6 p-2">
+    <section className="light:bg-red-600 p-5 pb-52 grid justify-items-stretch  h-screen  overflow-y-auto ">
+      {/* GPT output */}
+      <Card className="h-fit max-w-lg mb-6 p-2">
         <CardContent>
           <Markdown
             remarkPlugins={[remarkGfm]}
@@ -118,7 +121,7 @@ function ProblemHelp() {
                   <SyntaxHighlighter
                     {...rest}
                     language="python"
-                    style={docco}
+                    style={resolvedTheme === "dark" ? a11yDark : docco}
                     showLineNumbers
                     wrapLongLines
                   >
@@ -136,6 +139,7 @@ function ProblemHelp() {
           </Markdown>
         </CardContent>
       </Card>
+      {/* user message code */}
       <Card className="justify-self-end max-w-md h-fit mb-6">
         <CardContent className="p-0">
           <Markdown
@@ -148,7 +152,7 @@ function ProblemHelp() {
                   <SyntaxHighlighter
                     {...rest}
                     language="python"
-                    style={a11yDark}
+                    style={resolvedTheme === "dark" ? a11yDark : docco}
                     showLineNumbers
                   >
                     {children}
