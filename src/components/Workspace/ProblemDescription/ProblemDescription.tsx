@@ -203,28 +203,19 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
   };
 
   return (
-    <div className="">
+    <div className="flex-1 overflow-auto">
       {/* TAB */}
-      {/* <div className="flex h-11 w-full items-center pt-2 bg-dark-layer-2 text-white overflow-x-hidden">
-        <div
-          className={
-            "bg-dark-layer-1 rounded-t-[5px] px-5 py-[10px] text-xs"
-          }
-        >
-          Description
-        </div>
-      </div> */}
-      <Tabs defaultValue="description" className="">
+      <Tabs defaultValue="description" className="overflow-hidden">
         <TabsList className="">
-          <TabsTrigger value="description" className="rounded-t-[5px]">
+          <TabsTrigger value="description" className="rounded-t-lg">
             問題描述
           </TabsTrigger>
-          <TabsTrigger value="getHelp" className="rounded-t-[5px]">
+          <TabsTrigger value="getHelp" className="rounded-t-lg">
             求救
           </TabsTrigger>
         </TabsList>
         <TabsContent value="description">
-          <div className="flex px-0 py-4 h-[calc(100vh-94px)] overflow-y-auto">
+          <div className="flex px-0 py-4  overflow-y-auto">
             <div className="px-5">
               {/* Problem heading */}
               <div className="w-full">
@@ -352,7 +343,8 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
             </div>
           </div>
         </TabsContent>
-        <TabsContent value="getHelp" className="text-white">
+        <TabsContent value="getHelp">
+          {/* GPT 求救區 */}
           <ProblemHelp />
         </TabsContent>
       </Tabs>
