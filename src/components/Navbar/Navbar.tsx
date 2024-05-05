@@ -1,4 +1,4 @@
-import { authModalState } from "@/app/atoms/authModalAtom";
+import { authModalState } from "@/atoms/authModalAtom";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";

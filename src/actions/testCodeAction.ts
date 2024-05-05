@@ -8,6 +8,7 @@ type CodeInfo = {
   expectedOutput: string;
 };
 export const testUserCode = async (codeInfo: CodeInfo) => {
+  // 創造新的 submission
   const { userCode, expectedOutput } = codeInfo;
   // ca59b542-006d-4698-bf75-5af48a62db50
 
@@ -40,6 +41,7 @@ export const testUserCode = async (codeInfo: CodeInfo) => {
 };
 
 export const getSubmissionData = async (token: string) => {
+  // 透過 token 取得 submission
   const url = `${process.env.JUDGE0_URL}/submissions/${token}?base64_encoded=true`;
   const options = {
     method: "GET",

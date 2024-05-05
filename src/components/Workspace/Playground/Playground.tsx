@@ -18,6 +18,8 @@ import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TestCaseList from "./components/TestCaseList";
 import { SubmissionData } from "@/utils/types/testcase";
+import { useRecoilState } from "recoil";
+import { submissionsDataState } from "@/atoms/submissionsDataAtom";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -38,14 +40,16 @@ const Playground: React.FC<PlaygroundProps> = ({
   setSolved,
 }) => {
   const { id } = problem;
+  const [submissionsData, setSubmissionsData] =
+    useRecoilState<SubmissionData[]>(submissionsDataState);
 
   let [userCode, setUserCode] = useState<string>(problem.starterCode.js);
 
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
-  const [submissionsData, setSubmissionsData] = useState<SubmissionData[]>([]);
-  const [submissionError, setSubmissionError] = useState<SubmissionData | null>(
-    null
-  );
+  // const [submissionsData, setSubmissionsData] = useState<SubmissionData[]>([]);
+  // const [submissionError, setSubmissionError] = useState<SubmissionData | null>(
+  //   null
+  // );
   const isAllTestCasesAccepted = submissionsData.every(
     // 全部測資都通過 isAllTestCasesAccepted 才會是 true
     (submission) => submission.status.id === 3
@@ -105,22 +109,19 @@ const Playground: React.FC<PlaygroundProps> = ({
       let temp: SubmissionData[] = [];
 
       try {
-        await Promise.all(
-          problem.testCaseCode.map(async (testCase) => {
-            const token = await testUserCode({
-              userCode: userCode + testCase.inputCode, // inputCode 用來執行函式呼叫
-              expectedOutput: testCase.output,
-            });
-            const data = await getSubmissionData(token);
-            if (data.stderr) {
-              // 當語法錯誤時，在第一個 case 之後就要停止後續的 test case
-              setSubmissionError(data);
-              console.log("錯誤發生應停止後續的 test case");
-              return;
-            }
+        for (const testCase of problem.testCaseCode) {
+          const token = await testUserCode({
+            userCode: userCode + testCase.inputCode,
+            expectedOutput: testCase.output,
+          });
+          const data = await getSubmissionData(token);
+          if (data.stderr) {
             temp.push(data);
-          })
-        );
+            console.log("錯誤發生應停止後續的 test case");
+            throw new Error("錯誤發生應停止後續的 test case");
+          }
+          temp.push(data);
+        }
 
         setSubmissionsData(temp);
         setTestTab("testResult");
@@ -128,13 +129,15 @@ const Playground: React.FC<PlaygroundProps> = ({
         if (e instanceof Error) {
           console.log(e.message);
         }
+        setSubmissionsData(temp);
       }
     }
   };
 
   useEffect(() => {
     console.log("submissionsData: ", submissionsData);
-  }, [submissionsData]);
+    console.log("isAllTestCasesAccepted: ", isAllTestCasesAccepted);
+  }, [submissionsData, isAllTestCasesAccepted]);
 
   const handleJSTestCase = () => {
     try {
@@ -258,32 +261,31 @@ const Playground: React.FC<PlaygroundProps> = ({
                 >
                   {isAllTestCasesAccepted
                     ? "Accepted"
-                    : submissionError?.status.description}
+                    : submissionsData[0]?.status.description}
                 </h2>
                 {/* <pre className="text-sm text-muted-foreground ml-3">
                   Runtime: {data.time} ms
                 </pre> */}
               </div>
 
-              {submissionError && (
+              {submissionsData[0] && (
                 <div className="bg-red-100  rounded-lg">
                   <div
                     className="text-rose-500 p-6"
                     dangerouslySetInnerHTML={{
-                      __html: submissionError.stderr,
+                      __html: submissionsData[0].stderr,
                     }}
                   />
                 </div>
               )}
 
-              {!submissionError && submissionsData.length != 0 && (
+              {submissionsData.length === 0 ? (
+                <h2 className="text-white">沒有測試結果</h2>
+              ) : (
                 <TestCaseList
                   problem={problem}
                   submissionsData={submissionsData}
                 />
-              )}
-              {submissionsData.length === 0 && (
-                <h2 className="text-white">沒有測試結果</h2>
               )}
             </TabsContent>
           </Tabs>

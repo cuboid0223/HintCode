@@ -14,6 +14,9 @@ import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "next-themes";
 import { Problem } from "@/utils/types/problem";
+import { useRecoilState } from "recoil";
+import { submissionsDataState } from "@/atoms/submissionsDataAtom";
+import { SubmissionData } from "@/utils/types/testcase";
 const markdown = `
 ### Hi, *Pluto*!
 Just a link: www.nasa.gov.
@@ -61,11 +64,17 @@ type ProblemHelpProps = {
 
 const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
   const { resolvedTheme, setTheme } = useTheme();
+  const [submissionsData, setSubmissionsData] =
+    useRecoilState<SubmissionData[]>(submissionsDataState);
+
   // 1. 題目敘述 problem.problemStatement (done)
   // 2. 使用者程式碼 -> local storage 有 py-code-two-sum (有換行符號需移除)
   // 3. 使用者程式碼測資輸出 submissionsData, submissionError 都要有
   // 可能要用 recoil 的 global state 處理
 
+  useEffect(() => {
+    console.log("幹", submissionsData);
+  }, [submissionsData]);
   return (
     <section className="p-5 grid justify-items-stretch   overflow-y-auto ">
       {/* GPT output */}
