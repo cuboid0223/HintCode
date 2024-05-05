@@ -20,6 +20,7 @@ import TestCaseList from "./components/TestCaseList";
 import { SubmissionData } from "@/utils/types/testcase";
 import { useRecoilState } from "recoil";
 import { submissionsDataState } from "@/atoms/submissionsDataAtom";
+import { mockSubmissions } from "@/mockProblems/mockSubmissions";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -88,6 +89,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       });
       return;
     }
+    let temp: SubmissionData[] = [];
     // if (selectedLang === "js") {
     //   // handle js testCase
     //   const isPassed = handleJSTestCase();
@@ -100,43 +102,46 @@ const Playground: React.FC<PlaygroundProps> = ({
     //     console.log("submit");
     //   }
     // }
-    if (selectedLang === "py") {
-      checkStarterFunctionName(userCode);
-      // handle python testCase
-      userCode = userCode.slice(
-        userCode.indexOf(problem.starterFunctionName.py)
-      );
-      let temp: SubmissionData[] = [];
 
-      try {
-        for (const testCase of problem.testCaseCode) {
-          const token = await testUserCode({
-            userCode: userCode + testCase.inputCode,
-            expectedOutput: testCase.output,
-          });
-          const data = await getSubmissionData(token);
-          if (data.stderr) {
-            temp.push(data);
-            console.log("錯誤發生應停止後續的 test case");
-            throw new Error("錯誤發生應停止後續的 test case");
-          }
-          temp.push(data);
-        }
+    // 要測試 judge0 請打開
+    // if (selectedLang === "py") {
+    //   checkStarterFunctionName(userCode);
+    //   // handle python testCase
+    //   userCode = userCode.slice(
+    //     userCode.indexOf(problem.starterFunctionName.py)
+    //   );
 
-        setSubmissionsData(temp);
-        setTestTab("testResult");
-      } catch (e) {
-        if (e instanceof Error) {
-          console.log(e.message);
-        }
-        setSubmissionsData(temp);
-      }
-    }
+    //   try {
+    //     for (const testCase of problem.testCaseCode) {
+    //       const token = await testUserCode({
+    //         userCode: userCode + testCase.inputCode,
+    //         expectedOutput: testCase.output,
+    //       });
+    //       const data = await getSubmissionData(token);
+    //       if (data.stderr) {
+    //         temp.push(data);
+    //         console.log("錯誤發生應停止後續的 test case");
+    //         throw new Error("錯誤發生應停止後續的 test case");
+    //       }
+    //       temp.push(data);
+    //     }
+    //   } catch (e) {
+    //     if (e instanceof Error) {
+    //       console.log(e.message);
+    //     }
+    //   }
+    // }
+
+    // setSubmissionsData(temp);
+    setSubmissionsData(mockSubmissions);
+    setTestTab("testResult");
   };
 
   useEffect(() => {
     console.log("submissionsData: ", submissionsData);
     console.log("isAllTestCasesAccepted: ", isAllTestCasesAccepted);
+    const r = getWrongAnswerSubmissions(submissionsData);
+    console.log("r: ", r);
   }, [submissionsData, isAllTestCasesAccepted]);
 
   const handleJSTestCase = () => {
@@ -209,7 +214,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       <PreferenceNav settings={settings} setSettings={setSettings} />
 
       <Split
-        className="grow"
+        className="flex-1 overflow-hidden"
         direction="vertical"
         sizes={[60, 40]}
         minSize={60}
@@ -259,33 +264,34 @@ const Playground: React.FC<PlaygroundProps> = ({
                   }  
                   ${submissionsData.length === 0 && "hidden"}`}
                 >
-                  {isAllTestCasesAccepted
-                    ? "Accepted"
-                    : submissionsData[0]?.status.description}
+                  {isAllTestCasesAccepted ? "Accepted" : "Wrong Answer"}
                 </h2>
                 {/* <pre className="text-sm text-muted-foreground ml-3">
                   Runtime: {data.time} ms
                 </pre> */}
               </div>
-
-              {submissionsData[0] && (
-                <div className="bg-red-100  rounded-lg">
-                  <div
-                    className="text-rose-500 p-6"
-                    dangerouslySetInnerHTML={{
-                      __html: submissionsData[0].stderr,
-                    }}
-                  />
-                </div>
-              )}
-
               {submissionsData.length === 0 ? (
                 <h2 className="text-white">沒有測試結果</h2>
               ) : (
-                <TestCaseList
-                  problem={problem}
-                  submissionsData={submissionsData}
-                />
+                <>
+                  {submissionsData[0].stderr && (
+                    <div className="bg-red-100 rounded-lg">
+                      <div
+                        className="text-rose-500 p-6"
+                        dangerouslySetInnerHTML={{
+                          __html: submissionsData[0].stderr,
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {!submissionsData[0].stderr && (
+                    <TestCaseList
+                      problem={problem}
+                      submissionsData={submissionsData}
+                    />
+                  )}
+                </>
               )}
             </TabsContent>
           </Tabs>

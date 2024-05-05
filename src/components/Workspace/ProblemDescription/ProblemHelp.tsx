@@ -69,12 +69,21 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
 
   // 1. 題目敘述 problem.problemStatement (done)
   // 2. 使用者程式碼 -> local storage 有 py-code-two-sum (有換行符號需移除)
-  // 3. 使用者程式碼測資輸出 submissionsData, submissionError 都要有
+  // 3. 使用者程式碼測資輸出 submissionsData, submissionError 都要有 (done)
   // 可能要用 recoil 的 global state 處理
 
   useEffect(() => {
     console.log("幹", submissionsData);
   }, [submissionsData]);
+
+  const getWrongAnswerSubmissions = (data: SubmissionData[]) => {
+    // 取得 submissionsData 陣列中 data.status.id 不為 3 換句話講就是 wrong answer 的 submission
+    if (data.length === 0) return;
+
+    return data.filter((obj) => {
+      return obj.status.id !== 3;
+    });
+  };
   return (
     <section className="p-5 grid justify-items-stretch   overflow-y-auto ">
       {/* GPT output */}
