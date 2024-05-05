@@ -37,7 +37,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         role="dialog"
         className="fixed inset-0 overflow-y-auto z-modal"
       >
-        <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="flex items-center justify-center px-4">
           {/* overlay */}
           <div
             className="opacity-100"

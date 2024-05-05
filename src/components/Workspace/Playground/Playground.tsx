@@ -202,11 +202,11 @@ const Playground: React.FC<PlaygroundProps> = ({
   };
 
   return (
-    <div className="flex flex-col bg-dark-layer-1 relative overflow-x-hidden">
+    <div className="flex flex-col relative overflow-x-hidden ">
       <PreferenceNav settings={settings} setSettings={setSettings} />
 
       <Split
-        className="h-[calc(100vh-94px)]"
+        className="grow"
         direction="vertical"
         sizes={[60, 40]}
         minSize={60}

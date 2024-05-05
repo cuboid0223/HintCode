@@ -20,7 +20,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
   const { resolvedTheme } = useTheme();
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="overflow-auto">
       {/* TAB */}
       <Tabs defaultValue="description" className="overflow-hidden">
         <TabsList className="">

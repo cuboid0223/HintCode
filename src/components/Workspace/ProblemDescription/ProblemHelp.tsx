@@ -61,12 +61,13 @@ type ProblemHelpProps = {
 
 const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
   const { resolvedTheme, setTheme } = useTheme();
-  // 題目敘述 problem.problemStatement
-  // 使用者程式碼 -> local storage 有 py-code-two-sum
-  // 使用者輸出
+  // 1. 題目敘述 problem.problemStatement (done)
+  // 2. 使用者程式碼 -> local storage 有 py-code-two-sum (有換行符號需移除)
+  // 3. 使用者程式碼測資輸出 submissionsData, submissionError 都要有
+  // 可能要用 recoil 的 global state 處理
 
   return (
-    <section className="light:bg-red-600 p-5 pb-52 grid justify-items-stretch  h-screen  overflow-y-auto ">
+    <section className="p-5 grid justify-items-stretch   overflow-y-auto ">
       {/* GPT output */}
       <Card className="h-fit max-w-lg mb-6 p-2">
         <CardContent>
@@ -148,6 +149,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
         </CardContent>
       </Card>
       {/* user message code */}
+      {/* 要包含 使用者提交的程式碼  和 submissionsData, submissionError  */};
       <Card className="justify-self-end max-w-md h-fit mb-6">
         <CardContent className="p-0">
           <Markdown
@@ -177,7 +179,6 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
           </Markdown>
         </CardContent>
       </Card>
-
       <Card className="h-fit max-w-lg mb-6 p-2">
         <CardContent>
           <Markdown

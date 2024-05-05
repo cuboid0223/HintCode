@@ -18,7 +18,7 @@ const Workspace: React.FC<WorkspaceProps> = ({ problem }) => {
   const [solved, setSolved] = useState(false);
 
   return (
-    <Split className="split" minSize={0}>
+    <Split className="split flex-1 overflow-hidden" minSize={0}>
       {/* 左半 程式題目敘述區與 GPT 提示區 */}
       <ProblemTab problem={problem} _solved={solved} />
 
