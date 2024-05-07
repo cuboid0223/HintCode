@@ -104,44 +104,46 @@ const Playground: React.FC<PlaygroundProps> = ({
     // }
 
     // 要測試 judge0 請打開
-    // if (selectedLang === "py") {
-    //   checkStarterFunctionName(userCode);
-    //   // handle python testCase
-    //   userCode = userCode.slice(
-    //     userCode.indexOf(problem.starterFunctionName.py)
-    //   );
+    if (selectedLang === "py") {
+      checkStarterFunctionName(userCode);
+      // handle python testCase
+      userCode = userCode.slice(
+        userCode.indexOf(problem.starterFunctionName.py)
+      );
 
-    //   try {
-    //     for (const testCase of problem.testCaseCode) {
-    //       const token = await testUserCode({
-    //         userCode: userCode + testCase.inputCode,
-    //         expectedOutput: testCase.output,
-    //       });
-    //       const data = await getSubmissionData(token);
-    //       if (data.stderr) {
-    //         temp.push(data);
-    //         console.log("錯誤發生應停止後續的 test case");
-    //         throw new Error("錯誤發生應停止後續的 test case");
-    //       }
-    //       temp.push(data);
-    //     }
-    //   } catch (e) {
-    //     if (e instanceof Error) {
-    //       console.log(e.message);
-    //     }
-    //   }
-    // }
+      try {
+        for (const testCase of problem.testCaseCode) {
+          const token = await testUserCode({
+            userCode: userCode + testCase.inputCode,
+            expectedOutput: testCase.output,
+          });
+          const data = await getSubmissionData(token);
+          if (data.stderr) {
+            temp.push(data);
+            console.log("錯誤發生應停止後續的 test case");
+            throw new Error("錯誤發生應停止後續的 test case");
+          }
+          temp.push(data);
+        }
+      } catch (e) {
+        if (e instanceof Error) {
+          console.log(e.message);
+        }
+      }
+    }
 
-    // setSubmissionsData(temp);
-    setSubmissionsData(mockSubmissions);
+    localStorage.setItem(
+      `latest-test-${selectedLang}-code`,
+      JSON.stringify(userCode)
+    );
+    setSubmissionsData(temp);
+    // setSubmissionsData(mockSubmissions);
     setTestTab("testResult");
   };
 
   useEffect(() => {
     console.log("submissionsData: ", submissionsData);
     console.log("isAllTestCasesAccepted: ", isAllTestCasesAccepted);
-    const r = getWrongAnswerSubmissions(submissionsData);
-    console.log("r: ", r);
   }, [submissionsData, isAllTestCasesAccepted]);
 
   const handleJSTestCase = () => {

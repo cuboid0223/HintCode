@@ -10,7 +10,6 @@ type CodeInfo = {
 export const testUserCode = async (codeInfo: CodeInfo) => {
   // 創造新的 submission
   const { userCode, expectedOutput } = codeInfo;
-  // ca59b542-006d-4698-bf75-5af48a62db50
 
   const options = {
     method: "POST",
@@ -55,7 +54,7 @@ export const getSubmissionData = async (token: string) => {
     const response = await fetch(url, options);
     const result = await response.json();
     const { stdout, stderr, message, compile_output } = result;
-    console.log("base64ToString(stdout) ", base64ToString(stdout));
+    // console.log("base64ToString(stdout) ", base64ToString(stdout));
     const data = {
       ...result,
       stdout: base64ToString(stdout),

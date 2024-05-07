@@ -9,6 +9,7 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@ai-sdk/openai": "^0.0.9",
 		"@codemirror/lang-javascript": "^6.1.6",
 		"@codemirror/lang-python": "^6.1.5",
 		"@mdx-js/loader": "^3.0.1",
@@ -24,6 +25,7 @@
 		"@types/react-dom": "18.0.11",
 		"@uiw/codemirror-theme-vscode": "^4.19.16",
 		"@uiw/react-codemirror": "^4.19.16",
+		"ai": "^3.1.1",
 		"assert": "^2.0.0",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.1",
@@ -32,6 +34,7 @@
 		"lucide-react": "^0.373.0",
 		"next": "^14.2.3",
 		"next-themes": "^0.3.0",
+		"openai": "^4.42.0",
 		"prismjs": "^1.29.0",
 		"react": "18.2.0",
 		"react-confetti": "^6.1.0",
