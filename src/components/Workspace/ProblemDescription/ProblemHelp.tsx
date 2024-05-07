@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -19,51 +19,52 @@ import { submissionsDataState } from "@/atoms/submissionsDataAtom";
 import { SubmissionData } from "@/utils/types/testcase";
 import { useChat as useSubmitToGPT } from "ai/react";
 import { Button } from "@/components/ui/button";
-import { stdout } from "process";
-
-const markdown = `
-### Hi, *Pluto*!
-Just a link: www.nasa.gov.
-
-A paragraph with *emphasis* and **strong importance**
-> A block quote with ~strikethrough~ and a URL: https://reactjs.org.
-- p
-- s
-* Lists
-* [ ] todo
-* [x] done
-
-A table:
-| a | b | c |
-| - | - | - |
-| d | b | c |
-| - | s | - |
-| d | b | c |
-| - | s | - |
-
-
-> ssssss
-
-
-~~~py
-def hello():
-  print('It works!')
-  
-print('It works!')
-~~~
-`;
-
-const markdown2 = `
-~~~py
-def hello():
-  print('It works!')
-  
-print('It works!')
-~~~
-`;
+import { AssistantStream } from "openai/lib/AssistantStream";
 
 type ProblemHelpProps = {
   problem: Problem;
+};
+
+type MessageProps = {
+  role: "user" | "assistant" | "code";
+  text: string;
+};
+const UserMessage = ({ text }: { text: string }) => {
+  return <div>{text}</div>;
+};
+
+const AssistantMessage = ({ text }: { text: string }) => {
+  return (
+    <div>
+      <Markdown>{text}</Markdown>
+    </div>
+  );
+};
+
+const CodeMessage = ({ text }: { text: string }) => {
+  return (
+    <div>
+      {text.split("\n").map((line, index) => (
+        <div key={index}>
+          <span>{`${index + 1}. `}</span>
+          {line}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const Message = ({ role, text }: MessageProps) => {
+  switch (role) {
+    case "user":
+      return <UserMessage text={text} />;
+    case "assistant":
+      return <AssistantMessage text={text} />;
+    case "code":
+      return <CodeMessage text={text} />;
+    default:
+      return null;
+  }
 };
 
 const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
@@ -74,26 +75,26 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
   const [submissionsData, setSubmissionsData] =
     useRecoilState<SubmissionData[]>(submissionsDataState);
 
-  // 1. 題目敘述 problem.problemStatement (done)
-  // 2. 使用者程式碼 -> 應為測資當時提交的程式碼
-  // 3. 使用者程式碼測資輸出 submissionsData 都要有 (done)
-  // 可能要用 recoil 的 global state 處理
+  const [userInput, setUserInput] = useState("");
+  const [inputDisabled, setInputDisabled] = useState(false);
+  const [threadId, setThreadId] = useState("");
+  const [messages, setMessages] = useState([]);
 
-  const {
-    messages,
-    input,
-    setInput,
-    handleSubmit: handleSubmitToGPT,
-    isLoading: isHintLoading,
-  } = useSubmitToGPT({
-    api: "/api/hint",
-    onResponse: (response) => {
-      if (response.status === 429) {
-        window.alert("GPT 請求次數已達上限");
-        return;
-      }
-    },
-  });
+  // const {
+  //   messages,
+  //   input,
+  //   setInput,
+  //   handleSubmit: handleSubmitToGPT,
+  //   isLoading: isHintLoading,
+  // } = useSubmitToGPT({
+  //   api: "/api/hint",
+  //   onResponse: (response) => {
+  //     if (response.status === 429) {
+  //       window.alert("GPT 請求次數已達上限");
+  //       return;
+  //     }
+  //   },
+  // });
 
   const clickGetHintBtn = async () => {
     const wrongSubmissions = getWrongAnswerSubmissions(submissionsData);
@@ -166,24 +167,149 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
     });
   };
 
+  // automitcally scroll to bottom of chat
+  const messagesEndRef = useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   useEffect(() => {
     console.log("GPT :", messages);
+    scrollToBottom();
   }, [messages]);
 
-  const isGetHintBtnDisabled = isHintLoading || latestTestCode?.length === 0;
+  // create a new threadID when chat component created
+  useEffect(() => {
+    const createThread = async () => {
+      const res = await fetch(`/api/assistants/threads`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      setThreadId(data.threadId);
+    };
+    createThread();
+  }, []);
+
+  const sendMessage = async (text) => {
+    const response = await fetch(
+      `/api/assistants/threads/${threadId}/messages`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          content: text,
+        }),
+      }
+    );
+    const stream = AssistantStream.fromReadableStream(response.body);
+    handleReadableStream(stream);
+  };
+
+  const handleReadableStream = (stream: AssistantStream) => {
+    // messages
+    stream.on("textCreated", handleTextCreated);
+    stream.on("textDelta", handleTextDelta);
+
+    // image
+    // stream.on("imageFileDone", handleImageFileDone);
+
+    // code interpreter
+    // stream.on("toolCallCreated", toolCallCreated);
+    // stream.on("toolCallDelta", toolCallDelta);
+
+    // events without helpers yet (e.g. requires_action and run.done)
+    // stream.on("event", (event) => {
+    //   if (event.event === "thread.run.requires_action")
+    //     handleRequiresAction(event);
+    //   if (event.event === "thread.run.completed") handleRunCompleted();
+    // });
+  };
+
+  // handleRunCompleted - re-enable the input form
+  const handleRunCompleted = () => {
+    // setInputDisabled(false);
+    console.log("assistant messages all done");
+  };
+
+  /* Stream Event Handlers */
+
+  // textCreated - create new assistant message
+  const handleTextCreated = () => {
+    appendMessage("assistant", "");
+  };
+
+  // textDelta - append text to last assistant message
+  const handleTextDelta = (delta) => {
+    if (delta.value != null) {
+      appendToLastMessage(delta.value);
+    }
+    if (delta.annotations != null) {
+      annotateLastMessage(delta.annotations);
+    }
+  };
+  /*
+    =======================
+    === Utility Helpers ===
+    =======================
+  */
+  const appendMessage = (role, text) => {
+    setMessages((prevMessages) => [...prevMessages, { role, text }]);
+  };
+
+  const appendToLastMessage = (text) => {
+    setMessages((prevMessages) => {
+      const lastMessage = prevMessages[prevMessages.length - 1];
+      const updatedLastMessage = {
+        ...lastMessage,
+        text: lastMessage.text + text,
+      };
+      return [...prevMessages.slice(0, -1), updatedLastMessage];
+    });
+  };
+
+  const annotateLastMessage = (annotations) => {
+    setMessages((prevMessages) => {
+      const lastMessage = prevMessages[prevMessages.length - 1];
+      const updatedLastMessage = {
+        ...lastMessage,
+      };
+      annotations.forEach((annotation) => {
+        if (annotation.type === "file_path") {
+          updatedLastMessage.text = updatedLastMessage.text.replaceAll(
+            annotation.text,
+            `/api/files/${annotation.file_path.file_id}`
+          );
+        }
+      });
+      return [...prevMessages.slice(0, -1), updatedLastMessage];
+    });
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!userInput.trim()) return;
+    sendMessage(userInput);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: "user", text: userInput },
+    ]);
+    setUserInput("");
+    // setInputDisabled(true);
+    scrollToBottom();
+  };
+
+  // const isGetHintBtnDisabled = isHintLoading || latestTestCode?.length === 0;
   return (
     <section className="p-5 grid justify-items-stretch   overflow-y-auto ">
       <Button variant="outline" onClick={clickTestBtn}>
         Test
       </Button>
-      <form ref={getHintFormRef} onSubmit={handleSubmitToGPT}>
+      <form ref={getHintFormRef} onSubmit={handleSubmit}>
         <Button
           variant="outline"
           onClick={clickGetHintBtn}
-          disabled={isGetHintBtnDisabled}
+          // disabled={isGetHintBtnDisabled}
         >
           {/* <RingLoader color="#36d7b7" loading={submitBtnDisabled} size={20} /> */}
-          {isGetHintBtnDisabled ? "Loading..." : "Submit"}
+          {/* {isGetHintBtnDisabled ? "Loading..." : "Submit"} */}
         </Button>
       </form>
       {/* GPT output */}
@@ -276,6 +402,22 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
           </CardContent>
         </Card>
       ))}
+      {/* new */}
+      {messages.map((msg, index) => (
+        <Message key={index} role={msg.role} text={msg.text} />
+      ))}
+      <div ref={messagesEndRef} />
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+          placeholder="Enter your question"
+        />
+        <button type="submit" disabled={inputDisabled}>
+          Send
+        </button>
+      </form>
       {/* user message code */}
       {/* 要包含 使用者提交的程式碼  和 submissionsData  */};
       {/* <Card className="justify-self-end max-w-md h-fit mb-6">
