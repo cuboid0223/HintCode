@@ -1,4 +1,11 @@
-import React, { FormEvent, useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Card,
   CardContent,
@@ -24,12 +31,15 @@ import { Input } from "@/components/ui/input";
 
 type ProblemHelpProps = {
   problem: Problem;
+  threadId: string;
+  messages: MessageProps[];
+  setMessages: Dispatch<SetStateAction<MessageProps[]>>;
 };
 
 type MessageProps = {
   role: "user" | "assistant" | "code";
   text: string;
-  theme: string;
+  theme?: string;
 };
 const UserMessage = ({ text }: { text: string }) => {
   return (
@@ -80,7 +90,12 @@ const Message = ({ role, text, theme }: MessageProps) => {
   }
 };
 
-const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
+const ProblemHelp: React.FC<ProblemHelpProps> = ({
+  problem,
+  threadId,
+  messages,
+  setMessages,
+}) => {
   const lang = localStorage.getItem("selectedLang");
   const latestTestCode = localStorage.getItem(`latest-test-py-code`);
   const getHintFormRef = useRef<HTMLFormElement>(null);
@@ -90,8 +105,6 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
 
   const [userInput, setUserInput] = useState("");
   const [inputDisabled, setInputDisabled] = useState(false);
-  const [threadId, setThreadId] = useState("");
-  const [messages, setMessages] = useState([]);
 
   // const {
   //   messages,
@@ -124,7 +137,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
     ${problem.problemStatement}
     </info>
     <code>${formatCode(latestTestCode)}</code>
-    <output>${JSON.stringify(formatSubmissions(wrongSubmissions))}</output>
+    <output>${formatSubmissions(wrongSubmissions)}</output>
     `);
 
     // 表單傳送
@@ -153,20 +166,13 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
   const formatSubmissions = (data: SubmissionData[]) => {
     const formattedData = data.map((ele, id) => {
       return `
-      測資${id + 1} : 其輸出為 ${ele.stdout ? stdout : "空"}，錯誤為${
+      測資${id + 1} : 其輸出為 ${ele.stdout ? ele.stdout : "空"}，錯誤為${
         ele.stderr ? ele.stderr : "空"
       }，訊息為${ele.message ? ele.message : "空"}，判斷為 ${
         ele.status.description
       }
       
       `;
-      // return {
-      //   test_id: id + 1,
-      //   stdout: ele.stdout,
-      //   stderr: ele.stderr,
-      //   message: ele.message,
-      //   status: ele.status.description,
-      // };
     });
     return formattedData;
   };
@@ -190,19 +196,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
     scrollToBottom();
   }, [messages]);
 
-  // create a new threadID when chat component created
-  useEffect(() => {
-    const createThread = async () => {
-      const res = await fetch(`/api/assistants/threads`, {
-        method: "POST",
-      });
-      const data = await res.json();
-      setThreadId(data.threadId);
-    };
-    createThread();
-  }, []);
-
-  const sendMessage = async (text) => {
+  const sendMessage = async (text: string) => {
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
       {
@@ -298,8 +292,25 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!userInput.trim()) return;
-    sendMessage(userInput);
+    const wrongSubmissions = getWrongAnswerSubmissions(submissionsData);
+    // if (!userInput.trim()) return;
+    if (!latestTestCode || !wrongSubmissions) return;
+
+    const template = `
+    題目如下:
+    ${problem.problemStatement}
+    
+    以下是我的程式碼:
+    ${formatCode(latestTestCode)}
+
+    以下是經過測試後的輸出:
+    ${formatSubmissions(wrongSubmissions)}
+
+    請不要給我答案，給我一些提示就好
+    `;
+
+    // sendMessage(userInput); // 目前禁止學生直接接觸 GPT
+    sendMessage(template);
     setMessages((prevMessages) => [
       ...prevMessages,
       { role: "user", text: userInput },
@@ -324,6 +335,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
           theme={resolvedTheme}
         />
       ))}
+      {messages.length === 0 && <div>你可以先把能想到的全打上去</div>}
       <div ref={messagesEndRef} />
       <form
         className="absolute bottom-0 p-5 flex w-full items-center space-x-2 "

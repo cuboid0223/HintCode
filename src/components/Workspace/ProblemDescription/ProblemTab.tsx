@@ -9,6 +9,7 @@ import ProblemDescription from "./ProblemDescription";
 import ProblemHelp from "./ProblemHelp";
 
 import { DBProblem, Problem } from "@/utils/types/problem";
+import { useEffect, useState } from "react";
 
 type ProblemTabProps = {
   problem: Problem;
@@ -18,13 +19,32 @@ type ProblemTabProps = {
 const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
   const [user] = useAuthState(auth);
   const { resolvedTheme } = useTheme();
+  const [threadId, setThreadId] = useState("");
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
+
+  // create a new threadID when chat component created
+  useEffect(() => {
+    console.log("create thread");
+    const createThread = async () => {
+      const res = await fetch(`/api/assistants/threads`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      setThreadId(data.threadId);
+    };
+    createThread();
+  }, []);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col overflow-hidden">
       {/* TAB */}
       <Tabs
         defaultValue="description"
-        className=" flex-1 flex flex-col items-stretch"
+        className=" flex-1 flex flex-col items-stretch overflow-y-auto"
       >
         <TabsList className="self-start">
           <TabsTrigger value="description" className="rounded-t-lg">
@@ -45,7 +65,12 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
         </TabsContent>
         <TabsContent className="flex flex-col flex-1 " value="getHelp">
           {/* GPT 提示區 */}
-          <ProblemHelp problem={problem} />
+          <ProblemHelp
+            problem={problem}
+            threadId={threadId}
+            messages={messages}
+            setMessages={setMessages}
+          />
         </TabsContent>
       </Tabs>
     </div>
