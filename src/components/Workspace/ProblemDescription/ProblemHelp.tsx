@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -20,6 +20,7 @@ import { SubmissionData } from "@/utils/types/testcase";
 import { useChat as useSubmitToGPT } from "ai/react";
 import { Button } from "@/components/ui/button";
 import { AssistantStream } from "openai/lib/AssistantStream";
+import { Input } from "@/components/ui/input";
 
 type ProblemHelpProps = {
   problem: Problem;
@@ -28,40 +29,52 @@ type ProblemHelpProps = {
 type MessageProps = {
   role: "user" | "assistant" | "code";
   text: string;
+  theme: string;
 };
 const UserMessage = ({ text }: { text: string }) => {
-  return <div>{text}</div>;
+  return (
+    <Card className={`h-fit max-w-lg mb-6 p-2 justify-self-end`}>{text}</Card>
+  );
 };
 
 const AssistantMessage = ({ text }: { text: string }) => {
   return (
-    <div>
+    <Card className={`h-fit max-w-lg mb-6 p-2 bg-red-400`}>
       <Markdown>{text}</Markdown>
-    </div>
+    </Card>
   );
 };
 
-const CodeMessage = ({ text }: { text: string }) => {
+const CodeMessage = ({ text, theme }: { text: string; theme: string }) => {
   return (
     <div>
-      {text.split("\n").map((line, index) => (
+      {/* {text.split("\n").map((line, index) => (
         <div key={index}>
           <span>{`${index + 1}. `}</span>
           {line}
         </div>
-      ))}
+      ))} */}
+
+      <SyntaxHighlighter
+        language="python"
+        style={theme === "dark" ? a11yDark : docco}
+        showLineNumbers
+        wrapLongLines
+      >
+        {text}
+      </SyntaxHighlighter>
     </div>
   );
 };
 
-const Message = ({ role, text }: MessageProps) => {
+const Message = ({ role, text, theme }: MessageProps) => {
   switch (role) {
     case "user":
       return <UserMessage text={text} />;
     case "assistant":
       return <AssistantMessage text={text} />;
     case "code":
-      return <CodeMessage text={text} />;
+      return <CodeMessage text={text} theme={theme} />;
     default:
       return null;
   }
@@ -298,125 +311,34 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({ problem }) => {
 
   // const isGetHintBtnDisabled = isHintLoading || latestTestCode?.length === 0;
   return (
-    <section className="p-5 grid justify-items-stretch   overflow-y-auto ">
-      <Button variant="outline" onClick={clickTestBtn}>
+    <section className="relative flex-1 p-5 grid justify-items-stretch  overflow-y-auto ">
+      {/* <Button variant="outline" onClick={clickTestBtn}>
         Test
-      </Button>
-      <form ref={getHintFormRef} onSubmit={handleSubmit}>
-        <Button
-          variant="outline"
-          onClick={clickGetHintBtn}
-          // disabled={isGetHintBtnDisabled}
-        >
-          {/* <RingLoader color="#36d7b7" loading={submitBtnDisabled} size={20} /> */}
-          {/* {isGetHintBtnDisabled ? "Loading..." : "Submit"} */}
-        </Button>
-      </form>
+      </Button> */}
       {/* GPT output */}
-      {messages.map(({ content, role }, id) => (
-        <Card
-          key={id}
-          className={`h-fit max-w-lg mb-6 p-2 ${
-            role === "user" && "justify-self-end"
-          }`}
-        >
-          <CardContent>
-            <Markdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                // markdown components integrated with shadcn UI
-                h3({ className, ...rest }) {
-                  return (
-                    <h3
-                      className="scroll-m-20 text-2xl font-semibold tracking-tight"
-                      {...rest}
-                    ></h3>
-                  );
-                },
-                ul({ className, ...rest }) {
-                  return (
-                    <ul
-                      className="my-6 ml-6 list-disc [&>li]:mt-2"
-                      {...rest}
-                    ></ul>
-                  );
-                },
-                table({ className, ...rest }) {
-                  return <table className="w-full mb-6" {...rest}></table>;
-                },
-                tr({ className, ...rest }) {
-                  return (
-                    <tr
-                      className="m-0 border-t p-0 even:bg-muted"
-                      {...rest}
-                    ></tr>
-                  );
-                },
-                th({ className, ...rest }) {
-                  return (
-                    <th
-                      className="border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right"
-                      {...rest}
-                    ></th>
-                  );
-                },
-                td({ className, ...rest }) {
-                  return (
-                    <td
-                      className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right"
-                      {...rest}
-                    ></td>
-                  );
-                },
-                blockquote({ className, ...rest }) {
-                  return (
-                    <blockquote
-                      className="mt-6 border-l-2 pl-6 italic"
-                      {...rest}
-                    ></blockquote>
-                  );
-                },
-                code({ children, className, node, ...rest }) {
-                  const match = /language-(\w+)/.exec(className || "");
-                  return match ? (
-                    //  SyntaxHighlighter 沒有提供 Type
-                    <SyntaxHighlighter
-                      {...rest}
-                      language="python"
-                      style={resolvedTheme === "dark" ? a11yDark : docco}
-                      showLineNumbers
-                      wrapLongLines
-                    >
-                      {children}
-                    </SyntaxHighlighter>
-                  ) : (
-                    <code {...rest} className={className}>
-                      {children}
-                    </code>
-                  );
-                },
-              }}
-            >
-              {content}
-            </Markdown>
-          </CardContent>
-        </Card>
-      ))}
-      {/* new */}
       {messages.map((msg, index) => (
-        <Message key={index} role={msg.role} text={msg.text} />
+        <Message
+          key={index}
+          role={msg.role}
+          text={msg.text}
+          theme={resolvedTheme}
+        />
       ))}
       <div ref={messagesEndRef} />
-      <form onSubmit={handleSubmit}>
-        <input
+      <form
+        className="absolute bottom-0 p-5 flex w-full items-center space-x-2 "
+        onSubmit={handleSubmit}
+      >
+        <Input
+          className="flex-1  "
           type="text"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           placeholder="Enter your question"
         />
-        <button type="submit" disabled={inputDisabled}>
+        <Button type="submit" disabled={inputDisabled}>
           Send
-        </button>
+        </Button>
       </form>
       {/* user message code */}
       {/* 要包含 使用者提交的程式碼  和 submissionsData  */};

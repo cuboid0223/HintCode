@@ -20,10 +20,13 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
   const { resolvedTheme } = useTheme();
 
   return (
-    <div className="overflow-auto">
+    <div className="flex flex-col">
       {/* TAB */}
-      <Tabs defaultValue="description" className="overflow-hidden">
-        <TabsList className="">
+      <Tabs
+        defaultValue="description"
+        className=" flex-1 flex flex-col items-stretch"
+      >
+        <TabsList className="self-start">
           <TabsTrigger value="description" className="rounded-t-lg">
             問題描述
           </TabsTrigger>
@@ -40,7 +43,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
           {/* 程式題目敘述區 */}
           <ProblemDescription problem={problem} _solved={_solved} />
         </TabsContent>
-        <TabsContent value="getHelp">
+        <TabsContent className="flex flex-col flex-1 " value="getHelp">
           {/* GPT 提示區 */}
           <ProblemHelp problem={problem} />
         </TabsContent>
