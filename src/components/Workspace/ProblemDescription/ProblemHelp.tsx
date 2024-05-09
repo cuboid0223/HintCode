@@ -24,70 +24,23 @@ import { Problem } from "@/utils/types/problem";
 import { useRecoilState } from "recoil";
 import { submissionsDataState } from "@/atoms/submissionsDataAtom";
 import { SubmissionData } from "@/utils/types/testcase";
-import { useChat as useSubmitToGPT } from "ai/react";
 import { Button } from "@/components/ui/button";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import { Input } from "@/components/ui/input";
+import Message from "../Playground/components/Message";
+
+type MessageProps = {
+  role: "user" | "assistant" | "code";
+  text: string;
+  theme?: string;
+  code: string;
+};
 
 type ProblemHelpProps = {
   problem: Problem;
   threadId: string;
   messages: MessageProps[];
   setMessages: Dispatch<SetStateAction<MessageProps[]>>;
-};
-
-type MessageProps = {
-  role: "user" | "assistant" | "code";
-  text: string;
-  theme?: string;
-};
-const UserMessage = ({ text }: { text: string }) => {
-  return (
-    <Card className={`h-fit max-w-lg mb-6 p-2 justify-self-end`}>{text}</Card>
-  );
-};
-
-const AssistantMessage = ({ text }: { text: string }) => {
-  return (
-    <Card className={`h-fit max-w-lg mb-6 p-2 bg-red-400`}>
-      <Markdown>{text}</Markdown>
-    </Card>
-  );
-};
-
-const CodeMessage = ({ text, theme }: { text: string; theme: string }) => {
-  return (
-    <div>
-      {/* {text.split("\n").map((line, index) => (
-        <div key={index}>
-          <span>{`${index + 1}. `}</span>
-          {line}
-        </div>
-      ))} */}
-
-      <SyntaxHighlighter
-        language="python"
-        style={theme === "dark" ? a11yDark : docco}
-        showLineNumbers
-        wrapLongLines
-      >
-        {text}
-      </SyntaxHighlighter>
-    </div>
-  );
-};
-
-const Message = ({ role, text, theme }: MessageProps) => {
-  switch (role) {
-    case "user":
-      return <UserMessage text={text} />;
-    case "assistant":
-      return <AssistantMessage text={text} />;
-    case "code":
-      return <CodeMessage text={text} theme={theme} />;
-    default:
-      return null;
-  }
 };
 
 const ProblemHelp: React.FC<ProblemHelpProps> = ({
@@ -97,64 +50,13 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   setMessages,
 }) => {
   const lang = localStorage.getItem("selectedLang");
-  const latestTestCode = localStorage.getItem(`latest-test-py-code`);
-  const getHintFormRef = useRef<HTMLFormElement>(null);
+  const latestTestCode = localStorage.getItem(`latest-test-py-code`) || "";
   const { resolvedTheme, setTheme } = useTheme();
   const [submissionsData, setSubmissionsData] =
     useRecoilState<SubmissionData[]>(submissionsDataState);
 
   const [userInput, setUserInput] = useState("");
   const [inputDisabled, setInputDisabled] = useState(false);
-
-  // const {
-  //   messages,
-  //   input,
-  //   setInput,
-  //   handleSubmit: handleSubmitToGPT,
-  //   isLoading: isHintLoading,
-  // } = useSubmitToGPT({
-  //   api: "/api/hint",
-  //   onResponse: (response) => {
-  //     if (response.status === 429) {
-  //       window.alert("GPT 請求次數已達上限");
-  //       return;
-  //     }
-  //   },
-  // });
-
-  const clickGetHintBtn = async () => {
-    const wrongSubmissions = getWrongAnswerSubmissions(submissionsData);
-
-    if (!latestTestCode || !submissionsData || !wrongSubmissions) {
-      console.log(
-        `there is no ${latestTestCode} or ${submissionsData} or${wrongSubmissions}`
-      );
-      return;
-    }
-
-    setInput(`
-    <info>
-    ${problem.problemStatement}
-    </info>
-    <code>${formatCode(latestTestCode)}</code>
-    <output>${formatSubmissions(wrongSubmissions)}</output>
-    `);
-
-    // 表單傳送
-    getHintFormRef.current?.requestSubmit();
-  };
-
-  const clickTestBtn = () => {
-    const wrongSubmissions = getWrongAnswerSubmissions(submissionsData);
-    if (!wrongSubmissions) return;
-    console.log(
-      formatCode(
-        `def twoSum(nums, target):\n  # Write your code her\n   print([0,1])fuck\n\n\n'''\ndef twoSum(nums, target):\n  # Write your code her\n  n = len(nums)\n  for i in range(n - 1):\n      for j in range(i + 1, n):\n          if nums[i] + nums[j] == target:\n              print([i,j])\n              return [i, j]\n  return [] \n'''\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n`
-      )
-    );
-
-    console.log(JSON.stringify(formatSubmissions(wrongSubmissions)));
-  };
 
   function formatCode(code: string) {
     return code
@@ -191,10 +93,6 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  useEffect(() => {
-    console.log("GPT :", messages);
-    scrollToBottom();
-  }, [messages]);
 
   const sendMessage = async (text: string) => {
     const response = await fetch(
@@ -310,28 +208,35 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     `;
 
     // sendMessage(userInput); // 目前禁止學生直接接觸 GPT
+    // setMessages((prevMessages) => [
+    //   ...prevMessages,
+    //   { role: "user", text: userInput },
+    // ]);
+
     sendMessage(template);
     setMessages((prevMessages) => [
       ...prevMessages,
-      { role: "user", text: userInput },
+      { role: "user", code: latestTestCode, text: "ddd" },
     ]);
+
     setUserInput("");
     // setInputDisabled(true);
     scrollToBottom();
   };
 
-  // const isGetHintBtnDisabled = isHintLoading || latestTestCode?.length === 0;
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   return (
-    <section className="relative flex-1 p-5 grid justify-items-stretch  overflow-y-auto ">
-      {/* <Button variant="outline" onClick={clickTestBtn}>
-        Test
-      </Button> */}
+    <section className=" flex-1 p-5 grid justify-items-stretch  overflow-y-auto ">
       {/* GPT output */}
       {messages.map((msg, index) => (
         <Message
           key={index}
           role={msg.role}
           text={msg.text}
+          code={latestTestCode}
           theme={resolvedTheme}
         />
       ))}
@@ -352,37 +257,6 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
           Send
         </Button>
       </form>
-      {/* user message code */}
-      {/* 要包含 使用者提交的程式碼  和 submissionsData  */};
-      {/* <Card className="justify-self-end max-w-md h-fit mb-6">
-        <CardContent className="p-0">
-          <Markdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              code(props) {
-                const { children, className, node, ...rest } = props;
-                const match = /language-(\w+)/.exec(className || "");
-                return match ? (
-                  <SyntaxHighlighter
-                    {...rest}
-                    language="python"
-                    style={resolvedTheme === "dark" ? a11yDark : docco}
-                    showLineNumbers
-                  >
-                    {children}
-                  </SyntaxHighlighter>
-                ) : (
-                  <code {...rest} className={className}>
-                    {children}
-                  </code>
-                );
-              },
-            }}
-          >
-            {markdown2}
-          </Markdown>
-        </CardContent>
-      </Card> */}
     </section>
   );
 };

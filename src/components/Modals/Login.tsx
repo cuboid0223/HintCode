@@ -1,6 +1,6 @@
 import { authModalState } from "@/atoms/authModalAtom";
 import { auth } from "../../firebase/firebase";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useSetRecoilState } from "recoil";

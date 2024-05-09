@@ -1,4 +1,4 @@
-import { authModalState } from "@/app/atoms/authModalAtom";
+import { authModalState } from "@/atoms/authModalAtom";
 import React, { useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 import Login from "./Login";

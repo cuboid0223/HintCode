@@ -22,10 +22,6 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
   const [threadId, setThreadId] = useState("");
   const [messages, setMessages] = useState([]);
 
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
-
   // create a new threadID when chat component created
   useEffect(() => {
     console.log("create thread");
@@ -40,7 +36,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
   }, []);
 
   return (
-    <div className="flex flex-col overflow-hidden">
+    <div className="relative flex flex-col overflow-hidden">
       {/* TAB */}
       <Tabs
         defaultValue="description"
