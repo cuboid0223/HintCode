@@ -57,7 +57,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between bg-dark-layer-2 h-11 w-full ">
+    <div className="flex items-center justify-between w-full pt-2 ">
       <Select onValueChange={handleSelectedLang}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Python" />
