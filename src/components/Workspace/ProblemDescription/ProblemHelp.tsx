@@ -51,14 +51,15 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
 }) => {
   const lang = localStorage.getItem("selectedLang");
   const latestTestCode = localStorage.getItem(`latest-test-py-code`) || "";
-  const { resolvedTheme, setTheme } = useTheme();
-  const [submissionsData, setSubmissionsData] =
+  const { resolvedTheme } = useTheme();
+  const [submissionsData] =
     useRecoilState<SubmissionData[]>(submissionsDataState);
 
   const [userInput, setUserInput] = useState("");
   const [inputDisabled, setInputDisabled] = useState(false);
 
   function formatCode(code: string) {
+    // 這裡要檢查 formatCode 到底輸出是啥
     return code
       .replace(/^\s*'''\s*/, "") // 移除開始的'''以及前面的空格
       .replace(/\s*'''$/, "") // 移除結尾的'''以及後面的空格
@@ -66,6 +67,8 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   }
 
   const formatSubmissions = (data: SubmissionData[]) => {
+    // 這裡要修改 很難讀 ==
+    //
     const formattedData = data.map((ele, id) => {
       return `
       測資${id + 1} : 其輸出為 ${ele.stdout ? ele.stdout : "空"}，錯誤為${
@@ -88,12 +91,6 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     });
   };
 
-  // automitcally scroll to bottom of chat
-  const messagesEndRef = useRef(null);
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   const sendMessage = async (text: string) => {
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
@@ -106,6 +103,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     );
     const stream = AssistantStream.fromReadableStream(response.body);
     handleReadableStream(stream);
+    // setInputDisabled(false);
   };
 
   const handleReadableStream = (stream: AssistantStream) => {
@@ -216,20 +214,29 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     sendMessage(template);
     setMessages((prevMessages) => [
       ...prevMessages,
-      { role: "user", code: latestTestCode, text: "ddd" },
+      { role: "user", code: latestTestCode, text: "" },
     ]);
 
     setUserInput("");
-    // setInputDisabled(true);
+    setInputDisabled(true);
     scrollToBottom();
   };
-
+  /*
+    =======================
+    =====  useEffect ======
+    =======================
+  */
+  // automitcally scroll to bottom of chat
+  const messagesEndRef = useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   return (
-    <section className=" flex-1 p-5 grid justify-items-stretch  overflow-y-auto ">
+    <section className="flex-1 p-5 grid justify-items-stretch  overflow-y-auto ">
       {/* GPT output */}
       {messages.map((msg, index) => (
         <Message
@@ -241,20 +248,21 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
         />
       ))}
       {messages.length === 0 && <div>你可以先把能想到的全打上去</div>}
-      <div ref={messagesEndRef} />
+      <div className="mb-10" ref={messagesEndRef} />
       <form
-        className="absolute bottom-0 p-5 flex w-full items-center space-x-2 "
+        className=" absolute bottom-0 p-5 pr-7 flex w-full items-center space-x-2 "
         onSubmit={handleSubmit}
       >
         <Input
-          className="flex-1  "
+          className="flex-1"
           type="text"
+          disabled
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           placeholder="Enter your question"
         />
-        <Button type="submit" disabled={inputDisabled}>
-          Send
+        <Button className="font-bold" type="submit" disabled={inputDisabled}>
+          Help
         </Button>
       </form>
     </section>

@@ -90,18 +90,6 @@ const Playground: React.FC<PlaygroundProps> = ({
       return;
     }
     let temp: SubmissionData[] = [];
-    // if (selectedLang === "js") {
-    //   // handle js testCase
-    //   const isPassed = handleJSTestCase();
-    //   if (isPassed && executionMode === "submit") {
-    //     const userRef = doc(firestore, "users", user.uid);
-    //     await updateDoc(userRef, {
-    //       solvedProblems: arrayUnion(id),
-    //     });
-    //     setSolved(true);
-    //     console.log("submit");
-    //   }
-    // }
 
     // 要測試 judge0 請打開
     if (selectedLang === "py") {
