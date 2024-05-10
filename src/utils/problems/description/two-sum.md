@@ -8,22 +8,25 @@
 
 ### 範例 1:
 
-> Input: nums = [2,7,11,15], target = 9
+> **輸入:** nums = [2,7,11,15], target = 9
 >
-> Output:[0,1]
+> **輸出:** [0,1]
 >
-> Explanation: Because nums[0] + nums[1] == 9, we return
+> **解釋:** Because nums[0] + nums[1] == 9, 所以我們印出 [0,1]
 
 ### 範例 2:
 
-> Input: nums = [3,2,4], target = 6
-> Output:[1,2]
-> Explanation: Because nums[1] + nums[2] == 6, we return [1, 2].
+> **輸入:** nums = [3,2,4], target = 6
+>
+> **輸出:** [1,2]
+>
+> **解釋:** Because nums[1] + nums[2] == 6, 所以我們印出 [1,2].
 
 ### 範例 3:
 
-> Input: nums = [3,3], target = 6
-> Output:[0,1]
+> **輸入:** nums = [3,3], target = 6
+>
+> **輸出:** [0,1]
 
 ### Constraints:
 

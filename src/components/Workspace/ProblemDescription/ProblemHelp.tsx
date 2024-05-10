@@ -256,7 +256,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
         <Input
           className="flex-1"
           type="text"
-          disabled
+          disabled // 目前先關起來
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           placeholder="Enter your question"

@@ -221,7 +221,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
           </div>
           {/* Difficulty / likes / dislikes / star */}
           {!loading && currentProblem && (
-            <div className="flex items-center mt-3">
+            <div className="flex items-center my-3">
               <div
                 className={`${problemDifficultyClass} inline-block rounded-[21px] bg-opacity-[.15] px-2.5 py-1 text-xs font-medium capitalize `}
               >
@@ -332,9 +332,17 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
               blockquote({ className, ...rest }) {
                 return (
                   <blockquote
-                    className="mt-6 border-l-2 pl-6 italic"
+                    className="mb-3 border-l-4 p-3 pl-6  bg-gray-300 dark:bg-gray-400 rounded-md border-gray-400 dark:border-gray-300 "
                     {...rest}
                   ></blockquote>
+                );
+              },
+              hr({ className, ...rest }) {
+                return (
+                  <hr
+                    className="my-3 border-gray-400 dark:border-gray-300 border-1 "
+                    {...rest}
+                  ></hr>
                 );
               },
               code({ children, className, node, ...rest }) {
@@ -351,7 +359,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
                     {children}
                   </SyntaxHighlighter>
                 ) : (
-                  <code {...rest} className={className}>
+                  <code {...rest} className="text-white bg-gray-400 px-1  ">
                     {children}
                   </code>
                 );
