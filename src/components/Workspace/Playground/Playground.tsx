@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import PreferenceNav from "./components/PreferenceNav";
 import Split from "react-split";
 import CodeMirror from "@uiw/react-codemirror";
@@ -21,6 +21,7 @@ import { SubmissionData } from "@/utils/types/testcase";
 import { useRecoilState } from "recoil";
 import { submissionsDataState } from "@/atoms/submissionsDataAtom";
 import { mockSubmissions } from "@/mockProblems/mockSubmissions";
+import { useTheme } from "next-themes";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -41,6 +42,7 @@ const Playground: React.FC<PlaygroundProps> = ({
   setSolved,
 }) => {
   const { id } = problem;
+  const { resolvedTheme } = useTheme();
   const [submissionsData, setSubmissionsData] =
     useRecoilState<SubmissionData[]>(submissionsDataState);
 
@@ -208,6 +210,19 @@ const Playground: React.FC<PlaygroundProps> = ({
         direction="vertical"
         sizes={[60, 40]}
         minSize={60}
+        // gutterStyle={() => {
+        //   console.log("resolvedTheme", resolvedTheme);
+        //   if (resolvedTheme === "dark") {
+        //     return {
+        //       height: "10px",
+        //       backgroundColor: "rgb(26 26 26)",
+        //     };
+        //   }
+        //   return {
+        //     height: "10px",
+        //     backgroundColor: "rgb(156 163 175)",
+        //   };
+        // }}
       >
         {/*　Playground */}
         <div className="w-full overflow-auto">

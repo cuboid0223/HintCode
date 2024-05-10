@@ -133,12 +133,12 @@ body {
 }
 
 .gutter {
-  background-color: rgb(26, 26, 26);
+  /* background-color: rgb(26, 26, 26); */
   background-repeat: no-repeat;
   background-position: 50%;
 }
 .gutter:hover {
-  background-color: #0a84ff;
+  background-color: #0a84ff !important;
 }
 
 .gutter.gutter-horizontal {

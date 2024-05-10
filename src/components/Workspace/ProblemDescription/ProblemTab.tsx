@@ -37,20 +37,21 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
 
   return (
     <div className="relative flex flex-col overflow-hidden">
-      {/* TAB */}
+      {/* TABs */}
       <Tabs
         defaultValue="description"
-        className=" flex-1 flex flex-col items-stretch overflow-y-auto"
+        className="flex-1 flex flex-col items-stretch overflow-y-auto "
       >
-        <TabsList className="self-start">
-          <TabsTrigger value="description" className="rounded-t-lg">
+        <TabsList className="self-start p-0 pt-1 ">
+          <TabsTrigger
+            value="description"
+            className="rounded-t-lg text-gray-400 h-full !shadow-none"
+          >
             問題描述
           </TabsTrigger>
           <TabsTrigger
             value="getHelp"
-            className={`rounded-t-lg ${
-              resolvedTheme === "light" && "text-black"
-            }`}
+            className="rounded-t-lg text-gray-400  h-full !shadow-none"
           >
             提示
           </TabsTrigger>
