@@ -22,6 +22,7 @@ import { useRecoilState } from "recoil";
 import { submissionsDataState } from "@/atoms/submissionsDataAtom";
 import { mockSubmissions } from "@/mockProblems/mockSubmissions";
 import { useTheme } from "next-themes";
+import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -226,7 +227,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       >
         {/*　Playground */}
         <div className="w-full overflow-auto">
-          <CodeMirror
+          {/* <CodeMirror
             value={userCode}
             theme={vscodeDark}
             onChange={onChange}
@@ -234,7 +235,17 @@ const Playground: React.FC<PlaygroundProps> = ({
               settings.selectedLang === "py" ? python() : javascript(),
             ]}
             style={{ fontSize: settings.fontSize }}
+          /> */}
+          <Editor
+            value={userCode}
+            // height="90vh"
+            theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
+            defaultLanguage="python"
+            defaultValue=""
+            onChange={onChange}
+            options={{ fontSize: parseInt(settings.fontSize) }}
           />
+          ;
         </div>
 
         <div className="w-full px-5 overflow-auto">
