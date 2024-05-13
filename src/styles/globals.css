@@ -181,3 +181,11 @@ code {
   color: white;
   font-size: 1rem;
 }
+
+/* .neomo {
+  box-shadow: -6px 6px 12px #c6c6c6, 6px -6px 12px #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+.neomo:hover {
+  box-shadow: -2px -2px 5px #c6c6c6, 2px 2px 5px #ffffff;
+} */

@@ -15,7 +15,15 @@ import {
 import { auth, firestore } from "../../firebase/firebase";
 import { DBProblem } from "@/utils/types/problem";
 import { useAuthState } from "react-firebase-hooks/auth";
-
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 type ProblemsTableProps = {
   setLoadingProblems: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -29,6 +37,7 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
   });
   const problems = useGetProblems(setLoadingProblems);
   const solvedProblems = useGetSolvedProblems();
+  console.log("problems", problems);
   console.log("solvedProblems", solvedProblems);
   const closeModal = () => {
     setYoutubePlayer({ isOpen: false, videoId: "" });
@@ -45,25 +54,25 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
 
   return (
     <>
-      <tbody className="text-white">
+      <TableBody className="text-white">
         {problems.map((problem, idx) => {
-          const difficulyColor =
+          const difficultyColor =
             problem.difficulty === "Easy"
               ? "text-dark-green-s"
               : problem.difficulty === "Medium"
               ? "text-dark-yellow"
               : "text-dark-pink";
           return (
-            <tr
-              className={`${idx % 2 == 1 ? "bg-dark-layer-1" : ""}`}
+            <TableRow
+              className={`text-black ${idx % 2 == 1 ? "bg-dark-layer-1" : ""}`}
               key={problem.id}
             >
-              <th className="px-2 py-4 font-medium whitespace-nowrap text-dark-green-s">
+              <TableCell className=" font-medium whitespace-nowrap text-dark-green-s">
                 {solvedProblems.includes(problem.id) && (
                   <BsCheckCircle fontSize={"18"} width="18" />
                 )}
-              </th>
-              <td className="px-6 py-4">
+              </TableCell>
+              <TableCell className=" dark:text-white">
                 {problem.link ? (
                   <Link
                     href={problem.link}
@@ -80,12 +89,14 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
                     {problem.title}
                   </Link>
                 )}
-              </td>
-              <td className={`px-6 py-4 ${difficulyColor}`}>
+              </TableCell>
+              <TableCell className={` ${difficultyColor} `}>
                 {problem.difficulty}
-              </td>
-              <td className={"px-6 py-4"}>{problem.category}</td>
-              <td className={"px-6 py-4"}>
+              </TableCell>
+              <TableCell className={"dark:text-white"}>
+                {problem.category}
+              </TableCell>
+              {/* <TableCell className={"px-6 py-4"}>
                 {problem.videoId ? (
                   <AiFillYoutube
                     fontSize={"28"}
@@ -100,11 +111,12 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
                 ) : (
                   <p className="text-gray-400">Coming soon</p>
                 )}
-              </td>
-            </tr>
+              </TableCell> */}
+            </TableRow>
           );
         })}
-      </tbody>
+      </TableBody>
+
       {youtubePlayer.isOpen && (
         <tfoot className="fixed top-0 left-0 h-screen w-screen flex items-center justify-center">
           <div
@@ -152,6 +164,7 @@ function useGetProblems(
       querySnapshot.forEach((doc) => {
         tmp.push({ id: doc.id, ...doc.data() } as DBProblem);
       });
+      console.log("problems from Firestore", tmp);
       setProblems(tmp);
       setLoadingProblems(false);
     };

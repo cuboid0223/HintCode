@@ -97,7 +97,9 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
 
         <div className="flex items-center space-x-4 flex-1 justify-end">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            {/* box-shadow:  -23px 23px 46px #d0d0d0,
+             23px -23px 46px #ffffff; */}
+            <DropdownMenuTrigger asChild className="">
               <Button variant="outline" size="icon">
                 <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
