@@ -202,7 +202,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     以下是經過測試後的輸出:
     ${formatSubmissions(wrongSubmissions)}
 
-    請不要給我答案，給我一些提示就好
+    請不要給我答案，請透過疑問句讓我反思問題所在
     `;
 
     // sendMessage(userInput); // 目前禁止學生直接接觸 GPT

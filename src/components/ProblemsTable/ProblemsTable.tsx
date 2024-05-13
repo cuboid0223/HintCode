@@ -64,7 +64,9 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
               : "text-dark-pink";
           return (
             <TableRow
-              className={`text-black ${idx % 2 == 1 ? "bg-dark-layer-1" : ""}`}
+              className={`text-black ${
+                idx % 2 == 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""
+              }`}
               key={problem.id}
             >
               <TableCell className=" font-medium whitespace-nowrap text-dark-green-s">

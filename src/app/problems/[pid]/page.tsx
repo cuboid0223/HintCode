@@ -23,7 +23,7 @@ async function getProblem(params: { pid: string }) {
       notFound: true,
     };
   }
-  problem.handlerFunction = problem.handlerFunction.toString();
+  // problem.handlerFunction = problem.handlerFunction.toString();
 
   return problem;
 }

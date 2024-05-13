@@ -21,7 +21,7 @@ export type Problem = {
     js: string;
     [key: string]: string;
   };
-  handlerFunction: ((fn: any) => boolean) | string;
+  // handlerFunction: ((fn: any) => boolean) | string;
   starterFunctionName: {
     py: string;
     js: string;
