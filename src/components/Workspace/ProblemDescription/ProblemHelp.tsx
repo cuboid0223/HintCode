@@ -67,9 +67,6 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   }
 
   const formatSubmissions = (data: SubmissionData[]) => {
-    // 這裡要修改 很難讀 ==
-    //
-
     const formattedData = data.map((ele, id) => {
       const output = ele.stdout ? ele.stdout : "空";
       const error = ele.stderr ? ele.stderr : "空";

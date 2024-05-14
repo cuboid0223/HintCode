@@ -1,56 +1,8 @@
-/*
-data {
-  stdout: '[0, 1]\n',
-  time: '0.007',
-  memory: 3220,
-  stderr: '',
-  token: '154fa2cc-7dc7-4a78-a16e-0dba35db6207',
-  compile_output: '',
-  message: '',
-  status: { id: 3, description: 'Accepted' }
-}
- POST /problems/two-sum 200 in 449ms
-p:  [ { pid: 'two-sum' } ]
-base64ToString(stdout)  [1, 2]
-
-data {
-  stdout: '[1, 2]\n',
-  time: '0.007',
-  memory: 3312,
-  stderr: '',
-  token: 'bc437c94-8921-4ef5-89cc-ccf0333c7329',
-  compile_output: '',
-  message: '',
-  status: { id: 3, description: 'Accepted' }
-}
- POST /problems/two-sum 200 in 414ms
-base64ToString(stdout)  [0, 1]
-
-data {
-  stdout: '[0, 1]\n',
-  time: '0.007',
-  memory: 3220,
-  stderr: '',
-  token: '9696033a-70a8-4121-aa8c-3ea57dcabf1a',
-  compile_output: '',
-  message: '',
-  status: { id: 3, description: 'Accepted' }
-}
- POST /problems/two-sum 200 in 418ms
-p:  [ { pid: 'two-sum' } ]
-*/
 "use client";
 import { Problem } from "@/utils/types/problem";
 import { SubmissionData } from "@/utils/types/testcase";
-import { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useEffect, useRef, useState } from "react";
+import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { CircleSlash, CircleCheckBig } from "lucide-react";
 
 type TestCaseListProps = {
@@ -63,6 +15,15 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
   submissionsData,
 }) => {
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
+
+  // automitcally scroll to bottom of chat
+  const testCaseEndRef = useRef(null);
+  const scrollToBottom = () => {
+    testCaseEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [activeTestCaseId]);
 
   return (
     <>
@@ -143,6 +104,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               ></div>
             </CardContent>
           </Card>
+          <div ref={testCaseEndRef} />
         </>
       )}
     </>
