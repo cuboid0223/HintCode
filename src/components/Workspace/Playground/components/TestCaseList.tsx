@@ -93,9 +93,15 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
           <CardDescription className="font-bold mb-2">
             預期輸出:
           </CardDescription>
-          <div className="bg-gray-400 p-3 rounded-lg">
-            {problem.examples[activeTestCaseId].outputText}
-          </div>
+          <div
+            className="bg-gray-400 p-3 rounded-lg"
+            dangerouslySetInnerHTML={{
+              __html: problem.examples[activeTestCaseId].outputText.replace(
+                /\n/g,
+                "<br>"
+              ),
+            }}
+          ></div>
         </CardContent>
       </Card>
       {submissionsData && (
@@ -111,9 +117,15 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               <CardDescription className="font-bold mb-2">
                 預期輸出:
               </CardDescription>
-              <div className="bg-gray-400 p-3 rounded-lg">
-                {problem.examples[activeTestCaseId].outputText}
-              </div>
+              <div
+                className="bg-gray-400 p-3 rounded-lg"
+                dangerouslySetInnerHTML={{
+                  __html: problem.examples[activeTestCaseId].outputText.replace(
+                    /\n/g,
+                    "<br>"
+                  ),
+                }}
+              ></div>
             </CardContent>
           </Card>
         </>
