@@ -51,6 +51,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CircleSlash, CircleCheckBig } from "lucide-react";
 
 type TestCaseListProps = {
   problem: Problem;
@@ -78,7 +79,15 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
 										${activeTestCaseId === index ? "text-white" : "text-gray-500"}
 									`}
               >
-                測資 {index + 1}
+                {submissionsData?.[index].status.id === 3 ? (
+                  <CircleCheckBig color="green" />
+                ) : (
+                  <CircleSlash
+                    color="red"
+                    className={submissionsData ? "" : "hidden"}
+                  />
+                )}
+                <p className="ml-2"> 測資 {index + 1}</p>
               </div>
             </div>
           </div>
@@ -111,9 +120,15 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               <CardDescription className="font-bold mb-2">
                 你的輸出:
               </CardDescription>
-              <div className="bg-gray-400 p-3 rounded-lg mb-2">
-                {submissionsData[activeTestCaseId]?.stdout}
-              </div>
+              <div
+                className="bg-gray-400 p-3 rounded-lg mb-2"
+                dangerouslySetInnerHTML={{
+                  __html: submissionsData[activeTestCaseId]?.stdout.replace(
+                    /\n/g,
+                    "<br>"
+                  ),
+                }}
+              ></div>
               <CardDescription className="font-bold mb-2">
                 預期輸出:
               </CardDescription>

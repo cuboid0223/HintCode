@@ -69,14 +69,16 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const formatSubmissions = (data: SubmissionData[]) => {
     // 這裡要修改 很難讀 ==
     //
+
     const formattedData = data.map((ele, id) => {
+      const output = ele.stdout ? ele.stdout : "空";
+      const error = ele.stderr ? ele.stderr : "空";
+      const msg = ele.message ? ele.message : "空";
+      const status = ele.status.description;
       return `
-      測資${id + 1} : 其輸出為 ${ele.stdout ? ele.stdout : "空"}，錯誤為${
-        ele.stderr ? ele.stderr : "空"
-      }，訊息為${ele.message ? ele.message : "空"}，判斷為 ${
-        ele.status.description
-      }
-      
+      測資${
+        id + 1
+      } : 其輸出為 ${output}，錯誤為 ${error}，訊息為 ${msg}，判斷為 ${status}
       `;
     });
     return formattedData;
