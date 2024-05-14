@@ -14,7 +14,7 @@ export type Problem = {
   title: string;
   problemStatement: string;
   examples: Example[];
-  constraints: string;
+  // constraints: string;
   order: number;
   starterCode: {
     py: string;

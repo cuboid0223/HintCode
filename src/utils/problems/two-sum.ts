@@ -1,4 +1,4 @@
-import assert from "assert";
+"use client";
 import { Problem } from "../types/problem";
 
 import twoSumDescription from "./description/two-sum.md";

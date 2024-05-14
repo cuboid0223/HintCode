@@ -1,3 +1,4 @@
+"use client";
 import { Problem } from "../types/problem";
 
 import greetNTimesDescription from "./description/greet-n-times.md";

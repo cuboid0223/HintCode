@@ -10,7 +10,12 @@ import Image from "next/image";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { BsList } from "react-icons/bs";
 import Timer from "../Timer/Timer";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import {
+  useRouter,
+  usePathname,
+  useSearchParams,
+  useParams,
+} from "next/navigation";
 import { problems } from "@/utils/problems";
 import { Problem } from "@/utils/types/problem";
 import { Moon, Sun } from "lucide-react";
@@ -33,9 +38,10 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
   const router = useRouter();
   const { setTheme } = useTheme();
   const searchParams = useSearchParams();
+  const params = useParams<{ pid: string }>();
 
   const handleProblemChange = (isForward: boolean) => {
-    const pid = searchParams.get("pid");
+    const pid = params?.pid; // 當下題目的 pid
     const { order } = problems[pid as string] as Problem;
     const direction = isForward ? 1 : -1;
     const nextProblemOrder = order + direction;
@@ -79,7 +85,7 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
             </div>
             <Link
               href="/"
-              className="flex items-center gap-2 font-medium max-w-[170px] text-dark-gray-8 cursor-pointer"
+              className="flex items-center gap-2 font-medium max-w-[170px] dark:text-dark-gray-8 cursor-pointer"
             >
               <div>
                 <BsList />
