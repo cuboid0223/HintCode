@@ -105,7 +105,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       try {
         for (const testCase of problem.testCaseCode) {
           const token = await testUserCode({
-            userCode: userCode + testCase.inputCode,
+            userCode: `${userCode.trim()}\n${testCase.inputCode.trim()}`,
             expectedOutput: testCase.output,
           });
           const data = await getSubmissionData(token);

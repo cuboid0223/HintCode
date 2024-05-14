@@ -16,7 +16,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
 }) => {
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
 
-  // automitcally scroll to bottom of chat
+  // automitcally scroll to bottom of testCase
   const testCaseEndRef = useRef(null);
   const scrollToBottom = () => {
     testCaseEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -24,6 +24,18 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [activeTestCaseId]);
+
+  useEffect(() => {
+    if (!submissionsData) return;
+    const wrongSubmissionId = submissionsData.findIndex(
+      (data) => data.status.id !== 3
+    );
+    if (!wrongSubmissionId) {
+      setActiveTestCaseId(0);
+    } else {
+      setActiveTestCaseId(wrongSubmissionId);
+    }
+  }, [submissionsData]);
 
   return (
     <>
