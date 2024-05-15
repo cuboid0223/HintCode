@@ -56,7 +56,7 @@ const Playground: React.FC<PlaygroundProps> = ({
   // );
   const isAllTestCasesAccepted = submissionsData.every(
     // 全部測資都通過 isAllTestCasesAccepted 才會是 true
-    (submission) => submission.status.id === 3
+    (submission) => submission?.status.id === 3
   );
   const [testTab, setTestTab] = useState("testcase");
   const [settings, setSettings] = useState<Settings>({
@@ -104,15 +104,20 @@ const Playground: React.FC<PlaygroundProps> = ({
 
       try {
         for (const testCase of problem.testCaseCode) {
-          const token = await testUserCode({
+          const token = (await testUserCode({
             userCode: `${userCode.trim()}\n${testCase.inputCode.trim()}`,
             expectedOutput: testCase.output,
-          });
-          const data = await getSubmissionData(token);
-          if (data.stderr) {
+          })) as string;
+          if (!token) {
+            console.log("或許你用到流量上限了!!");
+            throw new Error("或許你用到流量上限了!!");
+          }
+
+          const data = (await getSubmissionData(token)) as SubmissionData;
+          if (data?.stderr) {
             temp.push(data);
-            console.log("錯誤發生應停止後續的 test case");
-            throw new Error("錯誤發生應停止後續的 test case");
+            console.log("當第一個測資發生錯誤後應停止後續的測資繼續進行");
+            throw new Error("當第一個測資發生錯誤後應停止後續的測資繼續進行");
           }
           temp.push(data);
         }
@@ -290,7 +295,7 @@ const Playground: React.FC<PlaygroundProps> = ({
                 <h2 className="text-white">沒有測試結果</h2>
               ) : (
                 <>
-                  {submissionsData[0].stderr && (
+                  {submissionsData[0]?.stderr && (
                     <div className="bg-red-100 rounded-lg">
                       <div
                         className="text-rose-500 p-6"
@@ -301,7 +306,7 @@ const Playground: React.FC<PlaygroundProps> = ({
                     </div>
                   )}
 
-                  {!submissionsData[0].stderr && (
+                  {!submissionsData[0]?.stderr && (
                     <TestCaseList
                       problem={problem}
                       submissionsData={submissionsData}

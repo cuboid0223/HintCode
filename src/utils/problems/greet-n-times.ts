@@ -16,7 +16,8 @@ const starterCode_js = `function greetNTimes(num){
 const starterFunctionName_py = "def greetNTimes(";
 const starterFunctionName_js = "function greetNTimes(";
 
-const case1InputCode = `num = 2
+const case1InputCode = `
+num = 2
 
 greetNTimes(num)`;
 const case1Output = "Hello World\nHello World\n";

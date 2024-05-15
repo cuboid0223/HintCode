@@ -4,7 +4,8 @@ import { SubmissionData } from "@/utils/types/testcase";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { CircleSlash, CircleCheckBig } from "lucide-react";
-
+import Diff from "../../../HighlightedDiff";
+import HighlightedDiff from "../../../HighlightedDiff";
 type TestCaseListProps = {
   problem: Problem;
   submissionsData?: SubmissionData[];
@@ -28,7 +29,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
   useEffect(() => {
     if (!submissionsData) return;
     const wrongSubmissionId = submissionsData.findIndex(
-      (data) => data.status.id !== 3
+      (data) => data?.status.id !== 3
     );
     if (!wrongSubmissionId) {
       setActiveTestCaseId(0);
@@ -52,7 +53,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
 										${activeTestCaseId === index ? "text-white" : "text-gray-500"}
 									`}
               >
-                {submissionsData?.[index].status.id === 3 ? (
+                {submissionsData?.[index]?.status.id === 3 ? (
                   <CircleCheckBig color="green" />
                 ) : (
                   <CircleSlash
@@ -116,9 +117,32 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               ></div>
             </CardContent>
           </Card>
+
           <div ref={testCaseEndRef} />
         </>
       )}
+
+      <HighlightedDiff
+        output={"Hello World\nHello World\n"}
+        expectedOutput={
+          "Hello World\nHello World\nHello World\nHello World\nHello World\n"
+        }
+        removedHidden
+        diffMode="line"
+        // addedHidden
+      />
+      <HighlightedDiff
+        output={"[0,2]"}
+        expectedOutput={"[0,1]"}
+        // removedHidden
+        addedHidden
+      />
+      <HighlightedDiff
+        output={"[0,2]"}
+        expectedOutput={"[0,1]"}
+        removedHidden
+        // addedHidden
+      />
     </>
   );
 };
