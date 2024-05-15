@@ -20,13 +20,13 @@ const EditorFooter: React.FC<EditorFooterProps> = ({ handleExecution }) => {
         </div>
         <div className="ml-auto flex items-center space-x-4">
           <Button className="" onClick={() => handleExecution("run")}>
-            Run
+            執行
           </Button>
           <Button
             className="font-bold	 text-white bg-dark-green-s hover:bg-green-3"
             onClick={() => handleExecution("submit")}
           >
-            Submit
+            繳交
           </Button>
         </div>
       </div>

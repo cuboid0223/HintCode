@@ -253,20 +253,31 @@ const Playground: React.FC<PlaygroundProps> = ({
           ;
         </div>
 
-        <div className="w-full px-5 overflow-auto">
+        <div className="w-full  overflow-auto">
           {/* Tabs: testcase */}
           <Tabs
+            className=""
             value={testTab}
             defaultValue="testcase"
             onValueChange={handleTestTabChange}
           >
-            <TabsList className="grid w-full grid-cols-2 ">
-              <TabsTrigger value="testcase" className="relative">
-                <div className="text-sm font-medium ">測試資料</div>
+            <TabsList className="grid w-full grid-cols-2 bg-card ">
+              <TabsTrigger
+                value="testcase"
+                className="relative hover:bg-muted transition-all"
+              >
+                <div className="text-sm font-medium text-foreground">
+                  測試資料
+                </div>
                 <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none " />
               </TabsTrigger>
-              <TabsTrigger value="testResult" className="relative">
-                <div className="text-sm font-medium leading-5 ">測試結果</div>
+              <TabsTrigger
+                value="testResult"
+                className="relative hover:bg-muted transition-all"
+              >
+                <div className="text-sm font-medium leading-5 text-foreground">
+                  測試結果
+                </div>
                 <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none " />
               </TabsTrigger>
             </TabsList>

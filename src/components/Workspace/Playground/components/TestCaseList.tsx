@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { CircleSlash, CircleCheckBig } from "lucide-react";
 import Diff from "../../../HighlightedDiff";
 import HighlightedDiff from "../../../HighlightedDiff";
+import { Button } from "@/components/ui/button";
 type TestCaseListProps = {
   problem: Problem;
   submissionsData?: SubmissionData[];
@@ -42,42 +43,48 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
     <>
       <div className="flex">
         {problem.examples.map((example, index) => (
-          <div
-            className="mr-2 items-start my-2 "
+          <Button
+            className="mr-2 items-start my-2 bg-card hover:bg-muted "
             key={example.id}
             onClick={() => setActiveTestCaseId(index)}
           >
             <div className="flex flex-wrap items-center gap-y-4">
               <div
-                className={`font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
-										${activeTestCaseId === index ? "text-white" : "text-gray-500"}
+                className={`font-medium items-center transition-all focus:outline-none inline-flex  relative whitespace-nowrap
+										${activeTestCaseId === index ? "text-black dark:text-white" : "text-gray-300"}
 									`}
               >
                 {submissionsData?.[index]?.status.id === 3 ? (
-                  <CircleCheckBig color="green" />
+                  <CircleCheckBig color="green" className="mr-2 " />
                 ) : (
                   <CircleSlash
                     color="red"
-                    className={submissionsData ? "" : "hidden"}
+                    className={submissionsData ? "mr-2" : "hidden"}
                   />
                 )}
-                <p className="ml-2"> 測資 {index + 1}</p>
+                <p
+                  className={`${
+                    activeTestCaseId === index ? "font-bold " : ""
+                  }`}
+                >
+                  測資 {index + 1}
+                </p>
               </div>
             </div>
-          </div>
+          </Button>
         ))}
       </div>
       <Card className="mb-6">
         <CardContent>
           <CardDescription className="font-bold mb-2">輸入:</CardDescription>
-          <div className="bg-gray-400 p-3 rounded-lg mb-2">
+          <div className="bg-background  p-3 rounded-lg mb-2">
             {problem.examples[activeTestCaseId].inputText}
           </div>
           <CardDescription className="font-bold mb-2">
             預期輸出:
           </CardDescription>
           <div
-            className="bg-gray-400 p-3 rounded-lg"
+            className="bg-background p-3 rounded-lg"
             dangerouslySetInnerHTML={{
               __html: problem.examples[activeTestCaseId].outputText.replace(
                 /\n/g,
@@ -95,7 +102,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
                 你的輸出:
               </CardDescription>
               <div
-                className="bg-gray-400 p-3 rounded-lg mb-2"
+                className="bg-background p-3 rounded-lg mb-2"
                 dangerouslySetInnerHTML={{
                   __html: submissionsData[activeTestCaseId]?.stdout.replace(
                     /\n/g,
@@ -107,7 +114,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
                 預期輸出:
               </CardDescription>
               <div
-                className="bg-gray-400 p-3 rounded-lg"
+                className="bg-background p-3 rounded-lg"
                 dangerouslySetInnerHTML={{
                   __html: problem.examples[activeTestCaseId].outputText.replace(
                     /\n/g,

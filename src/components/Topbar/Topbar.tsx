@@ -65,7 +65,7 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
   };
 
   return (
-    <nav className="relative flex h-[50px] w-full shrink-0 items-center px-5 dark:bg-dark-layer-1 text-dark-gray-7">
+    <nav className="relative flex h-[50px] w-full shrink-0 items-center px-5 dark:bg-dark-layer-1 bg-card text-dark-gray-7">
       <div
         className={`flex w-full items-center justify-between ${
           !isProblemPage ? "max-w-[1200px] mx-auto" : ""
@@ -90,7 +90,7 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
               <div>
                 <BsList />
               </div>
-              <p>Problem List</p>
+              <p>問題列表</p>
             </Link>
             <div
               className="flex items-center justify-center rounded bg-dark-fill-3 hover:bg-dark-fill-2 h-8 w-8 cursor-pointer"
