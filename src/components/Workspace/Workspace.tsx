@@ -19,32 +19,20 @@ const Workspace: React.FC<WorkspaceProps> = ({ problem }) => {
   const splitRef = useRef();
   const [success, setSuccess] = useState(false);
   const [solved, setSolved] = useState(false);
-  // const handleGutterStyle = (resolvedTheme: string) => {
-  //   // bg-gray-400	-> background-color: rgb(156 163 175);
-  //   if (resolvedTheme) return;
-  //   console.log(resolvedTheme);
-  //   if (resolvedTheme === "dark") {
-  //     return {
-  //       width: "10px",
-  //       "background-color": "rgb(26, 26, 26)",
-  //     };
-  //   }
-  //   return {
-  //     width: "10px",
-  //     "background-color": "rgb(156 163 175)",
-  //   };
-  // };
-
-  useEffect(() => {
-    console.log(resolvedTheme);
-  }, [resolvedTheme]);
 
   return (
     <Split
+      key={resolvedTheme} // 使用 theme 作為 key 以強制重新渲染
       ref={splitRef}
-      className="split flex-1 overflow-hidden"
+      className="split flex-1 overflow-hidden "
       minSize={0}
-      // gutterStyle={handleGutterStyle}
+      gutter={(index, direction) => {
+        const gutter = document.createElement("div");
+        gutter.className = `gutter gutter-${direction} ${
+          resolvedTheme === "dark" ? "bg-gray-600" : "bg-gray-300 "
+        } `;
+        return gutter;
+      }}
     >
       {/* 左半 程式題目敘述區與 GPT 提示區 */}
       <ProblemTab problem={problem} _solved={solved} />

@@ -216,19 +216,13 @@ const Playground: React.FC<PlaygroundProps> = ({
         direction="vertical"
         sizes={[60, 40]}
         minSize={60}
-        // gutterStyle={() => {
-        //   console.log("resolvedTheme", resolvedTheme);
-        //   if (resolvedTheme === "dark") {
-        //     return {
-        //       height: "10px",
-        //       backgroundColor: "rgb(26 26 26)",
-        //     };
-        //   }
-        //   return {
-        //     height: "10px",
-        //     backgroundColor: "rgb(156 163 175)",
-        //   };
-        // }}
+        gutter={(index, direction) => {
+          const gutter = document.createElement("div");
+          gutter.className = `gutter gutter-${direction} ${
+            resolvedTheme === "dark" ? "bg-gray-600" : "bg-gray-300 "
+          } `;
+          return gutter;
+        }}
       >
         {/*　Playground */}
         <div className="w-full overflow-auto">
