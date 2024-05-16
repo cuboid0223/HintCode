@@ -40,7 +40,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
   }, [submissionsData]);
 
   return (
-    <>
+    <div className="grow overflow-y-auto">
       <div className="flex">
         {problem.examples.map((example, index) => (
           <Button
@@ -74,17 +74,17 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
           </Button>
         ))}
       </div>
-      <Card className="mb-6">
+      <Card className="mb-6 dark:border-2 border-none ">
         <CardContent>
           <CardDescription className="font-bold mb-2">輸入:</CardDescription>
-          <div className="bg-background  p-3 rounded-lg mb-2">
+          <div className="bg-background  p-2 rounded-lg mb-2">
             {problem.examples[activeTestCaseId].inputText}
           </div>
           <CardDescription className="font-bold mb-2">
             預期輸出:
           </CardDescription>
           <div
-            className="bg-background p-3 rounded-lg"
+            className="bg-background p-2 rounded-lg"
             dangerouslySetInnerHTML={{
               __html: problem.examples[activeTestCaseId].outputText.replace(
                 /\n/g,
@@ -96,40 +96,36 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
       </Card>
       {submissionsData && (
         <>
-          <Card>
+          <Card className=" py-1 dark:border-4 border-none	">
             <CardContent>
               <CardDescription className="font-bold mb-2">
                 你的輸出:
               </CardDescription>
-              <div
-                className="bg-background p-3 rounded-lg mb-2"
-                dangerouslySetInnerHTML={{
-                  __html: submissionsData[activeTestCaseId]?.stdout.replace(
-                    /\n/g,
-                    "<br>"
-                  ),
-                }}
-              ></div>
+              <div className="bg-background p-2 rounded-lg">
+                <HighlightedDiff
+                  output={submissionsData[activeTestCaseId]?.stdout}
+                  expectedOutput={problem.examples[activeTestCaseId].outputText}
+                  addedHidden
+                />
+              </div>
+
               <CardDescription className="font-bold mb-2">
                 預期輸出:
               </CardDescription>
-              <div
-                className="bg-background p-3 rounded-lg"
-                dangerouslySetInnerHTML={{
-                  __html: problem.examples[activeTestCaseId].outputText.replace(
-                    /\n/g,
-                    "<br>"
-                  ),
-                }}
-              ></div>
+              <div className="bg-background p-2 rounded-lg">
+                <HighlightedDiff
+                  output={submissionsData[activeTestCaseId]?.stdout}
+                  expectedOutput={problem.examples[activeTestCaseId].outputText}
+                  removedHidden
+                />
+              </div>
             </CardContent>
           </Card>
 
           <div ref={testCaseEndRef} />
         </>
       )}
-
-      <HighlightedDiff
+      {/* <HighlightedDiff
         output={"Hello World\nHello World\n"}
         expectedOutput={
           "Hello World\nHello World\nHello World\nHello World\nHello World\n"
@@ -137,20 +133,8 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
         removedHidden
         diffMode="line"
         // addedHidden
-      />
-      <HighlightedDiff
-        output={"[0,2]"}
-        expectedOutput={"[0,1]"}
-        // removedHidden
-        addedHidden
-      />
-      <HighlightedDiff
-        output={"[0,2]"}
-        expectedOutput={"[0,1]"}
-        removedHidden
-        // addedHidden
-      />
-    </>
+      /> */}
+    </div>
   );
 };
 

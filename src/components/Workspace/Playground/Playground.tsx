@@ -23,6 +23,7 @@ import { submissionsDataState } from "@/atoms/submissionsDataAtom";
 import { mockSubmissions } from "@/mockProblems/mockSubmissions";
 import { useTheme } from "next-themes";
 import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -247,15 +248,15 @@ const Playground: React.FC<PlaygroundProps> = ({
           ;
         </div>
 
-        <div className="w-full  overflow-auto">
+        <div className="w-full overflow-auto">
           {/* Tabs: testcase */}
           <Tabs
-            className=""
+            className="flex flex-col "
             value={testTab}
             defaultValue="testcase"
             onValueChange={handleTestTabChange}
           >
-            <TabsList className="grid w-full grid-cols-2 bg-card ">
+            <TabsList className=" grid w-full grid-cols-2 bg-card">
               <TabsTrigger
                 value="testcase"
                 className="relative hover:bg-muted transition-all"
@@ -263,7 +264,9 @@ const Playground: React.FC<PlaygroundProps> = ({
                 <div className="text-sm font-medium text-foreground">
                   測試資料
                 </div>
-                <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none " />
+                {testTab === "testcase" && (
+                  <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-gray-400" />
+                )}
               </TabsTrigger>
               <TabsTrigger
                 value="testResult"
@@ -272,14 +275,18 @@ const Playground: React.FC<PlaygroundProps> = ({
                 <div className="text-sm font-medium leading-5 text-foreground">
                   測試結果
                 </div>
-                <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none " />
+                {testTab === "testResult" && (
+                  <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-gray-400" />
+                )}
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="testcase">
+            {/* <ScrollArea className="flex bg-red-300"> */}
+            <TabsContent value="testcase" className=" flex flex-col  px-3  ">
               {/* 測試資料區 */}
               <TestCaseList problem={problem} />
             </TabsContent>
-            <TabsContent value="testResult">
+            {/* </ScrollArea> */}
+            <TabsContent value="testResult" className=" flex flex-col  px-3  ">
               {/* 測試結果區 */}
               <div className="flex items-center mb-3">
                 <h2
