@@ -48,6 +48,7 @@ const Playground: React.FC<PlaygroundProps> = ({
   const [submissionsData, setSubmissionsData] =
     useRecoilState<SubmissionData[]>(submissionsDataState);
 
+  const [isLoading, setIsLoading] = useState(false);
   let [userCode, setUserCode] = useState<string>(problem.starterCode.js);
 
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
@@ -93,6 +94,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       });
       return;
     }
+    setIsLoading(true);
     let temp: SubmissionData[] = [];
 
     // 要測試 judge0 請打開
@@ -136,6 +138,7 @@ const Playground: React.FC<PlaygroundProps> = ({
     setSubmissionsData(temp);
     // setSubmissionsData(mockSubmissions);
     setTestTab("testResult");
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -330,7 +333,7 @@ const Playground: React.FC<PlaygroundProps> = ({
           </Tabs>
         </div>
       </Split>
-      <EditorFooter handleExecution={handleExecution} />
+      <EditorFooter handleExecution={handleExecution} isLoading={isLoading} />
     </div>
   );
 };

@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import { Input } from "@/components/ui/input";
 import Message from "../Playground/components/Message";
-
+import { RingLoader } from "react-spinners";
 type MessageProps = {
   role: "user" | "assistant" | "code";
   text: string;
@@ -56,6 +56,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     useRecoilState<SubmissionData[]>(submissionsDataState);
 
   const [userInput, setUserInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [inputDisabled, setInputDisabled] = useState(false);
 
   function formatCode(code: string) {
@@ -187,6 +188,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     const wrongSubmissions = getWrongAnswerSubmissions(submissionsData);
     // if (!userInput.trim()) return;
     if (!latestTestCode || !wrongSubmissions) return;
@@ -219,6 +221,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     setUserInput("");
     setInputDisabled(true);
     scrollToBottom();
+    setIsLoading(false);
   };
   /*
     =======================
@@ -260,8 +263,8 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
           onChange={(e) => setUserInput(e.target.value)}
           placeholder="Enter your question"
         />
-        <Button className="font-bold" type="submit" disabled={inputDisabled}>
-          Help
+        <Button className="font-bold" type="submit" disabled={isLoading}>
+          {isLoading ? <RingLoader color="#36d7b7" size={27} /> : "Help"}
         </Button>
       </form>
     </section>
