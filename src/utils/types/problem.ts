@@ -12,6 +12,7 @@ export type Example = {
 export type Problem = {
   id: string;
   title: string;
+  diffmode: string;
   problemStatement: string;
   examples: Example[];
   // constraints: string;

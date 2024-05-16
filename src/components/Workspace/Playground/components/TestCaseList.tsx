@@ -105,6 +105,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
                 <HighlightedDiff
                   output={submissionsData[activeTestCaseId]?.stdout}
                   expectedOutput={problem.examples[activeTestCaseId].outputText}
+                  diffMode={problem.diffmode}
                   addedHidden
                 />
               </div>
@@ -116,6 +117,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
                 <HighlightedDiff
                   output={submissionsData[activeTestCaseId]?.stdout}
                   expectedOutput={problem.examples[activeTestCaseId].outputText}
+                  diffMode={problem.diffmode}
                   removedHidden
                 />
               </div>

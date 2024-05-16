@@ -66,6 +66,7 @@ const case3Output = "NCHU\n";
 export const greetNTimes: Problem = {
   id: "greet-n-times",
   title: "0. Greet N Times",
+  diffmode: "line",
   problemStatement: greetNTimesDescription,
   examples: [
     {
