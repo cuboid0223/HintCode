@@ -3,9 +3,12 @@ import { auth, firestore } from "../../firebase/firebase";
 import { useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { useRouter } from "next/router";
-import { doc, setDoc } from "firebase/firestore";
+
+import { doc, setDoc, collection } from "firebase/firestore";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import { Content } from "@radix-ui/react-dropdown-menu";
+import { v4 as uuidv4 } from "uuid";
 
 type SignupProps = {};
 
@@ -29,9 +32,9 @@ const Signup: React.FC<SignupProps> = () => {
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!inputs.email || !inputs.password || !inputs.displayName)
-      return alert("Please fill all fields");
+      return alert("請填寫 Email 或是 密碼");
     try {
-      toast.loading("Creating your account", {
+      toast.loading("正在創建帳號", {
         position: "top-center",
         toastId: "loadingToast",
       });
@@ -40,6 +43,17 @@ const Signup: React.FC<SignupProps> = () => {
         inputs.password
       );
       if (!newUser) return;
+      /*
+      架構如下
+      users(collection) 
+        -> USER(doc) 
+          -> history(collection) 
+              -> PROBLEM NAME(doc) 
+                  -> messages(collection)
+      */
+      const userRef = doc(firestore, "users", newUser.user.uid);
+      const messageId = uuidv4();
+
       const userData = {
         uid: newUser.user.uid,
         email: newUser.user.email,
@@ -51,9 +65,29 @@ const Signup: React.FC<SignupProps> = () => {
         solvedProblems: [],
         starredProblems: [],
       };
-      await setDoc(doc(firestore, "users", newUser.user.uid), userData);
+      await setDoc(userRef, userData);
+
+      // 空的 historyData
+      const historyData = {
+        problemName: "greet-n-times",
+      };
+      const historyCollectionRef = collection(userRef, "history");
+      const historyDocRef = doc(historyCollectionRef, "greet-n-times");
+      await setDoc(historyDocRef, historyData);
+
+      // 空的 messageData
+      const messageData = {
+        content: "",
+        role: "",
+        createdAt: Date.now(),
+      };
+      const messagesCollectionRef = collection(historyDocRef, "messages");
+      const messagesDocRef = doc(messagesCollectionRef, messageId);
+      await setDoc(messagesDocRef, messageData);
+
       router.push("/");
     } catch (error: any) {
+      console.log(error);
       toast.error(error.message, { position: "top-center" });
     } finally {
       toast.dismiss("loadingToast");

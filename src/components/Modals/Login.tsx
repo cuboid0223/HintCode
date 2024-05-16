@@ -23,7 +23,7 @@ const Login: React.FC<LoginProps> = () => {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!inputs.email || !inputs.password)
-      return alert("Please fill all fields");
+      return alert("請填寫 Email 或是 密碼");
     try {
       const newUser = await signInWithEmailAndPassword(
         inputs.email,
@@ -50,13 +50,13 @@ const Login: React.FC<LoginProps> = () => {
   }, [error]);
   return (
     <form className="space-y-6 px-6 pb-4" onSubmit={handleLogin}>
-      <h3 className="text-xl font-medium text-white">Sign in to LeetClone</h3>
+      <h3 className="text-xl font-medium text-white">登入 Hint Code</h3>
       <div>
         <label
           htmlFor="email"
           className="text-sm font-medium block mb-2 text-gray-300"
         >
-          Your Email
+          Email
         </label>
         <input
           onChange={handleInputChange}
@@ -75,7 +75,7 @@ const Login: React.FC<LoginProps> = () => {
           htmlFor="password"
           className="text-sm font-medium block mb-2 text-gray-300"
         >
-          Your Password
+          密碼
         </label>
         <input
           onChange={handleInputChange}
@@ -96,7 +96,7 @@ const Login: React.FC<LoginProps> = () => {
                 text-sm px-5 py-2.5 text-center bg-brand-orange hover:bg-brand-orange-s
             "
       >
-        {loading ? "Loading..." : "Log In"}
+        {loading ? "載入中..." : "登入"}
       </button>
       <button
         className="flex w-full justify-end"
@@ -106,17 +106,17 @@ const Login: React.FC<LoginProps> = () => {
           href="#"
           className="text-sm block text-brand-orange hover:underline w-full text-right"
         >
-          Forgot Password?
+          忘記密碼?
         </a>
       </button>
       <div className="text-sm font-medium text-gray-300">
-        Not Registered?{" "}
+        還未註冊?{" "}
         <a
           href="#"
           className="text-blue-700 hover:underline"
           onClick={() => handleClick("register")}
         >
-          Create account
+          創造帳戶
         </a>
       </div>
     </form>
