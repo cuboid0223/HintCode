@@ -127,15 +127,6 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
           <div ref={testCaseEndRef} />
         </>
       )}
-      {/* <HighlightedDiff
-        output={"Hello World\nHello World\n"}
-        expectedOutput={
-          "Hello World\nHello World\nHello World\nHello World\nHello World\n"
-        }
-        removedHidden
-        diffMode="line"
-        // addedHidden
-      /> */}
     </div>
   );
 };

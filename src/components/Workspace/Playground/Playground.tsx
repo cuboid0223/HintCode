@@ -1,10 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import PreferenceNav from "./components/PreferenceNav";
 import Split from "react-split";
-import CodeMirror from "@uiw/react-codemirror";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
-import { javascript } from "@codemirror/lang-javascript";
-import { python } from "@codemirror/lang-python";
 import EditorFooter from "./EditorFooter";
 import { Problem } from "@/utils/types/problem";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -20,10 +16,10 @@ import TestCaseList from "./components/TestCaseList";
 import { SubmissionData } from "@/utils/types/testcase";
 import { useRecoilState } from "recoil";
 import { submissionsDataState } from "@/atoms/submissionsDataAtom";
-import { mockSubmissions } from "@/mockProblems/mockSubmissions";
+// import { mockSubmissions } from "@/mockProblems/mockSubmissions";
 import { useTheme } from "next-themes";
 import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion, AnimatePresence } from "framer-motion";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -268,7 +264,11 @@ const Playground: React.FC<PlaygroundProps> = ({
                   測試資料
                 </div>
                 {testTab === "testcase" && (
-                  <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-gray-400" />
+                  <motion.div
+                    className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-gray-400"
+                    layoutId="underline"
+                  />
+                  // <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-gray-400" />
                 )}
               </TabsTrigger>
               <TabsTrigger
@@ -279,7 +279,10 @@ const Playground: React.FC<PlaygroundProps> = ({
                   測試結果
                 </div>
                 {testTab === "testResult" && (
-                  <hr className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-gray-400" />
+                  <motion.div
+                    className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-gray-400"
+                    layoutId="underline"
+                  />
                 )}
               </TabsTrigger>
             </TabsList>

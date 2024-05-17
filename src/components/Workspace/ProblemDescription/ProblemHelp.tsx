@@ -29,6 +29,8 @@ import { AssistantStream } from "openai/lib/AssistantStream";
 import { Input } from "@/components/ui/input";
 import Message from "../Playground/components/Message";
 import { RingLoader } from "react-spinners";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+
 type MessageProps = {
   role: "user" | "assistant" | "code";
   text: string;
@@ -238,21 +240,24 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   }, [messages]);
 
   return (
-    <section className="flex-1 p-5 grid justify-items-stretch  overflow-y-auto ">
-      {/* GPT output */}
-      {messages.map((msg, index) => (
-        <Message
-          key={index}
-          role={msg.role}
-          text={msg.text}
-          code={latestTestCode}
-          theme={resolvedTheme}
-        />
-      ))}
+    <section className="flex-1 px-5 flex flex-col">
       {messages.length === 0 && <div>你可以先把能想到的全打上去</div>}
+      {/* GPT output */}
+      <div className="flex-1 space-y-6 grid justify-items-stretch overflow-y-auto">
+        {messages.map((msg, index) => (
+          <Message
+            key={index}
+            role={msg.role}
+            text={msg.text}
+            code={latestTestCode}
+            theme={resolvedTheme}
+          />
+        ))}
+      </div>
+
       <div className="mb-10" ref={messagesEndRef} />
       <form
-        className=" absolute bottom-0 p-5 pr-7 flex w-full items-center space-x-2 "
+        className="py-3 flex w-full items-center space-x-2 "
         onSubmit={handleSubmit}
       >
         <Input

@@ -14,7 +14,7 @@ type UserMessageProps = Omit<MessageProps, "role">;
 
 const UserMessage = ({ text, code, theme }: UserMessageProps) => {
   return (
-    <Card className={`h-fit max-w-lg mb-6 p-2 justify-self-end`}>
+    <Card className={`h-fit max-w-lg  p-2 justify-self-end`}>
       <Markdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -54,7 +54,7 @@ const UserMessage = ({ text, code, theme }: UserMessageProps) => {
 
 const AssistantMessage = ({ text }: { text: string }) => {
   return (
-    <Card className={`h-fit max-w-lg mb-6 p-2 bg-red-400`}>
+    <Card className={`h-fit max-w-lg  p-2 bg-green-600`}>
       <Markdown>{text}</Markdown>
     </Card>
   );
