@@ -60,6 +60,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [inputDisabled, setInputDisabled] = useState(false);
+  const [finalText, setFinalText] = useState("");
 
   function formatCode(code: string) {
     // 這裡要檢查 formatCode 到底輸出是啥
@@ -145,6 +146,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const handleTextDelta = (delta) => {
     if (delta.value != null) {
       appendToLastMessage(delta.value);
+      setFinalText((prevText) => prevText + delta.value);
     }
     if (delta.annotations != null) {
       annotateLastMessage(delta.annotations);
@@ -155,17 +157,19 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     === Utility Helpers ===
     =======================
   */
-  const appendMessage = (role, text) => {
+  const appendMessage = (role: string, text: string) => {
+    console.log(text);
     setMessages((prevMessages) => [...prevMessages, { role, text }]);
   };
 
-  const appendToLastMessage = (text) => {
+  const appendToLastMessage = (text: string) => {
     setMessages((prevMessages) => {
       const lastMessage = prevMessages[prevMessages.length - 1];
       const updatedLastMessage = {
         ...lastMessage,
         text: lastMessage.text + text,
       };
+
       return [...prevMessages.slice(0, -1), updatedLastMessage];
     });
   };
@@ -176,6 +180,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
       const updatedLastMessage = {
         ...lastMessage,
       };
+
       annotations.forEach((annotation) => {
         if (annotation.type === "file_path") {
           updatedLastMessage.text = updatedLastMessage.text.replaceAll(
@@ -205,7 +210,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     以下是經過測試後的輸出:
     ${formatSubmissions(wrongSubmissions)}
 
-    請不要給我答案，請透過疑問句讓我反思問題所在
+    請不要給我答案，請隱晦的提示我，讓我反思問題所在
     `;
 
     // sendMessage(userInput); // 目前禁止學生直接接觸 GPT
@@ -239,20 +244,34 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     scrollToBottom();
   }, [messages]);
 
+  const getMessages = async () => {
+    console.log("threadId from getMessages ", threadId);
+    const messages = await fetch(
+      `/api/assistants/threads/${threadId}/messages`,
+      {
+        method: "GET",
+      }
+    );
+
+    return messages;
+  };
   return (
     <section className="flex-1 px-5 flex flex-col">
+      <button onClick={getMessages}>sss</button>
       {messages.length === 0 && <div>你可以先把能想到的全打上去</div>}
       {/* GPT output */}
-      <div className="flex-1 space-y-6 grid justify-items-stretch overflow-y-auto">
-        {messages.map((msg, index) => (
-          <Message
-            key={index}
-            role={msg.role}
-            text={msg.text}
-            code={latestTestCode}
-            theme={resolvedTheme}
-          />
-        ))}
+      <div className="flex-1">
+        <div className="grid gap-4 justify-items-stretch overflow-y-auto">
+          {messages.map((msg, index) => (
+            <Message
+              key={index}
+              role={msg.role}
+              text={msg.text}
+              code={latestTestCode}
+              theme={resolvedTheme}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="mb-10" ref={messagesEndRef} />

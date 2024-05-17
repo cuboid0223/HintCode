@@ -11,6 +11,16 @@ import ProblemHelp from "./ProblemHelp";
 import { DBProblem, Problem } from "@/utils/types/problem";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu";
 
 type ProblemTabProps = {
   problem: Problem;
@@ -31,6 +41,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
         method: "POST",
       });
       const data = await res.json();
+      console.log(data.threadId);
       setThreadId(data.threadId);
     };
     createThread();
