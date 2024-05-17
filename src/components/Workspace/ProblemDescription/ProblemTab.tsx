@@ -11,16 +11,7 @@ import ProblemHelp from "./ProblemHelp";
 import { DBProblem, Problem } from "@/utils/types/problem";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
-} from "@/components/ui/navigation-menu";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 type ProblemTabProps = {
   problem: Problem;
@@ -33,9 +24,56 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
   const [threadId, setThreadId] = useState("");
   const [messages, setMessages] = useState([]);
   const [problemTab, setProblemTab] = useState("description");
+
   // create a new threadID when chat component created
   useEffect(() => {
     console.log("create thread");
+  }, []);
+
+  async function checkIsDocumentExists(userId: string, problemId: string) {
+    if (!userId || !problemId) {
+      throw new Error("Invalid userId or problemId");
+    }
+
+    // 獲取文件參考
+    const docRef = doc(firestore, "users", userId, "problems", problemId);
+
+    // 獲取文件快照
+    const docSnap = await getDoc(docRef);
+
+    // 確認文件是否存在
+    if (docSnap.exists()) {
+      console.log("Document exists:", docSnap.data());
+      setThreadId(docSnap.data().threadId);
+      return true;
+    } else {
+      console.log("Document does not exist");
+      return false;
+    }
+  }
+
+  useEffect(() => {
+    if (!user) return;
+    const createProblemDocument = async (id: string) => {
+      if (!id || !user) return;
+      try {
+        const userRef = doc(firestore, "users", user?.uid);
+        const problemRef = doc(userRef, "problems", problem.id);
+
+        // 设置文档数据
+        const problemData = {
+          id: problem.id,
+          threadId: id,
+        };
+
+        // 使用 setDoc 方法设置文档数据
+        await setDoc(problemRef, problemData);
+        console.log("Problem document created successfully!");
+      } catch (error) {
+        console.error("Error creating problem document:", error);
+      }
+    };
+
     const createThread = async () => {
       const res = await fetch(`/api/assistants/threads`, {
         method: "POST",
@@ -43,9 +81,28 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
       const data = await res.json();
       console.log(data.threadId);
       setThreadId(data.threadId);
+      return data.threadId;
     };
-    createThread();
-  }, []);
+
+    const checkAndCreateProblemDocument = async () => {
+      try {
+        const isExist = await checkIsDocumentExists(user.uid, problem.id);
+        if (isExist) {
+          // 有存在
+          // console.log("Document exists");
+        } else {
+          // 沒有， create threadId 加入至 problems/[pid]
+          console.log("Document does not exist, creating...");
+          const newThreadId = await createThread();
+          await createProblemDocument(newThreadId);
+          setThreadId(newThreadId);
+        }
+      } catch (error) {
+        console.error("Error checking or creating document:", error);
+      }
+    };
+    checkAndCreateProblemDocument();
+  }, [threadId, user, problem.id]);
 
   const handleProblemTabChange = (value: string) => {
     setProblemTab(value);

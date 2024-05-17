@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { Content } from "@radix-ui/react-dropdown-menu";
 import { v4 as uuidv4 } from "uuid";
+import { threadId } from "worker_threads";
 
 type SignupProps = {};
 
@@ -43,16 +44,9 @@ const Signup: React.FC<SignupProps> = () => {
         inputs.password
       );
       if (!newUser) return;
-      /*
-      架構如下
-      users(collection) 
-        -> USER(doc) 
-          -> history(collection) 
-              -> PROBLEM NAME(doc) 
-                  -> messages(collection)
-      */
+
       const userRef = doc(firestore, "users", newUser.user.uid);
-      const messageId = uuidv4();
+      const problemId = uuidv4();
 
       const userData = {
         uid: newUser.user.uid,
@@ -68,22 +62,23 @@ const Signup: React.FC<SignupProps> = () => {
       await setDoc(userRef, userData);
 
       // 空的 historyData
-      const historyData = {
-        problemName: "greet-n-times",
+      const problemsData = {
+        name: "greet-n-times",
+        threadId: "",
       };
-      const historyCollectionRef = collection(userRef, "history");
-      const historyDocRef = doc(historyCollectionRef, "greet-n-times");
-      await setDoc(historyDocRef, historyData);
+      const problemsCollectionRef = collection(userRef, "problems");
+      const problemDocRef = doc(problemsCollectionRef, problemId);
+      await setDoc(problemDocRef, problemsData);
 
-      // 空的 messageData
-      const messageData = {
-        content: "",
-        role: "",
-        createdAt: Date.now(),
-      };
-      const messagesCollectionRef = collection(historyDocRef, "messages");
-      const messagesDocRef = doc(messagesCollectionRef, messageId);
-      await setDoc(messagesDocRef, messageData);
+      // // 空的 messageData
+      // const messageData = {
+      //   content: "",
+      //   role: "",
+      //   createdAt: Date.now(),
+      // };
+      // const messagesCollectionRef = collection(historyDocRef, "messages");
+      // const messagesDocRef = doc(messagesCollectionRef, messageId);
+      // await setDoc(messagesDocRef, messageData);
 
       router.push("/");
     } catch (error: any) {

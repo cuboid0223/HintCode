@@ -33,9 +33,9 @@ import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 
 type MessageProps = {
   role: "user" | "assistant" | "code";
-  text: string;
+  text?: string;
   theme?: string;
-  code: string;
+  code?: string;
 };
 
 type ProblemHelpProps = {
@@ -244,20 +244,42 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     scrollToBottom();
   }, [messages]);
 
-  const getMessages = async () => {
-    console.log("threadId from getMessages ", threadId);
-    const messages = await fetch(
-      `/api/assistants/threads/${threadId}/messages`,
-      {
-        method: "GET",
-      }
-    );
+  useEffect(() => {
+    const getMessages = async () => {
+      if (!threadId) return;
+      console.log("threadId from getMessages ", threadId);
+      const messages = await fetch(
+        `/api/assistants/threads/${threadId}/messages`,
+        {
+          method: "GET",
+        }
+      );
+      const msgs = await messages.json();
+      console.log(msgs);
+      // console.log(messages.data[1].role);
+      // console.log(messages.data[0].content[0].text.value);
+      let temp = [] as MessageProps[];
+      msgs.data.forEach((msg) => {
+        if (msg.role === "user") {
+          temp.push({
+            role: msg.role,
+            code: msg.content[0].text.value,
+          });
+        } else {
+          temp.push({
+            role: msg.role,
+            text: msg.content[0].text.value,
+          });
+        }
+      });
+      setMessages(temp.reverse());
+    };
 
-    return messages;
-  };
+    getMessages();
+  }, [threadId]);
+
   return (
     <section className="flex-1 px-5 flex flex-col">
-      <button onClick={getMessages}>sss</button>
       {messages.length === 0 && <div>你可以先把能想到的全打上去</div>}
       {/* GPT output */}
       <div className="flex-1">

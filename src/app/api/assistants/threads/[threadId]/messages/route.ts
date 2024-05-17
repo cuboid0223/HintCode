@@ -25,12 +25,12 @@ export async function GET(request: Request, { params: { threadId } }) {
     console.log("Fetching messages for thread:", threadId);
     // thread_uUpAk93haL1KArBqT9hF3lh6
     const messages = await openai.beta.threads.messages.list(threadId);
-    console.log(messages);
+    // console.log(messages.data[1].role);
+    console.log(messages.data[0].content[0].text.value);
     return NextResponse.json(messages);
   } catch (error) {
     console.error("Error fetching messages:", error);
 
-    // 返回错误响应
     return new NextResponse(
       JSON.stringify({ error: "Failed to fetch messages" }),
       { status: 500 }
