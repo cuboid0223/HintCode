@@ -20,6 +20,10 @@ import { submissionsDataState } from "@/atoms/submissionsDataAtom";
 import { useTheme } from "next-themes";
 import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  IsHelpBtnEnableState,
+  isHelpBtnEnableState,
+} from "@/atoms/isHelpBtnEnableAtom";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -40,9 +44,13 @@ const Playground: React.FC<PlaygroundProps> = ({
   setSolved,
 }) => {
   const { id } = problem;
+  const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
+  const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
   const { resolvedTheme } = useTheme();
   const [submissionsData, setSubmissionsData] =
     useRecoilState<SubmissionData[]>(submissionsDataState);
+  const [isHelpBtnEnable, setIsHelpBtnEnable] =
+    useRecoilState(isHelpBtnEnableState);
 
   const [isLoading, setIsLoading] = useState(false);
   let [userCode, setUserCode] = useState<string>(problem.starterCode.js);
@@ -86,11 +94,22 @@ const Playground: React.FC<PlaygroundProps> = ({
       toast.error("登入後才能執行程式", {
         position: "top-center",
         autoClose: 3000,
-        theme: "dark",
+        theme: resolvedTheme,
       });
       return;
     }
+    if (latestTestCode === currentCode) {
+      toast.warn("與之前的程式碼相同", {
+        position: "top-center",
+        autoClose: 3000,
+        theme: resolvedTheme,
+      });
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
+    setIsHelpBtnEnable(true);
     let temp: SubmissionData[] = [];
 
     // 要測試 judge0 請打開

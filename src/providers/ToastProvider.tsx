@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 const ToastProvider = ({ children }: { children: ReactNode }) => (
   <>
     {children}
-    <ToastContainer />
+    <ToastContainer pauseOnHover={true} closeOnClick={true} />
   </>
 );
 

@@ -14,7 +14,7 @@ type UserMessageProps = Omit<MessageProps, "role">;
 
 const UserMessage = ({ text, code, theme }: UserMessageProps) => {
   return (
-    <Card className={`h-fit max-w-lg  p-2 justify-self-end`}>
+    <Card className={`h-fit  p-2 justify-self-end text-white`}>
       <Markdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -52,10 +52,42 @@ const UserMessage = ({ text, code, theme }: UserMessageProps) => {
   );
 };
 
-const AssistantMessage = ({ text }: { text: string }) => {
+const AssistantMessage = ({ text, theme }: { text: string; theme: string }) => {
   return (
-    <Card className={`h-fit max-w-lg  p-2 bg-green-600`}>
-      <Markdown>{text}</Markdown>
+    <Card className={`h-fit max-w-xl text-white  p-2 bg-green-600`}>
+      <Markdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          code(props) {
+            const { children, className, node, ...rest } = props;
+            const match = /language-(\w+)/.exec(className || "");
+            return match ? (
+              <SyntaxHighlighter
+                {...rest}
+                language="python"
+                style={theme === "dark" ? a11yDark : docco}
+                showLineNumbers
+              >
+                {/* 
+                .replace(/"/g, "") -> 因為從 localStorage 抓下來的 string 會有多餘的 "" 需要移除，否則 markdown 會當成只有一行 
+                .replace(/\\n/g, "\n") -> 因為從 localStorage 抓下來的 string 其換行符號並非真的換行符號，需要替換成真的
+                .trim() -> 負責削去使用者提交的程式碼後面多餘的空白行數
+                */}
+                {String(children)
+                  .replace(/"/g, "")
+                  .replace(/\\n/g, "\n")
+                  .trim()}
+              </SyntaxHighlighter>
+            ) : (
+              <code {...rest} className={className}>
+                {children}
+              </code>
+            );
+          },
+        }}
+      >
+        {text}
+      </Markdown>
     </Card>
   );
 };
@@ -80,7 +112,7 @@ const Message = ({ role, text, theme, code }: MessageProps) => {
     case "user":
       return <UserMessage text={text} code={code} theme={theme} />;
     case "assistant":
-      return <AssistantMessage text={text} />;
+      return <AssistantMessage text={text} theme={theme} />;
     case "code":
       return <CodeMessage text={text} theme={theme} />;
     default:

@@ -30,6 +30,8 @@ import { Input } from "@/components/ui/input";
 import Message from "../Playground/components/Message";
 import { RingLoader } from "react-spinners";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { toast } from "react-toastify";
+import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 
 type MessageProps = {
   role: "user" | "assistant" | "code";
@@ -52,23 +54,25 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   setMessages,
 }) => {
   const lang = localStorage.getItem("selectedLang");
-  const latestTestCode = localStorage.getItem(`latest-test-py-code`) || "";
+  const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
+  const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
   const { resolvedTheme } = useTheme();
   const [submissionsData] =
     useRecoilState<SubmissionData[]>(submissionsDataState);
-
+  const [isHelpBtnEnable, setIsHelpBtnEnable] =
+    useRecoilState(isHelpBtnEnableState);
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [inputDisabled, setInputDisabled] = useState(false);
   const [finalText, setFinalText] = useState("");
 
-  function formatCode(code: string) {
+  const formatCode = (code: string) => {
     // 這裡要檢查 formatCode 到底輸出是啥
     return code
       .replace(/^\s*'''\s*/, "") // 移除開始的'''以及前面的空格
       .replace(/\s*'''$/, "") // 移除結尾的'''以及後面的空格
       .trim(); // 移除前後的空格
-  }
+  };
 
   const formatSubmissions = (data: SubmissionData[]) => {
     const formattedData = data.map((ele, id) => {
@@ -94,7 +98,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     });
   };
 
-  const sendMessage = async (text: string) => {
+  const sendMessageToGPT = async (text: string) => {
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
       {
@@ -196,11 +200,20 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    setIsHelpBtnEnable(false);
     const wrongSubmissions = getWrongAnswerSubmissions(submissionsData);
     // if (!userInput.trim()) return;
-    if (!latestTestCode || !wrongSubmissions) return;
+    if (!latestTestCode || !wrongSubmissions) {
+      toast.warn("沒有測試結果，請按執行按鈕", {
+        position: "top-center",
+        autoClose: 3000,
+        theme: resolvedTheme,
+      });
+      setIsLoading(false);
+      return;
+    }
 
-    const template = `
+    const promptTemplate = `
     題目如下:
     ${problem.problemStatement}
     
@@ -213,13 +226,13 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     請不要給我答案，請隱晦的提示我，讓我反思問題所在
     `;
 
-    // sendMessage(userInput); // 目前禁止學生直接接觸 GPT
+    // sendMessageToGPT(userInput); // 目前禁止學生直接接觸 GPT
     // setMessages((prevMessages) => [
     //   ...prevMessages,
     //   { role: "user", text: userInput },
     // ]);
 
-    sendMessage(template);
+    sendMessageToGPT(promptTemplate);
     setMessages((prevMessages) => [
       ...prevMessages,
       { role: "user", code: latestTestCode, text: "" },
@@ -247,7 +260,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   useEffect(() => {
     const getMessages = async () => {
       if (!threadId) return;
-      console.log("threadId from getMessages ", threadId);
+      // console.log("threadId from getMessages ", threadId);
       const messages = await fetch(
         `/api/assistants/threads/${threadId}/messages`,
         {
@@ -272,11 +285,27 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
           });
         }
       });
-      setMessages(temp.reverse());
+      setMessages(swapPairs(temp));
     };
 
     getMessages();
   }, [threadId]);
+
+  const swapPairs = (arr: MessageProps[]) => {
+    // 複製原陣列，以免修改原陣列
+    let newArray = arr.slice();
+
+    // 迭代數組，每次跳兩個元素
+    for (let i = 0; i < newArray.length; i += 2) {
+      // 確保不會超出數組範圍
+      if (i + 1 < newArray.length) {
+        // 交換相鄰兩個元素
+        [newArray[i], newArray[i + 1]] = [newArray[i + 1], newArray[i]];
+      }
+    }
+
+    return newArray;
+  };
 
   return (
     <section className="flex-1 px-5 flex flex-col">
@@ -309,8 +338,12 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
           onChange={(e) => setUserInput(e.target.value)}
           placeholder="Enter your question"
         />
-        <Button className="font-bold" type="submit" disabled={isLoading}>
-          {isLoading ? <RingLoader color="#36d7b7" size={27} /> : "Help"}
+        <Button
+          className="font-bold"
+          type="submit"
+          disabled={isLoading || !isHelpBtnEnable}
+        >
+          {isLoading ? <RingLoader color="#36d7b7" size={27} /> : "請求幫助"}
         </Button>
       </form>
     </section>
