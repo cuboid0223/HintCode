@@ -212,16 +212,24 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
       setIsLoading(false);
       return;
     }
-
+    // 空白鍵不要動
     const promptTemplate = `
     題目如下:
+=========problem statement start========
     ${problem.problemStatement}
+=========problem statement end==========
     
     以下是我的程式碼:
+==========code start==========
+
     ${formatCode(latestTestCode)}
 
+===========code end===========
+
     以下是經過測試後的輸出:
+=========test output start=======
     ${formatSubmissions(wrongSubmissions)}
+=========test output end=========
 
     請不要給我答案，請隱晦的提示我，讓我反思問題所在
     `;
@@ -235,7 +243,17 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     sendMessageToGPT(promptTemplate);
     setMessages((prevMessages) => [
       ...prevMessages,
-      { role: "user", code: latestTestCode, text: "" },
+      {
+        role: "user",
+        code: latestTestCode,
+        text: `
+==========code start==========
+
+    ${formatCode(latestTestCode)}
+
+===========code end===========
+      `,
+      },
     ]);
 
     setUserInput("");
@@ -273,19 +291,12 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
       // console.log(messages.data[0].content[0].text.value);
       let temp = [] as MessageProps[];
       msgs.data.forEach((msg) => {
-        if (msg.role === "user") {
-          temp.push({
-            role: msg.role,
-            code: msg.content[0].text.value,
-          });
-        } else {
-          temp.push({
-            role: msg.role,
-            text: msg.content[0].text.value,
-          });
-        }
+        temp.push({
+          role: msg.role,
+          text: msg.content[0].text.value,
+        });
       });
-      setMessages(swapPairs(temp));
+      setMessages(temp.reverse());
     };
 
     getMessages();

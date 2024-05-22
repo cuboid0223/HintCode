@@ -13,6 +13,18 @@ type MessageProps = {
 type UserMessageProps = Omit<MessageProps, "role">;
 
 const UserMessage = ({ text, code, theme }: UserMessageProps) => {
+  const handleCodeFromText = (text: string) => {
+    const codeMatch = text.match(/=+code start=+\n([\s\S]*?)\n\s*=+code end=+/);
+    let extractedCode = codeMatch ? codeMatch[1] : "no code";
+
+    // 將提取的程式碼轉換為正常的格式
+    extractedCode = extractedCode
+      .replace(/\\n/g, "\n")
+      .replace(/\\"/g, '"')
+      .replace(/\\t/g, "\t");
+    return extractedCode;
+  };
+
   return (
     <Card className={`h-fit  p-2 justify-self-end text-white`}>
       <Markdown
@@ -46,7 +58,9 @@ const UserMessage = ({ text, code, theme }: UserMessageProps) => {
           },
         }}
       >
-        {`~~~py\n ${code}\n~~~`}
+        {/* {`~~~py\n ${code}\n~~~`} */}
+        {/* {handleCodeFromText(text)} */}
+        {`~~~py\n ${handleCodeFromText(text)}\n~~~`}
       </Markdown>
     </Card>
   );
