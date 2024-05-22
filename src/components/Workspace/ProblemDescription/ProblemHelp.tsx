@@ -303,9 +303,10 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
         </div>
       </div>
 
-      <div className="mb-10" ref={messagesEndRef} />
+      <div className="mb-24" ref={messagesEndRef} />
+
       <form
-        className="py-3 flex w-full items-center space-x-2 "
+        className="absolute bottom-0 left-0 p-3 flex w-full items-center space-x-2 bg-card "
         onSubmit={handleSubmit}
       >
         <Input
@@ -317,7 +318,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
           placeholder="Enter your question"
         />
         <Button
-          className="font-bold"
+          className="font-bold mr-3"
           type="submit"
           disabled={isLoading || !isHelpBtnEnable}
         >

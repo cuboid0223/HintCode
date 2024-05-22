@@ -141,66 +141,68 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
   };
 
   return (
-    <div className="relative flex flex-col overflow-hidden">
+    <div className="relative flex flex-col ">
       {/* TABs */}
       <AnimatePresence>
         <Tabs
           value={problemTab}
           onValueChange={handleProblemTabChange}
           defaultValue="description"
-          className="flex-1 flex flex-col items-stretch overflow-y-auto overflow-x-hidden"
+          className="flex-1 flex flex-col items-stretch overflow-hidden "
         >
-          <TabsList className="self-start p-0 pt-1 ">
+          <TabsList className="p-0 pt-3 h-fit flex justify-start ">
             <TabsTrigger
               value="description"
-              className="rounded-t-lg text-gray-400 h-full !shadow-none"
+              className="rounded-t-lg text-gray-400  !shadow-none "
             >
               問題描述
             </TabsTrigger>
             <TabsTrigger
               value="getHelp"
-              className="rounded-t-lg text-gray-400  h-full !shadow-none"
+              className="rounded-t-lg text-gray-400  !shadow-none"
             >
               提示
             </TabsTrigger>
           </TabsList>
 
-          {/* 程式題目敘述區 */}
+          <div className="overflow-y-auto overflow-x-hidden">
+            {/* 程式題目敘述區 */}
 
-          {problemTab === "description" && (
-            <motion.div
-              className="flex-1 flex"
-              key={problemTab}
-              initial={{ x: -5, opacity: 1 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 5, opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              layout
-            >
-              <ProblemDescription problem={problem} _solved={_solved} />
-            </motion.div>
-          )}
+            {problemTab === "description" && (
+              <motion.div
+                className="flex-1 flex"
+                key={problemTab}
+                initial={{ x: -5, opacity: 1 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 5, opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                layout
+              >
+                <ProblemDescription problem={problem} _solved={_solved} />
+              </motion.div>
+            )}
 
-          {/* GPT 提示區 */}
-          {problemTab === "getHelp" && (
-            <motion.div
-              className="flex-1 flex "
-              key={problemTab}
-              initial={{ x: 5, opacity: 1 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -5, opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              layout
-              layoutScroll
-            >
-              <ProblemHelp
-                problem={problem}
-                threadId={threadId}
-                messages={messages}
-                setMessages={setMessages}
-              />
-            </motion.div>
-          )}
+            {/* GPT 提示區 */}
+            {problemTab === "getHelp" && (
+              <motion.div
+                className="flex-1 flex "
+                key={problemTab}
+                initial={{ x: 5, opacity: 1 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -5, opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                layout
+                layoutScroll
+              >
+                <ProblemHelp
+                  problem={problem}
+                  threadId={threadId}
+                  messages={messages}
+                  setMessages={setMessages}
+                />
+              </motion.div>
+            )}
+          </div>
         </Tabs>
       </AnimatePresence>
     </div>

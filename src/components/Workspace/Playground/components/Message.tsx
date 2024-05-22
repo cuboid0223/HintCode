@@ -38,7 +38,9 @@ const UserMessage = ({ text, code, theme }: UserMessageProps) => {
   };
 
   return (
-    <Card className={`h-fit  p-2 justify-self-end text-white`}>
+    <Card
+      className={`h-fit max-w-2xl p-2 justify-self-end text-white overflow-x-auto `}
+    >
       <CustomMarkdown theme={theme}>
         {`~~~py\n ${handleCodeFromText(text)}\n~~~`}
       </CustomMarkdown>
@@ -48,7 +50,7 @@ const UserMessage = ({ text, code, theme }: UserMessageProps) => {
 
 const AssistantMessage = ({ text, code, theme }: AssistantMessageProps) => {
   return (
-    <Card className={`h-fit max-w-xl text-white  p-2 bg-green-600`}>
+    <Card className={`h-fit max-w-2xl text-white  p-2 bg-green-600`}>
       <CustomMarkdown theme={theme}>{text}</CustomMarkdown>
     </Card>
   );
