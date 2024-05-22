@@ -33,6 +33,12 @@ import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { toast } from "react-toastify";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { MessageProps } from "./ProblemTab";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type ProblemHelpProps = {
   problem: Problem;
@@ -317,13 +323,26 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
           onChange={(e) => setUserInput(e.target.value)}
           placeholder="Enter your question"
         />
-        <Button
-          className="font-bold mr-3"
-          type="submit"
-          disabled={isLoading || !isHelpBtnEnable}
-        >
-          {isLoading ? <RingLoader color="#36d7b7" size={27} /> : "請求幫助"}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button
+                className="font-bold mr-3"
+                type="submit"
+                disabled={isLoading || !isHelpBtnEnable}
+              >
+                {isLoading ? (
+                  <RingLoader color="#36d7b7" size={27} />
+                ) : (
+                  "請求幫助"
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {isHelpBtnEnable ? "" : <p>需要按下執行按鈕</p>}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </form>
     </section>
   );
