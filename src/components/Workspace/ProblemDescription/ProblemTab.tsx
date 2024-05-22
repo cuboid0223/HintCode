@@ -18,6 +18,13 @@ type ProblemTabProps = {
   _solved: boolean;
 };
 
+export type MessageProps = {
+  role: "user" | "assistant" | "code";
+  text?: string;
+  theme?: string;
+  code?: string;
+};
+
 const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
   const [user] = useAuthState(auth);
   const { resolvedTheme } = useTheme();
@@ -60,13 +67,11 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
         const userRef = doc(firestore, "users", user?.uid);
         const problemRef = doc(userRef, "problems", problem.id);
 
-        // 设置文档数据
         const problemData = {
           id: problem.id,
           threadId: id,
         };
 
-        // 使用 setDoc 方法设置文档数据
         await setDoc(problemRef, problemData);
         console.log("Problem document created successfully!");
       } catch (error) {
@@ -103,6 +108,33 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
     };
     checkAndCreateProblemDocument();
   }, [threadId, user, problem.id]);
+
+  useEffect(() => {
+    const getMessages = async () => {
+      if (!threadId) return;
+      // console.log("threadId from getMessages ", threadId);
+      const messages = await fetch(
+        `/api/assistants/threads/${threadId}/messages`,
+        {
+          method: "GET",
+        }
+      );
+      const msgs = await messages.json();
+      console.log(msgs);
+      // console.log(messages.data[1].role);
+      // console.log(messages.data[0].content[0].text.value);
+      let temp = [] as MessageProps[];
+      msgs.data.forEach((msg) => {
+        temp.push({
+          role: msg.role,
+          text: msg.content[0].text.value,
+        });
+      });
+      setMessages(temp.reverse());
+    };
+
+    getMessages();
+  }, [threadId]);
 
   const handleProblemTabChange = (value: string) => {
     setProblemTab(value);

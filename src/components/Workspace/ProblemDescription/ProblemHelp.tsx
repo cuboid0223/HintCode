@@ -32,13 +32,7 @@ import { RingLoader } from "react-spinners";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { toast } from "react-toastify";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
-
-type MessageProps = {
-  role: "user" | "assistant" | "code";
-  text?: string;
-  theme?: string;
-  code?: string;
-};
+import { MessageProps } from "./ProblemTab";
 
 type ProblemHelpProps = {
   problem: Problem;
@@ -274,33 +268,6 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  useEffect(() => {
-    const getMessages = async () => {
-      if (!threadId) return;
-      // console.log("threadId from getMessages ", threadId);
-      const messages = await fetch(
-        `/api/assistants/threads/${threadId}/messages`,
-        {
-          method: "GET",
-        }
-      );
-      const msgs = await messages.json();
-      console.log(msgs);
-      // console.log(messages.data[1].role);
-      // console.log(messages.data[0].content[0].text.value);
-      let temp = [] as MessageProps[];
-      msgs.data.forEach((msg) => {
-        temp.push({
-          role: msg.role,
-          text: msg.content[0].text.value,
-        });
-      });
-      setMessages(temp.reverse());
-    };
-
-    getMessages();
-  }, [threadId]);
 
   const swapPairs = (arr: MessageProps[]) => {
     // 複製原陣列，以免修改原陣列
