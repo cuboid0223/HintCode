@@ -32,7 +32,10 @@ const CustomMarkdown: React.FC<CustomMarkdownType> = ({ theme, children }) => {
               {String(children).replace(/"/g, "").replace(/\\n/g, "\n").trim()}
             </SyntaxHighlighter>
           ) : (
-            <code {...rest} className={className}>
+            <code
+              {...rest}
+              className="text-white dark:text-black bg-gray-400 px-1  "
+            >
               {children}
             </code>
           );

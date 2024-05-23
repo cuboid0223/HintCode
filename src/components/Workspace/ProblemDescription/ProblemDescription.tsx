@@ -332,7 +332,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
               blockquote({ className, ...rest }) {
                 return (
                   <blockquote
-                    className="mb-3 border-l-4 p-3 pl-6  bg-gray-300 dark:bg-gray-400 rounded-md border-gray-400 dark:border-gray-300 "
+                    className="mb-3 border-l-4 p-3 pl-6  bg-gray-300 dark:bg-gray-400 rounded-md border-gray-400 dark:border-gray-300  text-gray-600"
                     {...rest}
                   ></blockquote>
                 );
@@ -359,7 +359,10 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
                     {children}
                   </SyntaxHighlighter>
                 ) : (
-                  <code {...rest} className="text-white bg-gray-400 px-1  ">
+                  <code
+                    {...rest}
+                    className="text-white dark:text-black bg-gray-400 px-1  "
+                  >
                     {children}
                   </code>
                 );

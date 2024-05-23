@@ -39,6 +39,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import OrbitControlText from "@/components/OrbitControlText";
 
 type ProblemHelpProps = {
   problem: Problem;
@@ -293,7 +294,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
 
   return (
     <section className="flex-1 px-5 flex flex-col">
-      {messages.length === 0 && <div>你可以先把能想到的全打上去</div>}
+      {messages.length === 0 && <OrbitControlText />}
       {/* GPT output */}
       <div className="flex-1">
         <div className="grid gap-4 justify-items-stretch overflow-y-auto">
