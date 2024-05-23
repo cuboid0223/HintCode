@@ -50,8 +50,12 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
           >
             <div className="flex flex-wrap items-center gap-y-4">
               <div
-                className={`font-medium items-center transition-all focus:outline-none inline-flex  relative whitespace-nowrap
-										${activeTestCaseId === index ? "text-black dark:text-white" : "text-gray-300"}
+                className={` font-medium items-center transition-all focus:outline-none inline-flex  relative whitespace-nowrap
+										${
+                      activeTestCaseId === index
+                        ? "text-black  dark:text-white"
+                        : "text-gray-300 opacity-60"
+                    }
 									`}
               >
                 {submissionsData?.[index]?.status.id === 3 ? (
