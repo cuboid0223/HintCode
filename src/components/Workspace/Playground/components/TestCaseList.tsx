@@ -33,6 +33,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
       (data) => data?.status.id !== 3
     );
     if (!wrongSubmissionId) {
+      console.log("all pass");
       setActiveTestCaseId(0);
     } else {
       setActiveTestCaseId(wrongSubmissionId);
@@ -82,7 +83,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
         <CardContent>
           <CardDescription className="font-bold mb-2">輸入:</CardDescription>
           <div className="bg-background  p-2 rounded-lg mb-2">
-            {problem.examples[activeTestCaseId].inputText}
+            {problem.examples[activeTestCaseId]?.inputText}
           </div>
           <CardDescription className="font-bold mb-2">
             預期輸出:
@@ -90,7 +91,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
           <div
             className="bg-background p-2 rounded-lg"
             dangerouslySetInnerHTML={{
-              __html: problem.examples[activeTestCaseId].outputText.replace(
+              __html: problem.examples[activeTestCaseId]?.outputText.replace(
                 /\n/g,
                 "<br>"
               ),
@@ -108,7 +109,9 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               <div className="bg-background p-2 rounded-lg">
                 <HighlightedDiff
                   output={submissionsData[activeTestCaseId]?.stdout}
-                  expectedOutput={problem.examples[activeTestCaseId].outputText}
+                  expectedOutput={
+                    problem.examples[activeTestCaseId]?.outputText
+                  }
                   diffMode={problem.diffmode}
                   addedHidden
                 />
@@ -120,7 +123,9 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               <div className="bg-background p-2 rounded-lg">
                 <HighlightedDiff
                   output={submissionsData[activeTestCaseId]?.stdout}
-                  expectedOutput={problem.examples[activeTestCaseId].outputText}
+                  expectedOutput={
+                    problem.examples[activeTestCaseId]?.outputText
+                  }
                   diffMode={problem.diffmode}
                   removedHidden
                 />

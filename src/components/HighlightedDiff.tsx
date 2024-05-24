@@ -16,6 +16,7 @@ const HighlightedDiff: React.FC<HighlightedDiffProps> = ({
   removedHidden,
   diffMode = "word",
 }) => {
+  if (!output) return <p>{output}</p>;
   let diff;
   if (diffMode === "line") {
     diff = diffLines(output, expectedOutput);

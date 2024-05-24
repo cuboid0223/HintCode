@@ -85,7 +85,7 @@ export const greetNTimes: Problem = {
     {
       id: 3,
       inputText: "num = 0",
-      outputText: "NCHU",
+      outputText: "NCHU\n",
       explanation: "如果 num = 0, 所以我們印出 `NCHU`",
     },
   ],
