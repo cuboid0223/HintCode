@@ -53,7 +53,7 @@ const Playground: React.FC<PlaygroundProps> = ({
     useRecoilState(isHelpBtnEnableState);
 
   const [isLoading, setIsLoading] = useState(false);
-  let [userCode, setUserCode] = useState<string>(problem.starterCode.js);
+  let [userCode, setUserCode] = useState<string>(problem.starterCode.py);
 
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
   // const [submissionsData, setSubmissionsData] = useState<SubmissionData[]>([]);
