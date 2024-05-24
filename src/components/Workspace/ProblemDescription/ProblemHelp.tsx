@@ -66,6 +66,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [inputDisabled, setInputDisabled] = useState(false);
   const [finalText, setFinalText] = useState("");
+  const [isMounted, setIsMounted] = useState(false);
 
   const formatCode = (code: string) => {
     // 這裡要檢查 formatCode 到底輸出是啥
@@ -276,21 +277,15 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     scrollToBottom();
   }, [messages]);
 
-  const swapPairs = (arr: MessageProps[]) => {
-    // 複製原陣列，以免修改原陣列
-    let newArray = arr.slice();
+  useEffect(() => {
+    // https://stackoverflow.com/questions/73162551/how-to-solve-react-hydration-error-in-nextjs
+    // solve react-hydration-error
+    setIsMounted(true);
+  }, []);
 
-    // 迭代數組，每次跳兩個元素
-    for (let i = 0; i < newArray.length; i += 2) {
-      // 確保不會超出數組範圍
-      if (i + 1 < newArray.length) {
-        // 交換相鄰兩個元素
-        [newArray[i], newArray[i + 1]] = [newArray[i + 1], newArray[i]];
-      }
-    }
-
-    return newArray;
-  };
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <section className="flex-1 px-5 flex flex-col">
