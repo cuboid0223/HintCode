@@ -6,30 +6,15 @@ import React, {
   useRef,
   useState,
 } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useTheme } from "next-themes";
 import { Problem } from "@/utils/types/problem";
 import { useRecoilState } from "recoil";
 import { submissionsDataState } from "@/atoms/submissionsDataAtom";
 import { SubmissionData } from "@/utils/types/testcase";
-import { Button } from "@/components/ui/button";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import { Input } from "@/components/ui/input";
 import Message from "../Playground/components/Message";
 import { RingLoader } from "react-spinners";
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { toast } from "react-toastify";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { MessageProps } from "./ProblemTab";
@@ -40,17 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import OrbitControlText from "@/components/OrbitControlText";
-import {
-  doc,
-  setDoc,
-  getDoc,
-  collection,
-  getDocs,
-  addDoc,
-  serverTimestamp,
-  FieldValue,
-  Timestamp,
-} from "firebase/firestore";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { v4 as uuidv4 } from "uuid";

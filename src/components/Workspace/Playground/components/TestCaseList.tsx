@@ -33,9 +33,8 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
     const wrongSubmissionId = submissionsData.findIndex(
       (data) => data?.status.id !== 3
     );
-    console.log(wrongSubmissionId);
     if (wrongSubmissionId === -1) {
-      console.log("all pass");
+      // console.log("all pass");
       setActiveTestCaseId(0);
     } else {
       setActiveTestCaseId(wrongSubmissionId);

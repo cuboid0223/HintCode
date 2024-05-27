@@ -228,7 +228,12 @@ const Playground: React.FC<PlaygroundProps> = ({
 
   return (
     <div className="flex flex-col relative overflow-x-hidden ">
-      <PreferenceNav settings={settings} setSettings={setSettings} />
+      <PreferenceNav
+        settings={settings}
+        setSettings={setSettings}
+        problem={problem}
+        setUserCode={setUserCode}
+      />
 
       <Split
         className="flex-1 overflow-hidden"
