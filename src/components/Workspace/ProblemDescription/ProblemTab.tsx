@@ -11,16 +11,7 @@ import ProblemHelp from "./ProblemHelp";
 import { DBProblem, Problem } from "@/utils/types/problem";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  doc,
-  setDoc,
-  getDoc,
-  collection,
-  getDocs,
-  addDoc,
-  serverTimestamp,
-  FieldValue,
-} from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { SubmissionData } from "@/utils/types/testcase";
 
 type ProblemTabProps = {

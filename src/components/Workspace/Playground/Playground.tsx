@@ -245,15 +245,6 @@ const Playground: React.FC<PlaygroundProps> = ({
       >
         {/*　Playground */}
         <div className="w-full overflow-auto">
-          {/* <CodeMirror
-            value={userCode}
-            theme={vscodeDark}
-            onChange={onChange}
-            extensions={[
-              settings.selectedLang === "py" ? python() : javascript(),
-            ]}
-            style={{ fontSize: settings.fontSize }}
-          /> */}
           <Editor
             value={userCode}
             // height="90vh"
@@ -324,9 +315,6 @@ const Playground: React.FC<PlaygroundProps> = ({
                 >
                   {isAllTestCasesAccepted ? "Accepted" : "Wrong Answer"}
                 </h2>
-                {/* <pre className="text-sm text-muted-foreground ml-3">
-                  Runtime: {data.time} ms
-                </pre> */}
               </div>
               {submissionsData.length === 0 ? (
                 <h2 className="text-white">沒有測試結果</h2>

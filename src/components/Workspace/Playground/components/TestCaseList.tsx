@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 type TestCaseListProps = {
   problem: Problem;
   submissionsData?: SubmissionData[];
+  isAllTestCasesAccepted: boolean;
 };
 
 const TestCaseList: React.FC<TestCaseListProps> = ({
@@ -32,7 +33,8 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
     const wrongSubmissionId = submissionsData.findIndex(
       (data) => data?.status.id !== 3
     );
-    if (!wrongSubmissionId) {
+    console.log(wrongSubmissionId);
+    if (wrongSubmissionId === -1) {
       console.log("all pass");
       setActiveTestCaseId(0);
     } else {
