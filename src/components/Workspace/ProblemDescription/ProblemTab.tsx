@@ -11,7 +11,16 @@ import ProblemHelp from "./ProblemHelp";
 import { DBProblem, Problem } from "@/utils/types/problem";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  getDocs,
+  addDoc,
+  serverTimestamp,
+  FieldValue,
+} from "firebase/firestore";
 
 type ProblemTabProps = {
   problem: Problem;
@@ -19,17 +28,20 @@ type ProblemTabProps = {
 };
 
 export type MessageProps = {
+  id?: string;
   role: "user" | "assistant" | "code";
   text?: string;
   theme?: string;
   code?: string;
+  created_at: number;
+  // 把以前資料刪掉 不要給我都是 ?
 };
 
 const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
   const [user] = useAuthState(auth);
   const { resolvedTheme } = useTheme();
   const [threadId, setThreadId] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<MessageProps[]>([]);
   const [problemTab, setProblemTab] = useState("description");
 
   // create a new threadID when chat component created
@@ -58,6 +70,10 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
       return false;
     }
   }
+
+  const handleProblemTabChange = (value: string) => {
+    setProblemTab(value);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -126,8 +142,10 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
       let temp = [] as MessageProps[];
       msgs.data.forEach((msg) => {
         temp.push({
+          id: msg.id,
           role: msg.role,
           text: msg.content[0].text.value,
+          created_at: msg.created_at,
         });
       });
       setMessages(temp.reverse());
@@ -135,10 +153,6 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
 
     getMessages();
   }, [threadId]);
-
-  const handleProblemTabChange = (value: string) => {
-    setProblemTab(value);
-  };
 
   return (
     <div className="relative flex flex-col ">

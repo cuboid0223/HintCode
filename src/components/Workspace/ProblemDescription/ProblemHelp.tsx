@@ -40,7 +40,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import OrbitControlText from "@/components/OrbitControlText";
-
+import {
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  getDocs,
+  addDoc,
+  serverTimestamp,
+  FieldValue,
+  Timestamp,
+} from "firebase/firestore";
+import { auth, firestore } from "@/firebase/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { v4 as uuidv4 } from "uuid";
 type ProblemHelpProps = {
   problem: Problem;
   threadId: string;
@@ -57,6 +70,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const lang = localStorage.getItem("selectedLang");
   const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
   const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
+  const [user] = useAuthState(auth);
   const { resolvedTheme } = useTheme();
   const [submissionsData] =
     useRecoilState<SubmissionData[]>(submissionsDataState);
@@ -67,6 +81,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const [inputDisabled, setInputDisabled] = useState(false);
   const [finalText, setFinalText] = useState("");
   const [isMounted, setIsMounted] = useState(false);
+  const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const formatCode = (code: string) => {
     // 這裡要檢查 formatCode 到底輸出是啥
@@ -101,6 +116,9 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   };
 
   const sendMessageToGPT = async (text: string) => {
+    if (!threadId) {
+      console.log("no thread id");
+    }
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
       {
@@ -145,6 +163,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
 
   // textCreated - create new assistant message
   const handleTextCreated = () => {
+    // assistant message 是先被建立的，在使用者傳程式碼之前，所以整個 array 需要 revert
     appendMessage("assistant", "");
   };
 
@@ -165,7 +184,13 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   */
   const appendMessage = (role: string, text: string) => {
     console.log(text);
-    setMessages((prevMessages) => [...prevMessages, { role, text }]);
+    setMessages(
+      (prevMessages) =>
+        [
+          ...prevMessages,
+          { role, text, id: uuidv4(), created_at: Timestamp.now().toMillis() },
+        ] as MessageProps[]
+    );
   };
 
   const appendToLastMessage = (text: string) => {
@@ -203,6 +228,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     e.preventDefault();
     setIsLoading(true);
     setIsHelpBtnEnable(false);
+    // *** submissionsData 需要丟進 firestore
     const wrongSubmissions = getWrongAnswerSubmissions(submissionsData);
     // if (!userInput.trim()) return;
     if (!latestTestCode || !wrongSubmissions) {
@@ -214,7 +240,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
       setIsLoading(false);
       return;
     }
-    // 空白鍵不要動
+    // 請不要試著更改下方所有字串，例如 格式化
     const promptTemplate = `
     題目如下:
 =========problem statement start========
@@ -246,8 +272,10 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     setMessages((prevMessages) => [
       ...prevMessages,
       {
+        id: uuidv4(), // 先用一個假的騙過 typescript (傳送給GPT後會產生一個)
         role: "user",
         code: latestTestCode,
+        created_at: Timestamp.now().toMillis(),
         text: `
 ==========code start==========
 
@@ -263,12 +291,61 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     scrollToBottom();
     setIsLoading(false);
   };
+
   /*
     =======================
     =====  useEffect ======
     =======================
   */
-  // automitcally scroll to bottom of chat
+
+  useEffect(() => {
+    const updateMessagesFromFirestore = async (msgs: MessageProps[]) => {
+      if (!user || !problem || !msgs) return;
+      console.log(msgs);
+      try {
+        const promises = msgs.map((msg) => {
+          if (!msg.id) {
+            console.log("no msg id");
+            throw new Error("no msg id");
+          }
+          const msgRef = doc(
+            firestore,
+            "users",
+            user.uid,
+            "problems",
+            problem.id,
+            "messages",
+            msg.id
+          );
+          return setDoc(msgRef, msg);
+        });
+
+        await Promise.all(promises);
+        msgs.forEach((msg) => console.log(`Document added with ID: ${msg.id}`));
+      } catch (e) {
+        console.error("Error adding documents: ", e);
+      }
+    };
+
+    // 如果 messages 更改，清除之前的timeout
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    // 設置新的timeout来延遲更新
+    debounceTimeout.current = setTimeout(() => {
+      updateMessagesFromFirestore(messages);
+    }, 2000);
+
+    // 清理函數，如果原件卸載則清除timeout
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, [messages, user, problem]);
+
+  // automatically scroll to bottom of chat
   const messagesEndRef = useRef(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -277,16 +354,15 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     scrollToBottom();
   }, [messages]);
 
+  // solve react-hydration-error
   useEffect(() => {
     // https://stackoverflow.com/questions/73162551/how-to-solve-react-hydration-error-in-nextjs
-    // solve react-hydration-error
     setIsMounted(true);
   }, []);
 
   if (!isMounted) {
     return null;
   }
-
   return (
     <section className="flex-1 px-5 flex flex-col">
       {messages.length === 0 && <OrbitControlText />}
@@ -321,18 +397,16 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
         />
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>
-              <Button
-                className="font-bold mr-3"
-                type="submit"
-                disabled={isLoading || !isHelpBtnEnable}
-              >
-                {isLoading ? (
-                  <RingLoader color="#36d7b7" size={27} />
-                ) : (
-                  "請求幫助"
-                )}
-              </Button>
+            <TooltipTrigger
+              className="font-bold mr-3"
+              type="submit"
+              disabled={isLoading || !isHelpBtnEnable}
+            >
+              {isLoading ? (
+                <RingLoader color="#36d7b7" size={27} />
+              ) : (
+                "請求幫助"
+              )}
             </TooltipTrigger>
             <TooltipContent>
               {isHelpBtnEnable ? "" : <p>需要按下執行按鈕</p>}
