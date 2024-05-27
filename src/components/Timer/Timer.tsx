@@ -1,19 +1,29 @@
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiRefreshCcw } from "react-icons/fi";
-
+import { useRecoilState } from "recoil";
+import {
+  submissionsDataState,
+  SubmissionsDataState,
+} from "@/atoms/submissionsDataAtom";
+import { auth, firestore } from "@/firebase/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 type TimerProps = {};
 
 const Timer: React.FC<TimerProps> = () => {
+  //   let intervalId: NodeJS.Timeout;
+  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
+  const [user] = useAuthState(auth);
+  const [submissionsData, setSubmissionsData] =
+    useRecoilState<SubmissionsDataState>(submissionsDataState);
   const params = useParams<{ pid: string }>();
-  //   const [elapsedTime, setElapsedTime] = useLocalStorage("elapsed-time", 0);
   const [elapsedTime, setElapsedTime] = useState(
     () => Number(localStorage.getItem(`elapsed-time-${params.pid}`)) || 0
-  );
+  ); // 單位是秒
 
   const [showTimer, setShowTimer] = useState<boolean>(true);
-  const [time, setTime] = useState<number>(0); // 單位是秒
 
   const formatTime = (time: number): string => {
     const hours = Math.floor(time / 3600);
@@ -25,22 +35,52 @@ const Timer: React.FC<TimerProps> = () => {
     }:${seconds < 10 ? "0" + seconds : seconds}`;
   };
 
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
+  const stopTimer = () => {
+    if (intervalIdRef.current) {
+      clearInterval(intervalIdRef.current);
+    }
+  };
 
+  useEffect(() => {
     if (showTimer) {
-      intervalId = setInterval(() => {
+      intervalIdRef.current = setInterval(() => {
         setElapsedTime((prevTime) => prevTime + 1);
       }, 1000);
     }
 
-    return () => clearInterval(intervalId);
+    return () => stopTimer();
   }, [showTimer]);
 
   useEffect(() => {
-    // 更新 elapsedTime 到 localStorage
+    const handleAcceptedTime = (submissionsData: SubmissionsDataState) => {
+      if (!user) return;
+      const isAllTestCasesAccepted = submissionsData.submissions.every(
+        // 全部測資都通過 isAllTestCasesAccepted 才會是 true
+        (submission) => submission?.status.id === 3
+      );
+      // 更新 elapsedTime 到 localStorage
+      if (submissionsData.problemId === params.pid && isAllTestCasesAccepted) {
+        // acceptedTime: number
+        // elapsedTime: number
+        const userProblemRef = doc(
+          firestore,
+          "users",
+          user.uid,
+          "problems",
+          params.pid
+        );
+        stopTimer();
+        return updateDoc(userProblemRef, {
+          acceptedTime: Number(
+            localStorage.getItem(`elapsed-time-${params.pid}`)
+          ),
+        });
+      }
+    };
+
+    handleAcceptedTime(submissionsData);
     localStorage.setItem(`elapsed-time-${params.pid}`, String(elapsedTime));
-  }, [elapsedTime]);
+  }, [elapsedTime, submissionsData, params.pid]);
 
   return (
     <div>

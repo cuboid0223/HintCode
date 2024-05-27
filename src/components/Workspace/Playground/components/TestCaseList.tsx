@@ -7,17 +7,21 @@ import { CircleSlash, CircleCheckBig } from "lucide-react";
 import Diff from "../../../HighlightedDiff";
 import HighlightedDiff from "../../../HighlightedDiff";
 import { Button } from "@/components/ui/button";
+import {
+  submissionsDataState,
+  SubmissionsDataState,
+} from "@/atoms/submissionsDataAtom";
+import { useRecoilState } from "recoil";
 type TestCaseListProps = {
   problem: Problem;
-  submissionsData?: SubmissionData[];
+
   isAllTestCasesAccepted: boolean;
 };
 
-const TestCaseList: React.FC<TestCaseListProps> = ({
-  problem,
-  submissionsData,
-}) => {
+const TestCaseList: React.FC<TestCaseListProps> = ({ problem }) => {
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
+  const [{ submissions }, setSubmissionsData] =
+    useRecoilState<SubmissionsDataState>(submissionsDataState);
 
   // automitcally scroll to bottom of testCase
   const testCaseEndRef = useRef(null);
@@ -29,8 +33,8 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
   }, [activeTestCaseId]);
 
   useEffect(() => {
-    if (!submissionsData) return;
-    const wrongSubmissionId = submissionsData.findIndex(
+    if (!submissions) return;
+    const wrongSubmissionId = submissions.findIndex(
       (data) => data?.status.id !== 3
     );
     if (wrongSubmissionId === -1) {
@@ -39,7 +43,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
     } else {
       setActiveTestCaseId(wrongSubmissionId);
     }
-  }, [submissionsData]);
+  }, [submissions]);
 
   return (
     <div className="grow overflow-y-auto">
@@ -60,12 +64,12 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
                     }
 									`}
               >
-                {submissionsData?.[index]?.status.id === 3 ? (
+                {submissions?.[index]?.status.id === 3 ? (
                   <CircleCheckBig color="green" className="mr-2 " />
                 ) : (
                   <CircleSlash
                     color="red"
-                    className={submissionsData ? "mr-2" : "hidden"}
+                    className={submissions ? "mr-2" : "hidden"}
                   />
                 )}
                 <p
@@ -100,7 +104,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
           ></div>
         </CardContent>
       </Card>
-      {submissionsData && (
+      {submissions && (
         <>
           <Card className=" py-1 dark:border-4 border-none	">
             <CardContent>
@@ -109,7 +113,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               </CardDescription>
               <div className="bg-background p-2 rounded-lg">
                 <HighlightedDiff
-                  output={submissionsData[activeTestCaseId]?.stdout}
+                  output={submissions[activeTestCaseId]?.stdout}
                   expectedOutput={
                     problem.examples[activeTestCaseId]?.outputText
                   }
@@ -123,7 +127,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               </CardDescription>
               <div className="bg-background p-2 rounded-lg">
                 <HighlightedDiff
-                  output={submissionsData[activeTestCaseId]?.stdout}
+                  output={submissions[activeTestCaseId]?.stdout}
                   expectedOutput={
                     problem.examples[activeTestCaseId]?.outputText
                   }

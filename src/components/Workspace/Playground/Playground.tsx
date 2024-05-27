@@ -15,15 +15,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TestCaseList from "./components/TestCaseList";
 import { SubmissionData } from "@/utils/types/testcase";
 import { useRecoilState } from "recoil";
-import { submissionsDataState } from "@/atoms/submissionsDataAtom";
+import {
+  submissionsDataState,
+  SubmissionsDataState,
+} from "@/atoms/submissionsDataAtom";
 // import { mockSubmissions } from "@/mockProblems/mockSubmissions";
 import { useTheme } from "next-themes";
 import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  IsHelpBtnEnableState,
-  isHelpBtnEnableState,
-} from "@/atoms/isHelpBtnEnableAtom";
+import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 
 type PlaygroundProps = {
   problem: Problem;
@@ -48,7 +48,7 @@ const Playground: React.FC<PlaygroundProps> = ({
   const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
   const { resolvedTheme } = useTheme();
   const [submissionsData, setSubmissionsData] =
-    useRecoilState<SubmissionData[]>(submissionsDataState);
+    useRecoilState<SubmissionsDataState>(submissionsDataState);
   const [isHelpBtnEnable, setIsHelpBtnEnable] =
     useRecoilState(isHelpBtnEnableState);
 
@@ -56,14 +56,12 @@ const Playground: React.FC<PlaygroundProps> = ({
   let [userCode, setUserCode] = useState<string>(problem.starterCode.py);
 
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
-  // const [submissionsData, setSubmissionsData] = useState<SubmissionData[]>([]);
-  // const [submissionError, setSubmissionError] = useState<SubmissionData | null>(
-  //   null
-  // );
-  const isAllTestCasesAccepted = submissionsData.every(
+
+  const isAllTestCasesAccepted = submissionsData.submissions.every(
     // 全部測資都通過 isAllTestCasesAccepted 才會是 true
     (submission) => submission?.status.id === 3
   );
+
   const [testTab, setTestTab] = useState("testcase");
   const [settings, setSettings] = useState<Settings>({
     fontSize: fontSize,
@@ -150,7 +148,7 @@ const Playground: React.FC<PlaygroundProps> = ({
       `latest-test-${selectedLang}-code`,
       JSON.stringify(userCode)
     );
-    setSubmissionsData(temp);
+    setSubmissionsData({ problemId: problem.id, submissions: temp });
     // setSubmissionsData(mockSubmissions);
     setTestTab("testResult");
     setIsLoading(false);
