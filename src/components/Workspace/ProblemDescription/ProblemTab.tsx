@@ -21,6 +21,7 @@ import {
   serverTimestamp,
   FieldValue,
 } from "firebase/firestore";
+import { SubmissionData } from "@/utils/types/testcase";
 
 type ProblemTabProps = {
   problem: Problem;
@@ -34,6 +35,7 @@ export type MessageProps = {
   theme?: string;
   code?: string;
   created_at: number;
+  submissions?: SubmissionData[]; // 只有 role 為 user 才有
   // 把以前資料刪掉 不要給我都是 ?
 };
 

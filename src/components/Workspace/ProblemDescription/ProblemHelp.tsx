@@ -272,10 +272,11 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     setMessages((prevMessages) => [
       ...prevMessages,
       {
-        id: uuidv4(), // 先用一個假的騙過 typescript (傳送給GPT後會產生一個)
+        id: uuidv4(),
         role: "user",
         code: latestTestCode,
         created_at: Timestamp.now().toMillis(),
+        submisstions: submissionsData,
         text: `
 ==========code start==========
 
