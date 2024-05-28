@@ -44,12 +44,14 @@ const Timer: React.FC<TimerProps> = () => {
 
   const stopTimer = () => {
     if (intervalIdRef.current) {
-      console.log("時間停止");
+      //   console.log("時間停止");
       clearInterval(intervalIdRef.current);
+      intervalIdRef.current = null;
     }
   };
 
   const startTimer = () => {
+    stopTimer();
     intervalIdRef.current = setInterval(() => {
       setElapsedTime((prevTime) => prevTime + 1);
     }, 1000);
@@ -66,32 +68,30 @@ const Timer: React.FC<TimerProps> = () => {
     const getAcceptedTime = async () => {
       const docSnap = await getDoc(userProblemRef);
       if (docSnap.exists() && docSnap.data().acceptedTime) {
-        console.log("Document data:", docSnap.data());
+        // console.log("Document data:", docSnap.data());
         return docSnap.data().acceptedTime;
       } else {
-        console.log("No such document!");
+        // console.log("No such document!");
+        return false;
       }
-
-      return false;
     };
 
     const checkAcceptedTime = async () => {
+      stopTimer();
       const acceptedTime = await getAcceptedTime();
       if (acceptedTime) {
-        console.log(`有時間 ${acceptedTime}`);
+        // console.log(`有時間 ${acceptedTime}`);
         setElapsedTime(acceptedTime);
       } else {
-        console.log("開始時間");
+        // console.log("開始時間");
         startTimer();
       }
     };
 
     checkAcceptedTime();
 
-    // startTimer();
-
     return () => stopTimer();
-  }, []);
+  }, [userProblemRef]);
 
   useEffect(() => {
     const handleAcceptedTime = ({

@@ -58,6 +58,7 @@ const Signup: React.FC<SignupProps> = () => {
         dislikedProblems: [],
         solvedProblems: [],
         starredProblems: [],
+        totalScore: 0,
       };
       await setDoc(userRef, userData);
 
