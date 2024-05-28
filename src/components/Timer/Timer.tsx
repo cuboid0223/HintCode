@@ -58,32 +58,37 @@ const Timer: React.FC<TimerProps> = () => {
   const resetTimer = () => {
     stopTimer();
     setElapsedTime(0);
-    startTimer();
+    localStorage.setItem(`elapsed-time-${params.pid}`, "0");
+    if (!intervalIdRef) startTimer();
   };
 
   useEffect(() => {
-    // const isAcceptedTimeExist = async () => {
-    //   const docSnap = await getDoc(userProblemRef);
-    //   if (docSnap.exists() && docSnap.data().acceptedTime) {
-    //     console.log("Document data:", docSnap.data());
-    //     return true;
-    //   } else {
-    //     console.log("No such document!");
-    //   }
+    const getAcceptedTime = async () => {
+      const docSnap = await getDoc(userProblemRef);
+      if (docSnap.exists() && docSnap.data().acceptedTime) {
+        console.log("Document data:", docSnap.data());
+        return docSnap.data().acceptedTime;
+      } else {
+        console.log("No such document!");
+      }
 
-    //   return false;
-    // };
+      return false;
+    };
 
-    // const checkAcceptedTime = async () => {
-    //   const isExist = await isAcceptedTimeExist();
-    //   if (!isExist) {
-    //     console.log("開始時間");
-    //   }
-    // };
+    const checkAcceptedTime = async () => {
+      const acceptedTime = await getAcceptedTime();
+      if (acceptedTime) {
+        console.log(`有時間 ${acceptedTime}`);
+        setElapsedTime(acceptedTime);
+      } else {
+        console.log("開始時間");
+        startTimer();
+      }
+    };
 
-    // checkAcceptedTime();
+    checkAcceptedTime();
 
-    startTimer();
+    // startTimer();
 
     return () => stopTimer();
   }, []);
