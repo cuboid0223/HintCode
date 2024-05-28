@@ -47,7 +47,7 @@ const Playground: React.FC<PlaygroundProps> = ({
   const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
   const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
   const { resolvedTheme } = useTheme();
-  const [submissionsData, setSubmissionsData] =
+  const [{ submissions }, setSubmissionsData] =
     useRecoilState<SubmissionsDataState>(submissionsDataState);
   const [isHelpBtnEnable, setIsHelpBtnEnable] =
     useRecoilState(isHelpBtnEnableState);
@@ -57,7 +57,7 @@ const Playground: React.FC<PlaygroundProps> = ({
 
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
 
-  const isAllTestCasesAccepted = submissionsData.submissions.every(
+  const isAllTestCasesAccepted = submissions.every(
     // 全部測資都通過 isAllTestCasesAccepted 才會是 true
     (submission) => submission?.status.id === 3
   );
@@ -155,9 +155,9 @@ const Playground: React.FC<PlaygroundProps> = ({
   };
 
   useEffect(() => {
-    console.log("submissionsData: ", submissionsData);
+    console.log("submissions: ", submissions);
     console.log("isAllTestCasesAccepted: ", isAllTestCasesAccepted);
-  }, [submissionsData, isAllTestCasesAccepted]);
+  }, [submissions, isAllTestCasesAccepted]);
 
   const handleJSTestCase = () => {
     try {
@@ -314,31 +314,28 @@ const Playground: React.FC<PlaygroundProps> = ({
                     // id: 3 是 Accepted
                     isAllTestCasesAccepted ? "text-green-600" : "text-red-600"
                   }  
-                  ${submissionsData.length === 0 && "hidden"}`}
+                  ${submissions.length === 0 && "hidden"}`}
                 >
                   {isAllTestCasesAccepted ? "Accepted" : "Wrong Answer"}
                 </h2>
               </div>
-              {submissionsData.length === 0 ? (
+              {submissions.length === 0 ? (
                 <h2 className="text-white">沒有測試結果</h2>
               ) : (
                 <>
-                  {submissionsData[0]?.stderr && (
+                  {submissions[0]?.stderr && (
                     <div className="bg-red-100 rounded-lg">
                       <div
                         className="text-rose-500 p-6"
                         dangerouslySetInnerHTML={{
-                          __html: submissionsData[0].stderr,
+                          __html: submissions[0].stderr,
                         }}
                       />
                     </div>
                   )}
 
-                  {!submissionsData[0]?.stderr && (
-                    <TestCaseList
-                      problem={problem}
-                      submissionsData={submissionsData}
-                    />
+                  {!submissions[0]?.stderr && (
+                    <TestCaseList problem={problem} isTestResult />
                   )}
                 </>
               )}

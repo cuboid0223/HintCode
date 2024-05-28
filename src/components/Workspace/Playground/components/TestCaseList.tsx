@@ -14,11 +14,13 @@ import {
 import { useRecoilState } from "recoil";
 type TestCaseListProps = {
   problem: Problem;
-
-  isAllTestCasesAccepted: boolean;
+  isTestResult: boolean;
 };
 
-const TestCaseList: React.FC<TestCaseListProps> = ({ problem }) => {
+const TestCaseList: React.FC<TestCaseListProps> = ({
+  problem,
+  isTestResult, // 用在測試結果區而非測試資料區
+}) => {
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
   const [{ submissions }, setSubmissionsData] =
     useRecoilState<SubmissionsDataState>(submissionsDataState);
@@ -28,6 +30,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({ problem }) => {
   const scrollToBottom = () => {
     testCaseEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
   useEffect(() => {
     scrollToBottom();
   }, [activeTestCaseId]);
@@ -59,19 +62,18 @@ const TestCaseList: React.FC<TestCaseListProps> = ({ problem }) => {
                 className={` font-medium items-center transition-all focus:outline-none inline-flex  relative whitespace-nowrap
 										${
                       activeTestCaseId === index
-                        ? "text-black  dark:text-white"
+                        ? "text-black dark:text-white"
                         : "text-gray-300 opacity-60"
                     }
 									`}
               >
-                {submissions?.[index]?.status.id === 3 ? (
-                  <CircleCheckBig color="green" className="mr-2 " />
-                ) : (
-                  <CircleSlash
-                    color="red"
-                    className={submissions ? "mr-2" : "hidden"}
+                {isTestResult && (
+                  <SubmissionStatusIcon
+                    index={index}
+                    submissions={submissions}
                   />
                 )}
+
                 <p
                   className={`${
                     activeTestCaseId === index ? "font-bold " : ""
@@ -104,7 +106,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({ problem }) => {
           ></div>
         </CardContent>
       </Card>
-      {submissions && (
+      {isTestResult && (
         <>
           <Card className=" py-1 dark:border-4 border-none	">
             <CardContent>
@@ -143,6 +145,26 @@ const TestCaseList: React.FC<TestCaseListProps> = ({ problem }) => {
       )}
     </div>
   );
+};
+
+const SubmissionStatusIcon = ({
+  index,
+  submissions,
+}: {
+  index: number;
+  submissions: SubmissionData[];
+}) => {
+  if (submissions?.length !== 0) {
+    const statusId = submissions?.[index]?.status.id;
+    if (statusId === 3) {
+      return <CircleCheckBig color="green" className="mr-2 " />;
+    } else {
+      return (
+        <CircleSlash color="red" className={submissions ? "mr-2" : "hidden"} />
+      );
+    }
+  }
+  return null; // 如果不符合任何條件，返回 null
 };
 
 export default TestCaseList;
