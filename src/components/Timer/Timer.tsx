@@ -9,7 +9,7 @@ import {
 } from "@/atoms/submissionsDataAtom";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 type TimerProps = {};
 
 const Timer: React.FC<TimerProps> = () => {
@@ -24,6 +24,13 @@ const Timer: React.FC<TimerProps> = () => {
   ); // 單位是秒
 
   const [showTimer, setShowTimer] = useState<boolean>(true);
+  const userProblemRef = doc(
+    firestore,
+    "users",
+    user?.uid,
+    "problems",
+    params.pid
+  );
 
   const formatTime = (time: number): string => {
     const hours = Math.floor(time / 3600);
@@ -37,38 +44,63 @@ const Timer: React.FC<TimerProps> = () => {
 
   const stopTimer = () => {
     if (intervalIdRef.current) {
+      console.log("時間停止");
       clearInterval(intervalIdRef.current);
     }
   };
 
+  const startTimer = () => {
+    intervalIdRef.current = setInterval(() => {
+      setElapsedTime((prevTime) => prevTime + 1);
+    }, 1000);
+  };
+
+  const resetTimer = () => {
+    stopTimer();
+    setElapsedTime(0);
+    startTimer();
+  };
+
   useEffect(() => {
-    if (showTimer) {
-      intervalIdRef.current = setInterval(() => {
-        setElapsedTime((prevTime) => prevTime + 1);
-      }, 1000);
-    }
+    // const isAcceptedTimeExist = async () => {
+    //   const docSnap = await getDoc(userProblemRef);
+    //   if (docSnap.exists() && docSnap.data().acceptedTime) {
+    //     console.log("Document data:", docSnap.data());
+    //     return true;
+    //   } else {
+    //     console.log("No such document!");
+    //   }
+
+    //   return false;
+    // };
+
+    // const checkAcceptedTime = async () => {
+    //   const isExist = await isAcceptedTimeExist();
+    //   if (!isExist) {
+    //     console.log("開始時間");
+    //   }
+    // };
+
+    // checkAcceptedTime();
+
+    startTimer();
 
     return () => stopTimer();
-  }, [showTimer]);
+  }, []);
 
   useEffect(() => {
-    const handleAcceptedTime = (submissionsData: SubmissionsDataState) => {
+    const handleAcceptedTime = ({
+      submissions,
+      problemId,
+    }: SubmissionsDataState) => {
+      // 用來記錄每題的通過時間(秒)
       if (!user) return;
-      const isAllTestCasesAccepted = submissionsData.submissions.every(
+      const isAllTestCasesAccepted = submissions.every(
         // 全部測資都通過 isAllTestCasesAccepted 才會是 true
         (submission) => submission?.status.id === 3
       );
       // 更新 elapsedTime 到 localStorage
-      if (submissionsData.problemId === params.pid && isAllTestCasesAccepted) {
-        // acceptedTime: number
-        // elapsedTime: number
-        const userProblemRef = doc(
-          firestore,
-          "users",
-          user.uid,
-          "problems",
-          params.pid
-        );
+      if (problemId === params.pid && isAllTestCasesAccepted) {
         stopTimer();
         return updateDoc(userProblemRef, {
           acceptedTime: Number(
@@ -77,10 +109,13 @@ const Timer: React.FC<TimerProps> = () => {
         });
       }
     };
+    // check is there acceptedTime attr exists
+    // if exist -> stopTimer();
+    // else ->　handleAcceptedTime
 
     handleAcceptedTime(submissionsData);
     localStorage.setItem(`elapsed-time-${params.pid}`, String(elapsedTime));
-  }, [elapsedTime, submissionsData, params.pid]);
+  }, [elapsedTime, submissionsData, params.pid, user, userProblemRef]);
 
   return (
     <div>
@@ -115,6 +150,7 @@ const Timer: React.FC<TimerProps> = () => {
           </svg>
         </div>
       )}
+      <button onClick={resetTimer}>Reset Timer</button>
     </div>
   );
 };
