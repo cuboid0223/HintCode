@@ -30,6 +30,7 @@ const Login: React.FC<LoginProps> = () => {
         inputs.password
       );
       if (!newUser) return;
+
       router.push("/");
     } catch (error: any) {
       toast.error(error.message, {

@@ -3,15 +3,27 @@ import { auth, firestore } from "../../firebase/firebase";
 import { useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-
 import { doc, setDoc, collection } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { Content } from "@radix-ui/react-dropdown-menu";
 import { v4 as uuidv4 } from "uuid";
-import { threadId } from "worker_threads";
+import { createAvatar } from "@dicebear/core";
+import { thumbs } from "@dicebear/collection";
 
 type SignupProps = {};
+const avatar = createAvatar(thumbs, {
+  // ... options
+  seed: "Felix",
+  flip: true,
+  size: 32,
+  backgroundColor: ["b6e3f4", "c0aede", "d1d4f9", "ffd5dc", "ffdfbf"],
+  backgroundType: ["gradientLinear", "solid"],
+  randomizeIds: true,
+  eyesColor: ["000000", "ffffff"],
+  shapeColor: ["0a5b83", "1c799f", "69d2e7", "f1f4dc"],
+  radius: 50,
+});
+const svg = avatar.toString();
 
 const Signup: React.FC<SignupProps> = () => {
   const setAuthModalState = useSetRecoilState(authModalState);
@@ -44,7 +56,6 @@ const Signup: React.FC<SignupProps> = () => {
         inputs.password
       );
       if (!newUser) return;
-
       const userRef = doc(firestore, "users", newUser.user.uid);
       const problemId = uuidv4();
 
@@ -59,6 +70,7 @@ const Signup: React.FC<SignupProps> = () => {
         solvedProblems: [],
         starredProblems: [],
         totalScore: 0,
+        thumbnail: svg,
       };
       await setDoc(userRef, userData);
 

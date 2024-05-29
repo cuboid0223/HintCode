@@ -1,7 +1,7 @@
 "use client";
-import { auth } from "../../firebase/firebase";
+import { auth, firestore } from "../../firebase/firebase";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Logout from "../Buttons/Logout";
 import { useSetRecoilState } from "recoil";
@@ -27,13 +27,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { User } from "@/utils/types/global";
 type TopbarProps = {
   isProblemPage?: boolean;
 };
 
 const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
   const [user] = useAuthState(auth);
+  const [userData, setUserData] = useState<User | null>(null);
+
   const setAuthModalState = useSetRecoilState(authModalState);
   const router = useRouter();
   const { setTheme } = useTheme();
@@ -63,6 +66,22 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
       router.push(`/problems/${nextProblemKey}`);
     }
   };
+
+  useEffect(() => {
+    const handleUserData = async () => {
+      if (!user) return;
+      const userRef = doc(firestore, "users", user?.uid);
+      const docSnap = await getDoc(userRef);
+      if (docSnap.exists()) {
+        console.log("User data:", docSnap.data());
+        setUserData(docSnap.data() as User);
+      } else {
+        console.log("No User data!");
+        return false;
+      }
+    };
+    handleUserData();
+  }, [user]);
 
   return (
     <nav className="relative flex h-[50px] w-full shrink-0 items-center px-5 dark:bg-dark-layer-1 bg-card text-dark-gray-7">
@@ -143,19 +162,26 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
           {user && isProblemPage && <Timer />}
           {user && (
             <div className="cursor-pointer group relative">
-              <Image
+              {/* <Image
                 src="/avatar.png"
                 alt="Avatar"
                 width={30}
                 height={30}
                 className="rounded-full"
-              />
+              /> */}
+              <div
+                className="rounded-full"
+                dangerouslySetInnerHTML={{
+                  __html: userData?.thumbnail || "",
+                }}
+              ></div>
+
               <div
                 className="absolute top-10 left-2/4 -translate-x-2/4  mx-auto bg-dark-layer-1 text-brand-orange p-2 rounded shadow-lg 
 								z-40 group-hover:scale-100 scale-0 
 								transition-all duration-300 ease-in-out"
               >
-                <p className="text-sm">{user.email}</p>
+                <p className="text-sm">{userData?.email}</p>
               </div>
             </div>
           )}
