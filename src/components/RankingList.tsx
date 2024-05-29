@@ -15,6 +15,7 @@ import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { firestore } from "@/firebase/firebase";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
+import { useTheme } from "next-themes";
 
 const Trophy = dynamic(
   () => import("@/components/canvas/Models").then((mod) => mod.Trophy),
@@ -64,7 +65,7 @@ const Common = dynamic(
 
 function RankingList() {
   const [top10UsersData, setTop10UsersData] = useState<User[]>([]);
-
+  const { resolvedTheme } = useTheme();
   //   const handleRanking = () => {
   //     const rankedUsers = users.sort((a, b) => b.totalScore - a.totalScore);
   //     // 取前10名
@@ -107,7 +108,7 @@ function RankingList() {
             <TableHead className="p-0 text-center">總分</TableHead>
             <TableHead className="p-0 text-center">名字</TableHead>
             <TableHead className="p-0 text-center">Avatar</TableHead>
-            <TableHead className="p-0 text-center">排名</TableHead>
+            <TableHead className="p-0 text-center w-[100px]">排名</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -124,13 +125,13 @@ function RankingList() {
                   }}
                 ></div>
               </TableCell>
-              <TableCell className=" font-bold text-xl">{id + 1}</TableCell>
+              <TableCell className="font-bold text-xl">{id + 1}</TableCell>
               {/* <TableCell className="text-right">{user.totalAmount}</TableCell> */}
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <div className="h-40 w-[700px] bg-red-500">
+      <div className="h-40 w-[700px]">
         <View orbit className="relative h-full sm:h-48 sm:w-full">
           <Suspense fallback={null}>
             <Trophy
@@ -138,7 +139,7 @@ function RankingList() {
               position={[0, -1.6, 0]}
               rotation={[0.0, -0.3, 0]}
             />
-            <Common color={"black"} />
+            <Common color={resolvedTheme === "dark" ? "#030711" : "#f6f6f6"} />
           </Suspense>
         </View>
       </div>
@@ -146,7 +147,7 @@ function RankingList() {
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader>
           <TableRow>
-            <TableHead className="p-0 text-center">排名</TableHead>
+            <TableHead className="p-0 text-center w-[100px]">排名</TableHead>
             <TableHead className="p-0 text-center">Avatar</TableHead>
             <TableHead className="p-0 text-center">名字</TableHead>
             <TableHead className="p-0 text-center">總分</TableHead>

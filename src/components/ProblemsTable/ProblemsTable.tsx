@@ -60,61 +60,36 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
             problem.difficulty === "Easy"
               ? "text-dark-green-s"
               : problem.difficulty === "Medium"
-              ? "text-dark-yellow"
-              : "text-dark-pink";
+                ? "text-dark-yellow"
+                : "text-dark-pink";
           return (
-            <TableRow
-              className={`text-foreground ${
-                idx % 2 == 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""
-              }`}
+            <Link
               key={problem.id}
+              className="block cursor-pointer  "
+              target="_blank"
+              href={`/problems/${problem.id}`}
             >
-              <TableCell className=" font-medium whitespace-nowrap text-dark-green-s">
-                {solvedProblems.includes(problem.id) && (
-                  <BsCheckCircle fontSize={"18"} width="18" />
-                )}
-              </TableCell>
-              <TableCell className=" dark:text-white">
-                {problem.link ? (
-                  <Link
-                    href={problem.link}
-                    className="hover:text-blue-600 cursor-pointer"
-                    target="_blank"
-                  >
-                    {problem.title}
-                  </Link>
-                ) : (
-                  <Link
-                    className="hover:text-blue-600 cursor-pointer"
-                    href={`/problems/${problem.id}`}
-                  >
-                    {problem.title}
-                  </Link>
-                )}
-              </TableCell>
-              <TableCell className={` ${difficultyColor} `}>
-                {problem.difficulty}
-              </TableCell>
-              <TableCell className={"dark:text-white"}>
-                {problem.category}
-              </TableCell>
-              {/* <TableCell className={"px-6 py-4"}>
-                {problem.videoId ? (
-                  <AiFillYoutube
-                    fontSize={"28"}
-                    className="cursor-pointer hover:text-red-600"
-                    onClick={() =>
-                      setYoutubePlayer({
-                        isOpen: true,
-                        videoId: problem.videoId as string,
-                      })
-                    }
-                  />
-                ) : (
-                  <p className="text-gray-400">Coming soon</p>
-                )}
-              </TableCell> */}
-            </TableRow>
+              <TableRow
+                className={`grid grid-cols-4 gap-4 text-foreground   ${
+                  idx % 2 == 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""
+                }`}
+              >
+                <TableCell className=" font-medium whitespace-nowrap text-dark-green-s">
+                  {solvedProblems.includes(problem.id) && (
+                    <BsCheckCircle fontSize={"18"} width="18" />
+                  )}
+                </TableCell>
+                <TableCell className=" dark:text-white">
+                  <p className="hover:text-blue-600">{problem.title}</p>
+                </TableCell>
+                <TableCell className={` ${difficultyColor} `}>
+                  {problem.difficulty}
+                </TableCell>
+                <TableCell className={"dark:text-white"}>
+                  {problem.category}
+                </TableCell>
+              </TableRow>
+            </Link>
           );
         })}
       </TableBody>

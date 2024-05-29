@@ -29,11 +29,11 @@ export default function Home() {
             </div>
           )}
           {/* 問題列表 */}
-          <Table>
+          <Table className="my-6 ">
             {!loadingProblems && (
               <>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="grid grid-cols-4 gap-4">
                     <TableHead className="w-[100px]">Status</TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead>Difficulty</TableHead>
@@ -46,7 +46,7 @@ export default function Home() {
             <ProblemsTable setLoadingProblems={setLoadingProblems} />
           </Table>
           {/* 排行榜 */}
-          <RankingList />
+          {/* <RankingList /> */}
         </div>
       </main>
     </>
