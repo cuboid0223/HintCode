@@ -99,23 +99,23 @@ function RankingList() {
   }, []);
 
   return (
-    <div className="flex">
-      <Table>
+    <div className="flex items-center">
+      <Table className="flex-none text-center">
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-        <TableHeader>
-          <TableRow>
-            <TableHead>總分</TableHead>
-            <TableHead>名字</TableHead>
-            <TableHead>Avatar</TableHead>
-            <TableHead className="w-[100px]">排名</TableHead>
+        <TableHeader className="">
+          <TableRow className="">
+            <TableHead className="p-0 text-center">總分</TableHead>
+            <TableHead className="p-0 text-center">名字</TableHead>
+            <TableHead className="p-0 text-center">Avatar</TableHead>
+            <TableHead className="p-0 text-center">排名</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {top10UsersData.slice(0, 5).map((user, id) => (
             <TableRow key={user.uid}>
-              <TableCell>{user.totalScore}</TableCell>
-              <TableCell className="font-medium">{user.displayName}</TableCell>
-              <TableCell>
+              <TableCell className="">{user.totalScore}</TableCell>
+              <TableCell className="">{user.displayName}</TableCell>
+              <TableCell className="flex place-content-center">
                 <div
                   className="rounded-full"
                   dangerouslySetInnerHTML={{
@@ -124,42 +124,42 @@ function RankingList() {
                   }}
                 ></div>
               </TableCell>
-              <TableCell className="font-medium">{id + 1}</TableCell>
+              <TableCell className=" font-bold text-xl">{id + 1}</TableCell>
               {/* <TableCell className="text-right">{user.totalAmount}</TableCell> */}
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <div className="h-24 w-24 bg-red-500">
-        <View orbit className="relative h-full  sm:h-48 sm:w-full">
+      <div className="h-40 w-[700px] bg-red-500">
+        <View orbit className="relative h-full sm:h-48 sm:w-full">
           <Suspense fallback={null}>
             <Trophy
               scale={1}
               position={[0, -1.6, 0]}
               rotation={[0.0, -0.3, 0]}
             />
-            <Common color={"transparent"} />
+            <Common color={"black"} />
           </Suspense>
         </View>
       </div>
-      <Table>
+      <Table className="flex-none text-center">
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">排名</TableHead>
-            <TableHead>Avatar</TableHead>
-            <TableHead>名字</TableHead>
-            <TableHead>總分</TableHead>
+            <TableHead className="p-0 text-center">排名</TableHead>
+            <TableHead className="p-0 text-center">Avatar</TableHead>
+            <TableHead className="p-0 text-center">名字</TableHead>
+            <TableHead className="p-0 text-center">總分</TableHead>
             {/* <TableHead className="text-right">Amount</TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody>
           {top10UsersData.slice(5, 10).map((user, id) => (
             <TableRow key={user.uid}>
-              <TableCell className="font-medium">{id + 6}</TableCell>
+              <TableCell className="font-bold text-xl">{id + 6}</TableCell>
               <TableCell>
                 <div
-                  className="rounded-full"
+                  className="flex place-content-center"
                   dangerouslySetInnerHTML={{
                     __html: user?.thumbnail || "",
                   }}
