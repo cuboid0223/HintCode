@@ -8,6 +8,7 @@ import "@/styles/prism.css";
 
 import ToastProvider from "@/providers/ToastProvider";
 import Topbar from "@/components/Topbar/Topbar";
+import { SceneLayout } from "@/components/dom/SceneLayout";
 
 export const metadata: Metadata = {
   title: "HintCode",
@@ -60,7 +61,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ToastProvider>{children}</ToastProvider>
+            <ToastProvider>
+              <SceneLayout>{children}</SceneLayout>
+            </ToastProvider>
           </ThemeProvider>
         </RecoilRootProvider>
       </body>
