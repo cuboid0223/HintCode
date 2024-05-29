@@ -17,8 +17,8 @@ export function CustomText3D(props) {
     <>
       <Text
         // color='red'
-        fontSize={8}
-        maxWidth={200}
+        fontSize={2}
+        maxWidth={23}
         lineHeight={1}
         letterSpacing={0.02}
         textAlign={"left"}
@@ -29,7 +29,7 @@ export function CustomText3D(props) {
         strokeWidth={"2.5%"}
         strokeColor="#ffffff"
       >
-        hello world!
+        Just go ahead and type in whatever comes to mind.
       </Text>
     </>
   );

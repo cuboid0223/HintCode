@@ -340,11 +340,13 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     return null;
   }
   return (
-    <section className="flex-1 px-5 flex flex-col">
+    <section className="flex-1 px-5 flex flex-col ">
       {messages.length === 0 && <OrbitControlText />}
       {/* GPT output */}
       <div className="flex-1">
-        <div className="grid gap-4 justify-items-stretch overflow-y-auto">
+        <div
+          className={`grid gap-4 justify-items-stretch ${messages.length === 0 ? "overflow-hidden" : "overflow-y-auto"} `}
+        >
           {messages.map((msg, index) => (
             <Message
               key={index}
@@ -356,11 +358,10 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
           ))}
         </div>
       </div>
-
-      <div className="mb-24" ref={messagesEndRef} />
+      {messages.length !== 0 && <div className="mb-24" ref={messagesEndRef} />}
 
       <form
-        className="absolute bottom-0 left-0 p-3 flex w-full items-center space-x-2 bg-card "
+        className="absolute bottom-0 left-0 p-3 z-50 flex w-full items-center space-x-2 bg-card "
         onSubmit={handleSubmit}
       >
         <Input

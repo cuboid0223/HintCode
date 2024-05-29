@@ -1,6 +1,18 @@
-// import React from "react";
-// import { Text } from "@react-three/drei";
-// import { Canvas } from "@react-three/fiber";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+import { View } from "./canvas/View";
+
+const CustomText3D = dynamic(
+  () => import("@/components/canvas/Models").then((mod) => mod.CustomText3D),
+  {
+    ssr: false,
+  }
+);
+const Common = dynamic(
+  () => import("@/components/canvas/View").then((mod) => mod.Common),
+  { ssr: false }
+);
+
 function OrbitControlText() {
   return (
     // <Canvas>
@@ -15,7 +27,14 @@ function OrbitControlText() {
     //     <meshNormalMaterial />
     //   </Text>
     // </Canvas>
-    <p>Just go ahead and type in whatever comes to mind.</p>
+    <div className="overflow-hidden">
+      <View orbit className="relative h-screen sm:w-full overflow-hidden">
+        <Suspense fallback={null}>
+          <CustomText3D />
+          <Common color={"#000000"} />
+        </Suspense>
+      </View>
+    </div>
   );
 }
 
