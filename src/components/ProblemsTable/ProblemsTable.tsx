@@ -70,7 +70,7 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
               href={`/problems/${problem.id}`}
             >
               <TableRow
-                className={`grid grid-cols-4 gap-4 text-foreground   ${
+                className={`grid grid-cols-6 gap-4 text-foreground   ${
                   idx % 2 == 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""
                 }`}
               >
@@ -84,6 +84,12 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
                 </TableCell>
                 <TableCell className={` ${difficultyColor} `}>
                   {problem.difficulty}
+                </TableCell>
+                <TableCell className={"dark:text-white"}>
+                  {problem.category}
+                </TableCell>
+                <TableCell className={"dark:text-white"}>
+                  {problem.score}
                 </TableCell>
                 <TableCell className={"dark:text-white"}>
                   {problem.category}

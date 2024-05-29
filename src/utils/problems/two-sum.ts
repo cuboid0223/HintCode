@@ -93,7 +93,7 @@ export const twoSum: Problem = {
       outputText: "[0,1]",
     },
   ],
-  handlerFunction: handlerTwoSum,
+  // handlerFunction: handlerTwoSum,
   starterCode: {
     py: starterCode_py,
     js: starterCode_js,

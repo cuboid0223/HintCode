@@ -11,16 +11,16 @@ import {
   submissionsDataState,
   SubmissionsDataState,
 } from "@/atoms/submissionsDataAtom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { problemDataState } from "@/atoms/ProblemData";
 type TestCaseListProps = {
-  problem: Problem;
   isTestResult: boolean;
 };
 
 const TestCaseList: React.FC<TestCaseListProps> = ({
-  problem,
   isTestResult, // 用在測試結果區而非測試資料區
 }) => {
+  const problem = useRecoilValue(problemDataState);
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
   const [{ submissions }, setSubmissionsData] =
     useRecoilState<SubmissionsDataState>(submissionsDataState);

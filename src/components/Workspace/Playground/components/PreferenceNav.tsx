@@ -36,20 +36,21 @@ import CustomMarkdown from "@/components/CustomMarkdown";
 import { useTheme } from "next-themes";
 import { Problem } from "@/utils/types/problem";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import { problemDataState } from "@/atoms/ProblemData";
+import { useRecoilValue } from "recoil";
 
 type PreferenceNavProps = {
   settings: Settings;
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
-  problem: Problem;
   setUserCode: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const PreferenceNav: React.FC<PreferenceNavProps> = ({
   setSettings,
   settings,
-  problem,
   setUserCode,
 }) => {
+  const problem = useRecoilValue(problemDataState);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const { resolvedTheme } = useTheme();
   const [selectedLang, setSelectedLang] = useLocalStorage("selectedLang", "py");

@@ -11,6 +11,10 @@ export type Example = {
 // local problem data
 export type Problem = {
   id: string;
+  category: string;
+  difficulty: string;
+  likes: number;
+  dislikes: number;
   title: string;
   diffmode: string;
   problemStatement: string;
@@ -29,16 +33,5 @@ export type Problem = {
     [key: string]: string;
   };
   testCaseCode: TestCaseCode;
-};
-
-export type DBProblem = {
-  id: string;
-  title: string;
-  category: string;
-  difficulty: string;
-  likes: number;
-  dislikes: number;
-  order: number;
-  videoId?: string;
-  link?: string;
+  score: number;
 };

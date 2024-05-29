@@ -2,20 +2,20 @@ import { auth, firestore } from "../../../firebase/firebase";
 
 import { useAuthState } from "react-firebase-hooks/auth";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "next-themes";
 
 import ProblemDescription from "./ProblemDescription";
 import ProblemHelp from "./ProblemHelp";
 
-import { DBProblem, Problem } from "@/utils/types/problem";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { SubmissionData } from "@/utils/types/testcase";
+import { useRecoilValue } from "recoil";
+import { problemDataState } from "@/atoms/ProblemData";
 
 type ProblemTabProps = {
-  problem: Problem;
   _solved: boolean;
 };
 
@@ -30,7 +30,8 @@ export type MessageProps = {
   // 把以前資料刪掉 不要給我都是 ?
 };
 
-const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
+const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
+  const problem = useRecoilValue(problemDataState);
   const [user] = useAuthState(auth);
   const { resolvedTheme } = useTheme();
   const [threadId, setThreadId] = useState("");
@@ -185,7 +186,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
                 transition={{ duration: 0.5 }}
                 layout
               >
-                <ProblemDescription problem={problem} _solved={_solved} />
+                <ProblemDescription _solved={_solved} />
               </motion.div>
             )}
 
@@ -202,7 +203,6 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ problem, _solved }) => {
                 layoutScroll
               >
                 <ProblemHelp
-                  problem={problem}
                   threadId={threadId}
                   messages={messages}
                   setMessages={setMessages}

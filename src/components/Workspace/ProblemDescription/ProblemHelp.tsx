@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useTheme } from "next-themes";
 import { Problem } from "@/utils/types/problem";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { submissionsDataState } from "@/atoms/submissionsDataAtom";
 import { SubmissionData } from "@/utils/types/testcase";
 import { AssistantStream } from "openai/lib/AssistantStream";
@@ -29,19 +29,19 @@ import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { v4 as uuidv4 } from "uuid";
+import { problemDataState } from "@/atoms/ProblemData";
 type ProblemHelpProps = {
-  problem: Problem;
   threadId: string;
   messages: MessageProps[];
   setMessages: Dispatch<SetStateAction<MessageProps[]>>;
 };
 
 const ProblemHelp: React.FC<ProblemHelpProps> = ({
-  problem,
   threadId,
   messages,
   setMessages,
 }) => {
+  const problem = useRecoilValue(problemDataState);
   const lang = localStorage.getItem("selectedLang");
   const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
   const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼

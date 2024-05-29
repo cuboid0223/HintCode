@@ -2,9 +2,12 @@
 import Topbar from "@/components/Topbar/Topbar";
 import Workspace from "@/components/Workspace/Workspace";
 import useHasMounted from "../../../hooks/useHasMounted";
-
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { Problem } from "@/utils/types/problem";
-import React from "react";
+import React, { useEffect } from "react";
+import { firestore } from "@/firebase/firebase";
+import { useRecoilState } from "recoil";
+import { problemDataState } from "@/atoms/ProblemData";
 
 type ProblemPageProps = {
   problem: Problem;
@@ -12,13 +15,24 @@ type ProblemPageProps = {
 
 const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
   const hasMounted = useHasMounted();
+  const [problemData, setProblemData] = useRecoilState(problemDataState);
+
+  useEffect(() => {
+    // const addData = async () => {
+    //   const problemRef = doc(firestore, "problems", problem.id);
+    //   await setDoc(problemRef, problem);
+    // };
+    // addData();
+    // get problem data from firestore
+    // store in global state
+    setProblemData(problem);
+  }, [problem, setProblemData]);
 
   if (!hasMounted) return null;
-
   return (
     <div className="flex flex-col h-screen  overflow-hidden">
       <Topbar isProblemPage />
-      <Workspace problem={problem} />
+      <Workspace />
     </div>
   );
 };

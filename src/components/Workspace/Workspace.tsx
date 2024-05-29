@@ -1,19 +1,14 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Split from "react-split";
 
 import Playground from "./Playground/Playground";
-import { Problem } from "@/utils/types/problem";
 import Confetti from "react-confetti";
 import useWindowSize from "../../hooks/useWindowSize";
 import ProblemTab from "./ProblemDescription/ProblemTab";
 import { useTheme } from "next-themes";
 
-type WorkspaceProps = {
-  problem: Problem;
-};
-
-const Workspace: React.FC<WorkspaceProps> = ({ problem }) => {
+const Workspace = () => {
   const { resolvedTheme } = useTheme();
   const { width, height } = useWindowSize();
   const splitRef = useRef();
@@ -35,14 +30,10 @@ const Workspace: React.FC<WorkspaceProps> = ({ problem }) => {
       }}
     >
       {/* 左半 程式題目敘述區與 GPT 提示區 */}
-      <ProblemTab problem={problem} _solved={solved} />
+      <ProblemTab _solved={solved} />
 
       {/* 右半 程式碼輸入區與測試資料區 */}
-      <Playground
-        problem={problem}
-        setSuccess={setSuccess}
-        setSolved={setSolved}
-      />
+      <Playground setSuccess={setSuccess} setSolved={setSolved} />
       {/* 解題成功撒花 */}
       {success && (
         <Confetti

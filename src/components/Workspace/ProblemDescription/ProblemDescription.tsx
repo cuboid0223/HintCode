@@ -29,16 +29,15 @@ import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useRecoilValue } from "recoil";
+import { problemDataState } from "@/atoms/ProblemData";
 type ProblemDescriptionProps = {
-  problem: Problem;
   _solved: boolean;
 };
 
-const ProblemDescription: React.FC<ProblemDescriptionProps> = ({
-  problem,
-  _solved,
-}) => {
+const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ _solved }) => {
   const [user] = useAuthState(auth);
+  const problem = useRecoilValue(problemDataState);
   const { resolvedTheme } = useTheme();
   const { currentProblem, loading, problemDifficultyClass, setCurrentProblem } =
     useGetCurrentProblem(problem.id);
@@ -398,8 +397,8 @@ function useGetCurrentProblem(problemId: string) {
           problem.difficulty === "Easy"
             ? "bg-olive text-olive"
             : problem.difficulty === "Medium"
-            ? "bg-dark-yellow text-dark-yellow"
-            : " bg-dark-pink text-dark-pink"
+              ? "bg-dark-yellow text-dark-yellow"
+              : " bg-dark-pink text-dark-pink"
         );
       }
       setLoading(false);

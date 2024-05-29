@@ -14,7 +14,7 @@ import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TestCaseList from "./components/TestCaseList";
 import { SubmissionData } from "@/utils/types/testcase";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   submissionsDataState,
   SubmissionsDataState,
@@ -24,9 +24,9 @@ import { useTheme } from "next-themes";
 import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
+import { problemDataState } from "@/atoms/ProblemData";
 
 type PlaygroundProps = {
-  problem: Problem;
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
   setSolved: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -38,11 +38,8 @@ export type Settings = {
   selectedLang: "py" | "js";
 };
 
-const Playground: React.FC<PlaygroundProps> = ({
-  problem,
-  setSuccess,
-  setSolved,
-}) => {
+const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
+  const problem = useRecoilValue(problemDataState);
   const { id } = problem;
   const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
   const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
@@ -229,7 +226,6 @@ const Playground: React.FC<PlaygroundProps> = ({
       <PreferenceNav
         settings={settings}
         setSettings={setSettings}
-        problem={problem}
         setUserCode={setUserCode}
       />
 
@@ -302,7 +298,7 @@ const Playground: React.FC<PlaygroundProps> = ({
             {/* <ScrollArea className="flex bg-red-300"> */}
             <TabsContent value="testcase" className=" flex flex-col  px-3  ">
               {/* 測試資料區 */}
-              <TestCaseList problem={problem} />
+              <TestCaseList />
             </TabsContent>
             {/* </ScrollArea> */}
             <TabsContent value="testResult" className=" flex flex-col  px-3  ">
@@ -334,9 +330,7 @@ const Playground: React.FC<PlaygroundProps> = ({
                     </div>
                   )}
 
-                  {!submissions[0]?.stderr && (
-                    <TestCaseList problem={problem} isTestResult />
-                  )}
+                  {!submissions[0]?.stderr && <TestCaseList isTestResult />}
                 </>
               )}
             </TabsContent>
