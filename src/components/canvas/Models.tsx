@@ -12,7 +12,7 @@ export function Trophy(props) {
   return <primitive object={scene} {...props} />;
 }
 
-export function CustomText3D(props) {
+export function StrokeText3D(props) {
   return (
     <>
       <Text
