@@ -25,6 +25,7 @@ import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { problemDataState } from "@/atoms/ProblemData";
+import useGetUserProblems from "@/hooks/useGetUserProblems";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
@@ -40,6 +41,7 @@ export type Settings = {
 
 const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const problem = useRecoilValue(problemDataState);
+  const userProblems = useGetUserProblems();
   const { id } = problem;
   const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
   const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
@@ -146,6 +148,15 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     setIsLoading(false);
   };
 
+  const onChange = (value: string) => {
+    setUserCode(value);
+    localStorage.setItem(`${selectedLang}-code-${id}`, JSON.stringify(value));
+  };
+
+  const handleTestTabChange = (value: string) => {
+    setTestTab(value);
+  };
+
   useEffect(() => {
     // console.log("submissions: ", submissions);
     // console.log("isAllTestCasesAccepted: ", isAllTestCasesAccepted);
@@ -164,52 +175,24 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     handleIsAllTestCasesAccepted();
   }, [submissions]);
 
-  const handleJSTestCase = () => {
-    try {
-      // 將 userCode 字串從該位置開始一直到結尾的部分截取出來
-      userCode = userCode.slice(
-        userCode.indexOf(problem.starterFunctionName.js)
-      );
-      checkStarterFunctionName(userCode);
-      const cb = new Function(`return ${userCode}`)();
-      const handler = problems[id as string].handlerFunction;
+  useEffect(() => {
+    // 如果全部測資都通過且按了繳交按鈕 則重新計算使用者總分
 
-      if (typeof handler === "function") {
-        const isPassed = handler(cb);
-        if (isPassed) {
-          toast.success("恭喜! 通過所有測試資料!", {
-            position: "top-center",
-            autoClose: 3000,
-            theme: "dark",
-          });
-          setSuccess(true);
-          setTimeout(() => {
-            setSuccess(false);
-          }, 4000);
-        }
-        return isPassed;
-      }
-    } catch (error: any) {
-      console.log(error.message);
-      if (
-        error.message.startsWith(
-          "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:"
-        )
-      ) {
-        toast.error("Oops! One or more test cases failed", {
-          position: "top-center",
-          autoClose: 3000,
-          theme: "dark",
-        });
-      } else {
-        toast.error(error.message, {
-          position: "top-center",
-          autoClose: 3000,
-          theme: "dark",
+    const updateUserScore = async () => {
+      if (!user) return;
+      const userSolvedProblems = userProblems.filter(
+        (p) => p.is_solved === true
+      );
+      if (isAllTestCasesAccepted) {
+        const userRef = doc(firestore, "users", user.uid);
+        await updateDoc(userRef, {
+          // reduce 加總陣列裡的分數
+          totalScore: userSolvedProblems.reduce((acc, p) => acc + p.score, 0),
         });
       }
-    }
-  };
+    };
+    updateUserScore();
+  }, [isAllTestCasesAccepted, userProblems, user]);
 
   useEffect(() => {
     const code = localStorage.getItem(`${selectedLang}-code-${id}`);
@@ -219,15 +202,6 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
       setUserCode(problem.starterCode.js);
     }
   }, [id, user, problem.starterCode, selectedLang]);
-
-  const onChange = (value: string) => {
-    setUserCode(value);
-    localStorage.setItem(`${selectedLang}-code-${id}`, JSON.stringify(value));
-  };
-
-  const handleTestTabChange = (value: string) => {
-    setTestTab(value);
-  };
 
   return (
     <div className="flex flex-col relative overflow-x-hidden ">

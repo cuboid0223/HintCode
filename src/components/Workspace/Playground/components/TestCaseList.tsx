@@ -14,7 +14,7 @@ import {
 import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 type TestCaseListProps = {
-  isTestResult: boolean;
+  isTestResult?: boolean;
 };
 
 const TestCaseList: React.FC<TestCaseListProps> = ({

@@ -11,7 +11,14 @@ import {
 } from "@/components/ui/table";
 import { User } from "@/utils/types/global";
 import { mockUsersData } from "@/mockProblems/mockUsersData";
-import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { firestore } from "@/firebase/firebase";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
@@ -46,18 +53,27 @@ function RankingList() {
     // 按 score 降序排序並限制結果數量為 10
     const usersRef = collection(firestore, "users");
     const q = query(usersRef, orderBy("totalScore", "desc"), limit(10));
-    const querySnapshot = await getDocs(q);
-    const usersList = querySnapshot.docs.map((doc) => ({
-      ...doc.data(),
-    }));
+    const usersList = [];
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        usersList.push(doc.data());
+      });
 
-    // 如果獲取到的用戶數少於 10，使用 mock data 補足
-    if (usersList.length < 10) {
-      const additionalUsers = mockUsersData.slice(0, 10 - usersList.length);
-      setTop10UsersData([...usersList, ...additionalUsers]);
-    } else {
-      setTop10UsersData(usersList);
-    }
+      // 如果獲取到的用戶數少於 10，使用 mock data 補足
+      if (usersList.length < 10) {
+        const additionalUsers = mockUsersData.slice(0, 10 - usersList.length);
+        setTop10UsersData([...usersList, ...additionalUsers]);
+      } else {
+        setTop10UsersData(usersList);
+      }
+      // console.log("usersList: ", JSON.stringify(usersList));
+    });
+    // console.log(unsubscribe());
+
+    // const querySnapshot = await getDocs(q);
+    // const usersList = querySnapshot.docs.map((doc) => ({
+    //   ...doc.data(),
+    // }));
   };
 
   useEffect(() => {
