@@ -1,7 +1,7 @@
 import CircleSkeleton from "@/components/Skeletons/CircleSkeleton";
 import RectangleSkeleton from "@/components/Skeletons/RectangleSkeleton";
 import { auth, firestore } from "../../../firebase/firebase";
-import { DBProblem, Problem } from "@/utils/types/problem";
+import { Problem } from "@/utils/types/problem";
 import {
   arrayRemove,
   arrayUnion,

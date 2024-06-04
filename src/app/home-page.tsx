@@ -33,13 +33,13 @@ export default function Home() {
             {!loadingProblems && (
               <>
                 <TableHeader>
-                  <TableRow className="grid grid-cols-6 gap-4">
+                  <TableRow className="grid grid-cols-5 gap-4">
                     <TableHead className="w-[100px]">狀態</TableHead>
                     <TableHead>標題</TableHead>
                     <TableHead>難易度</TableHead>
                     <TableHead>類別</TableHead>
-                    <TableHead>滿分</TableHead>
-                    <TableHead>分數</TableHead>
+                    <TableHead>得分</TableHead>
+
                     {/* <TableHead className="text-right">Solution</TableHead> */}
                   </TableRow>
                 </TableHeader>

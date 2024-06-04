@@ -8,7 +8,7 @@ export type Example = {
   img?: string;
 };
 
-// local problem data
+// firestore problem data
 export type Problem = {
   id: string;
   category: string;
@@ -35,4 +35,14 @@ export type Problem = {
   };
   testCaseCode: TestCaseCode;
   score: number;
+};
+
+// user -> problem
+export type UserProblem = {
+  id: string;
+  threadId: string;
+  acceptedTime: number;
+  remainTimes: number;
+  score: number;
+  is_solved: boolean;
 };
