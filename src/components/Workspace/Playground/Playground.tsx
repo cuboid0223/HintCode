@@ -51,13 +51,8 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   let [userCode, setUserCode] = useState<string>(problem.starterCode.py);
-
+  const [isAllTestCasesAccepted, setIsAllTestCasesAccepted] = useState(false);
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
-
-  const isAllTestCasesAccepted = submissions.every(
-    // 全部測資都通過 isAllTestCasesAccepted 才會是 true
-    (submission) => submission?.status.id === 3
-  );
 
   const [testTab, setTestTab] = useState("testcase");
   const [settings, setSettings] = useState<Settings>({
@@ -84,7 +79,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     }
   };
 
-  const handleExecution = async (executionMode: "submit" | "run") => {
+  const handleExecution = async () => {
     if (!user) {
       toast.error("登入後才能執行程式", {
         position: "top-center",
@@ -152,9 +147,22 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   };
 
   useEffect(() => {
-    console.log("submissions: ", submissions);
-    console.log("isAllTestCasesAccepted: ", isAllTestCasesAccepted);
-  }, [submissions, isAllTestCasesAccepted]);
+    // console.log("submissions: ", submissions);
+    // console.log("isAllTestCasesAccepted: ", isAllTestCasesAccepted);
+    const handleIsAllTestCasesAccepted = () => {
+      if (submissions.length === 0) {
+        setIsAllTestCasesAccepted(false);
+        return;
+      }
+      const isAllTestCasesAccepted = submissions.every(
+        // 全部測資都通過 isAllTestCasesAccepted 才會是 true
+        (submission) => submission?.status.id === 3
+      );
+
+      setIsAllTestCasesAccepted(isAllTestCasesAccepted);
+    };
+    handleIsAllTestCasesAccepted();
+  }, [submissions]);
 
   const handleJSTestCase = () => {
     try {
@@ -337,7 +345,12 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
           </Tabs>
         </div>
       </Split>
-      <EditorFooter handleExecution={handleExecution} isLoading={isLoading} />
+      <EditorFooter
+        handleExecution={handleExecution}
+        isLoading={isLoading}
+        isAllTestCasesAccepted={isAllTestCasesAccepted}
+        setSuccess={setSuccess}
+      />
     </div>
   );
 };

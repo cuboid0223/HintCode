@@ -21,6 +21,7 @@ export type Problem = {
   examples: Example[];
   // constraints: string;
   order: number;
+  totalTimes: number;
   starterCode: {
     py: string;
     js: string;

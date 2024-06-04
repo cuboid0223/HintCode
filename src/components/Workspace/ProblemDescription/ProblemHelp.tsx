@@ -39,8 +39,6 @@ type ProblemHelpProps = {
   setMessages: Dispatch<SetStateAction<MessageProps[]>>;
 };
 
-const REMAIN_TIMES = 20;
-
 const ProblemHelp: React.FC<ProblemHelpProps> = ({
   threadId,
   messages,
@@ -67,6 +65,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const [graduallyPrompt, setGraduallyPrompt] = useState(
     "請不要給我答案，請隱晦的提示我，讓我反思問題所在"
   );
+  const [isHelpBtnHidden, setIsHelpBtnHidden] = useState(false);
   const formatCode = (code: string) => {
     // 這裡要檢查 formatCode 到底輸出是啥
     return code
@@ -330,28 +329,39 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     };
   }, [messages, user, problem]);
 
-  // update remaining times
+  // update remaining times and gradually prompt
   useEffect(() => {
     const updateRemainingTimes = async () => {
       await updateDoc(problemRef, {
-        remainTimes: REMAIN_TIMES - messages.length / 2,
+        remainTimes: problem.totalTimes - messages.length / 2,
       });
-      setRemainTimes(REMAIN_TIMES - messages.length / 2);
+      setRemainTimes(problem.totalTimes - messages.length / 2);
     };
+    // 20 -> 12 + 6 + 2
     const updateGraduallyPrompt = () => {
-      let times = REMAIN_TIMES - messages.length / 2;
-      if (times >= 12) {
+      let times = problem.totalTimes - messages.length / 2;
+      if (12 <= times && times <= problem.totalTimes) {
         setGraduallyPrompt("請不要給我答案，請隱晦的提示我，讓我反思問題所在");
       } else if (3 <= times && times <= 11) {
         setGraduallyPrompt("請不要給我答案，請明確的提示我，讓我反思問題所在");
-      } else {
+      } else if (0 < times && times <= 2) {
         // times <= 2
-        setGraduallyPrompt("請給我答案，並詳細解釋答案，並提出反思問題");
+        setGraduallyPrompt("請給我答案，詳細解釋答案，並提出反思問題");
+      } else {
+        // times <= 0 隱藏幫助按鈕
+        setIsHelpBtnHidden(true);
       }
     };
+    const updateUserProblemScore = async () => {
+      await updateDoc(problemRef, {
+        score: remainTimes * (problem.score / problem.totalTimes),
+      });
+    };
+
     updateRemainingTimes();
+    updateUserProblemScore();
     updateGraduallyPrompt();
-  }, [messages, problemRef]);
+  }, [messages, problemRef, problem, remainTimes]);
 
   // automatically scroll to bottom of chat
   const messagesEndRef = useRef(null);
@@ -402,13 +412,14 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
           disabled // 目前先關起來
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
-          placeholder={`剩下 ${remainTimes} 次提示次數`}
+          placeholder={`剩下 ${remainTimes} 次提示次數，得分為 ${remainTimes * (problem.score / problem.totalTimes)}`}
         />
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger
               className="font-bold mr-3"
               type="submit"
+              hidden={isHelpBtnHidden}
               disabled={isLoading || !isHelpBtnEnable}
             >
               {isLoading ? (
