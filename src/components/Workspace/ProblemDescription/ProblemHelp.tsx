@@ -9,7 +9,10 @@ import React, {
 import { useTheme } from "next-themes";
 import { Problem } from "@/utils/types/problem";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { submissionsDataState } from "@/atoms/submissionsDataAtom";
+import {
+  SubmissionsDataState,
+  submissionsDataState,
+} from "@/atoms/submissionsDataAtom";
 import { SubmissionData } from "@/utils/types/testcase";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import { Input } from "@/components/ui/input";
@@ -25,7 +28,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import OrbitControlText from "@/components/OrbitControlText";
-import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { v4 as uuidv4 } from "uuid";
@@ -35,6 +38,8 @@ type ProblemHelpProps = {
   messages: MessageProps[];
   setMessages: Dispatch<SetStateAction<MessageProps[]>>;
 };
+
+const REMAIN_TIMES = 20;
 
 const ProblemHelp: React.FC<ProblemHelpProps> = ({
   threadId,
@@ -57,7 +62,11 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const [finalText, setFinalText] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const problemRef = doc(firestore, "users", user.uid, "problems", problem.id);
+  const [remainTimes, setRemainTimes] = useState(0);
+  const [graduallyPrompt, setGraduallyPrompt] = useState(
+    "請不要給我答案，請隱晦的提示我，讓我反思問題所在"
+  );
   const formatCode = (code: string) => {
     // 這裡要檢查 formatCode 到底輸出是啥
     return code
@@ -81,11 +90,11 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     return formattedData;
   };
 
-  const getWrongAnswerSubmissions = (data: SubmissionData[]) => {
+  const getWrongAnswerSubmissions = ({ submissions }: SubmissionsDataState) => {
     // 取得 submissionsData 陣列中 data.status.id 不為 3 換句話講就是 wrong answer 的 submission
-    if (data.length === 0) return;
-
-    return data.filter((obj) => {
+    if (submissions.length === 0) return;
+    console.log(submissions);
+    return submissions.filter((obj) => {
       return obj.status.id !== 3;
     });
   };
@@ -215,7 +224,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
       setIsLoading(false);
       return;
     }
-    // 請不要試著更改下方所有字串，例如 格式化
+    // 請不要試著更改下方所有字串，包含空格或是格式化
     const promptTemplate = `
     題目如下:
 =========problem statement start========
@@ -234,7 +243,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     ${formatSubmissions(wrongSubmissions)}
 =========test output end=========
 
-    請不要給我答案，請隱晦的提示我，讓我反思問題所在
+    ${graduallyPrompt}
     `;
 
     // sendMessageToGPT(userInput); // 目前禁止學生直接接觸 GPT
@@ -251,7 +260,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
         role: "user",
         code: latestTestCode,
         created_at: Timestamp.now().toMillis(),
-        submisstions: submissionsData,
+        result: submissionsData,
         text: `
 ==========code start==========
 
@@ -308,18 +317,41 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
       clearTimeout(debounceTimeout.current);
     }
 
-    // 設置新的timeout来延遲更新
+    // 設置新的timeout来延遲更新，避免　GPT　每更新一個字就發 requests
     debounceTimeout.current = setTimeout(() => {
       updateMessagesFromFirestore(messages);
     }, 2000);
 
-    // 清理函數，如果原件卸載則清除timeout
+    // 清理函數，如果元件卸載則清除timeout
     return () => {
       if (debounceTimeout.current) {
         clearTimeout(debounceTimeout.current);
       }
     };
   }, [messages, user, problem]);
+
+  // update remaining times
+  useEffect(() => {
+    const updateRemainingTimes = async () => {
+      await updateDoc(problemRef, {
+        remainTimes: REMAIN_TIMES - messages.length / 2,
+      });
+      setRemainTimes(REMAIN_TIMES - messages.length / 2);
+    };
+    const updateGraduallyPrompt = () => {
+      let times = REMAIN_TIMES - messages.length / 2;
+      if (times >= 12) {
+        setGraduallyPrompt("請不要給我答案，請隱晦的提示我，讓我反思問題所在");
+      } else if (3 <= times && times <= 11) {
+        setGraduallyPrompt("請不要給我答案，請明確的提示我，讓我反思問題所在");
+      } else {
+        // times <= 2
+        setGraduallyPrompt("請給我答案，並詳細解釋答案，並提出反思問題");
+      }
+    };
+    updateRemainingTimes();
+    updateGraduallyPrompt();
+  }, [messages, problemRef]);
 
   // automatically scroll to bottom of chat
   const messagesEndRef = useRef(null);
@@ -370,7 +402,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
           disabled // 目前先關起來
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
-          placeholder="Enter your question"
+          placeholder={`剩下 ${remainTimes} 次提示次數`}
         />
         <TooltipProvider>
           <Tooltip>
