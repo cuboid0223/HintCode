@@ -24,7 +24,8 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { useTheme } from "next-themes";
 import { View } from "./canvas/View";
-
+import { useTransition, animated } from "react-spring";
+import CSSstyles from "./styles.module.css";
 const Trophy = dynamic(
   () => import("@/components/canvas/Models").then((mod) => mod.Trophy),
   { ssr: false }
@@ -53,67 +54,101 @@ function RankingList() {
     // 按 score 降序排序並限制結果數量為 10
     const usersRef = collection(firestore, "users");
     const q = query(usersRef, orderBy("totalScore", "desc"), limit(10));
-    const usersList = [];
+
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const usersList = [];
       querySnapshot.forEach((doc) => {
-        usersList.push(doc.data());
+        usersList.push({ ...doc.data(), height: 64 });
       });
 
       // 如果獲取到的用戶數少於 10，使用 mock data 補足
       if (usersList.length < 10) {
         const additionalUsers = mockUsersData.slice(0, 10 - usersList.length);
         setTop10UsersData([...usersList, ...additionalUsers]);
+        // setTop10UsersData([...additionalUsers]);
       } else {
         setTop10UsersData(usersList);
       }
-      // console.log("usersList: ", JSON.stringify(usersList));
     });
-    // console.log(unsubscribe());
-
-    // const querySnapshot = await getDocs(q);
-    // const usersList = querySnapshot.docs.map((doc) => ({
-    //   ...doc.data(),
-    // }));
   };
+  let heightTop5Accumulator = 0;
+  let heightTop6_10Accumulator = 0;
+  const transitionsTop5 = useTransition(
+    top10UsersData.slice(0, 5).map((data: any) => ({
+      ...data,
+      y: (heightTop5Accumulator += data.height) - data.height,
+    })),
+    {
+      keys: (user: any) => user.uid,
+      from: { height: 0, opacity: 0 },
+      enter: ({ y, height }) => ({ y, height, opacity: 1 }),
+      leave: { height: 0, opacity: 0 },
+      update: ({ y, height }) => ({ y, height }),
+    }
+  );
+
+  const transitionsTop6_10 = useTransition(
+    top10UsersData.slice(5, 10).map((data: any) => ({
+      ...data,
+      y: (heightTop6_10Accumulator += data.height) - data.height,
+    })),
+    {
+      keys: (user: any) => user.uid,
+      from: { height: 0, opacity: 0 },
+      enter: ({ y, height }) => ({ y, height, opacity: 1 }),
+      leave: { height: 0, opacity: 0 },
+      update: ({ y, height }) => ({ y, height }),
+    }
+  );
 
   useEffect(() => {
     getTop10UsersData();
   }, []);
 
+  useEffect(() => {
+    console.log("top10UsersData: ", top10UsersData.slice(6, 11));
+  }, [top10UsersData]);
+
   return (
-    <div className="flex items-center">
-      <Table className="flex-none text-center">
+    <div className="grid grid-cols-3 grid-rows-1 min-h-[400px]">
+      <Table className="h-full text-center ">
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader className="">
-          <TableRow className="">
+          <TableRow className="grid grid-cols-4">
             <TableHead className="p-0 text-center">總分</TableHead>
             <TableHead className="p-0 text-center">名字</TableHead>
             <TableHead className="p-0 text-center">Avatar</TableHead>
             <TableHead className="p-0 text-center w-[100px]">排名</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
-          {top10UsersData.slice(0, 5).map((user, id) => (
-            <TableRow key={user.uid}>
+        <TableBody className="relative">
+          {transitionsTop5((styles, user, state, index) => (
+            <animated.tr
+              // key={user.uid}
+              className="grid grid-cols-4  absolute w-full  border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+              style={{
+                zIndex: 5 - index,
+                willChange: "transform, height, opacity",
+                ...styles,
+              }}
+            >
               <TableCell className="">{user.totalScore}</TableCell>
               <TableCell className="">{user.displayName}</TableCell>
               <TableCell className="flex place-content-center">
                 <div
-                  className="rounded-full"
+                  className="rounded-full h-8 w-8"
                   dangerouslySetInnerHTML={{
-                    __html:
-                      user?.thumbnail || "<div className='h-8 w-8'></div>",
+                    __html: user.thumbnail || "<div className='h-8 w-8'></div>",
                   }}
                 ></div>
               </TableCell>
-              <TableCell className="font-bold text-xl">{id + 1}</TableCell>
-              {/* <TableCell className="text-right">{user.totalAmount}</TableCell> */}
-            </TableRow>
+              <TableCell className="font-bold text-xl ">{index + 1}</TableCell>
+            </animated.tr>
           ))}
         </TableBody>
       </Table>
-      <div className="h-40 w-[700px]">
-        <View orbit className="relative h-full sm:h-48 sm:w-full">
+      <div className="">
+        <View orbit className="relative h-full  sm:w-full">
           <Suspense fallback={null}>
             <Trophy
               scale={1}
@@ -124,33 +159,39 @@ function RankingList() {
           </Suspense>
         </View>
       </div>
-      <Table className="flex-none text-center">
+      <Table className="h-full text-center ">
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-        <TableHeader>
-          <TableRow>
-            <TableHead className="p-0 text-center w-[100px]">排名</TableHead>
-            <TableHead className="p-0 text-center">Avatar</TableHead>
-            <TableHead className="p-0 text-center">名字</TableHead>
+        <TableHeader className="">
+          <TableRow className="grid grid-cols-4">
             <TableHead className="p-0 text-center">總分</TableHead>
-            {/* <TableHead className="text-right">Amount</TableHead> */}
+            <TableHead className="p-0 text-center">名字</TableHead>
+            <TableHead className="p-0 text-center">Avatar</TableHead>
+            <TableHead className="p-0 text-center w-[100px]">排名</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
-          {top10UsersData.slice(5, 10).map((user, id) => (
-            <TableRow key={user.uid}>
-              <TableCell className="font-bold text-xl">{id + 6}</TableCell>
-              <TableCell>
+        <TableBody className="relative">
+          {transitionsTop6_10((styles, user, state, index) => (
+            <animated.tr
+              // key={user.uid}
+              className="grid grid-cols-4  absolute w-full  border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+              style={{
+                zIndex: 5 - index,
+                willChange: "transform, height, opacity",
+                ...styles,
+              }}
+            >
+              <TableCell className="">{user.totalScore}</TableCell>
+              <TableCell className="">{user.displayName}</TableCell>
+              <TableCell className="flex place-content-center">
                 <div
-                  className="flex place-content-center"
+                  className="rounded-full h-8 w-8"
                   dangerouslySetInnerHTML={{
-                    __html: user?.thumbnail || "",
+                    __html: user.thumbnail || "<div className='h-8 w-8'></div>",
                   }}
                 ></div>
               </TableCell>
-              <TableCell className="font-medium">{user.displayName}</TableCell>
-              <TableCell>{user.totalScore}</TableCell>
-              {/* <TableCell className="text-right">{user.totalAmount}</TableCell> */}
-            </TableRow>
+              <TableCell className="font-bold text-xl ">{index + 5}</TableCell>
+            </animated.tr>
           ))}
         </TableBody>
       </Table>
