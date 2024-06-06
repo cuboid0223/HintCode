@@ -1,29 +1,34 @@
 import { problemDataState } from "@/atoms/ProblemData";
+import {
+  submissionsDataState,
+  SubmissionsDataState,
+} from "@/atoms/submissionsDataAtom";
 import { Button } from "@/components/ui/button";
 import { auth, firestore } from "@/firebase/firebase";
+import isAllTestCasesAccepted from "@/utils/isAllTestCasesAccepted";
 import { doc, updateDoc } from "firebase/firestore";
 import React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { BsChevronUp } from "react-icons/bs";
 import { DotLoader } from "react-spinners";
 import { toast } from "react-toastify";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 type EditorFooterProps = {
   handleExecution: () => void;
   isLoading: boolean;
-  isAllTestCasesAccepted: boolean;
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const EditorFooter: React.FC<EditorFooterProps> = ({
   handleExecution,
   isLoading,
-  isAllTestCasesAccepted,
   setSuccess,
 }) => {
   const [user] = useAuthState(auth);
   const problem = useRecoilValue(problemDataState);
+  const [{ submissions }, setSubmissionsData] =
+    useRecoilState<SubmissionsDataState>(submissionsDataState);
 
   const handleSubmitCode = async () => {
     const userProblemRef = doc(
@@ -33,7 +38,7 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
       "problems",
       problem.id
     );
-    if (!isAllTestCasesAccepted) {
+    if (!isAllTestCasesAccepted(submissions)) {
       toast.warning("需要通過所有測試資料才能繳交", {
         position: "top-center",
         autoClose: 3000,
@@ -80,7 +85,7 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
             )}
           </Button>
           <Button
-            disabled={!isAllTestCasesAccepted}
+            disabled={!isAllTestCasesAccepted(submissions)}
             className="font-bold	 text-white bg-dark-green-s hover:bg-green-3"
             onClick={handleSubmitCode}
           >

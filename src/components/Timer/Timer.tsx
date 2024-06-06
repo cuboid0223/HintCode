@@ -10,6 +10,7 @@ import {
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import isAllTestCasesAccepted from "@/utils/isAllTestCasesAccepted";
 type TimerProps = {};
 
 const Timer: React.FC<TimerProps> = () => {
@@ -100,10 +101,7 @@ const Timer: React.FC<TimerProps> = () => {
     }: SubmissionsDataState) => {
       // 用來記錄每題的通過時間(秒)
       if (!user) return;
-      const isAllTestCasesAccepted = submissions.every(
-        // 全部測資都通過 isAllTestCasesAccepted 才會是 true
-        (submission) => submission?.status.id === 3
-      );
+
       // 更新 elapsedTime 到 localStorage
       if (problemId === params.pid && isAllTestCasesAccepted) {
         stopTimer();

@@ -88,10 +88,17 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
       </div>
       <Card className="mb-6 dark:border-2 border-none ">
         <CardContent>
-          <CardDescription className="font-bold mb-2">輸入:</CardDescription>
-          <div className="bg-background  p-2 rounded-lg mb-2">
-            {problem.examples[activeTestCaseId]?.inputText}
-          </div>
+          {problem.examples[activeTestCaseId]?.inputText && (
+            <>
+              <CardDescription className="font-bold mb-2">
+                輸入:
+              </CardDescription>
+              <div className="bg-background  p-2 rounded-lg mb-2">
+                {problem.examples[activeTestCaseId]?.inputText}
+              </div>
+            </>
+          )}
+
           <CardDescription className="font-bold mb-2">
             預期輸出:
           </CardDescription>

@@ -33,8 +33,11 @@ import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { v4 as uuidv4 } from "uuid";
 import { problemDataState } from "@/atoms/ProblemData";
+import getWrongTestCases from "@/utils/getWrongTestcases";
 type ProblemHelpProps = {
   threadId: string;
+  remainTimes: number;
+  setRemainTimes: Dispatch<SetStateAction<number>>;
   messages: MessageProps[];
   setMessages: Dispatch<SetStateAction<MessageProps[]>>;
 };
@@ -43,6 +46,8 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   threadId,
   messages,
   setMessages,
+  setRemainTimes,
+  remainTimes,
 }) => {
   const problem = useRecoilValue(problemDataState);
   const lang = localStorage.getItem("selectedLang");
@@ -50,8 +55,8 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
   const [user] = useAuthState(auth);
   const { resolvedTheme } = useTheme();
-  const [submissionsData] =
-    useRecoilState<SubmissionData[]>(submissionsDataState);
+  const [submissionsData, setSubmissionsData] =
+    useRecoilState<SubmissionsDataState>(submissionsDataState);
   const [isHelpBtnEnable, setIsHelpBtnEnable] =
     useRecoilState(isHelpBtnEnableState);
   const [userInput, setUserInput] = useState("");
@@ -61,7 +66,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const [isMounted, setIsMounted] = useState(false);
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const problemRef = doc(firestore, "users", user.uid, "problems", problem.id);
-  const [remainTimes, setRemainTimes] = useState(0);
+
   const [graduallyPrompt, setGraduallyPrompt] = useState(
     "請不要給我答案，請隱晦的提示我，讓我反思問題所在"
   );
@@ -87,15 +92,6 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
       `;
     });
     return formattedData;
-  };
-
-  const getWrongAnswerSubmissions = ({ submissions }: SubmissionsDataState) => {
-    // 取得 submissionsData 陣列中 data.status.id 不為 3 換句話講就是 wrong answer 的 submission
-    if (submissions.length === 0) return;
-    console.log(submissions);
-    return submissions.filter((obj) => {
-      return obj.status.id !== 3;
-    });
   };
 
   const sendMessageToGPT = async (text: string) => {
@@ -212,7 +208,8 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     setIsLoading(true);
     setIsHelpBtnEnable(false);
     // *** submissionsData 需要丟進 firestore
-    const wrongSubmissions = getWrongAnswerSubmissions(submissionsData);
+    const { submissions } = submissionsData;
+    const wrongSubmissions = getWrongTestCases(submissions);
     // if (!userInput.trim()) return;
     if (!latestTestCode || !wrongSubmissions) {
       toast.warn("沒有測試結果，請按執行按鈕", {
@@ -361,7 +358,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     updateRemainingTimes();
     updateUserProblemScore();
     updateGraduallyPrompt();
-  }, [messages, problemRef, problem, remainTimes]);
+  }, [messages, problemRef, problem, remainTimes, setRemainTimes]);
 
   // automatically scroll to bottom of chat
   const messagesEndRef = useRef(null);
@@ -383,7 +380,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   }
   return (
     <section className="flex-1 px-5 flex flex-col ">
-      {messages.length === 0 && <OrbitControlText />}
+      {/* {messages.length === 0 && <OrbitControlText />} */}
       {/* GPT output */}
       <div className="flex-1">
         <div

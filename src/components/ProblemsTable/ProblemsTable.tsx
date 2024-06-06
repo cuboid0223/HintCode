@@ -72,7 +72,7 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
               }`}
             >
               <TableCell className=" font-medium whitespace-nowrap text-dark-green-s">
-                {userProblem.is_solved && (
+                {userProblem?.is_solved && (
                   <BsCheckCircle fontSize={"18"} width="18" />
                 )}
               </TableCell>
@@ -92,7 +92,7 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
                 {problem.category}
               </TableCell>
               <TableCell className={"dark:text-white"}>
-                {`${userProblem.score} / ${problem.score}`}
+                {`${userProblem?.score || 0} / ${problem.score}`}
               </TableCell>
             </TableRow>
           );

@@ -197,9 +197,9 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   useEffect(() => {
     const code = localStorage.getItem(`${selectedLang}-code-${id}`);
     if (user) {
-      setUserCode(code ? JSON.parse(code) : problem.starterCode.js);
+      setUserCode(code ? JSON.parse(code) : problem.starterCode.py);
     } else {
-      setUserCode(problem.starterCode.js);
+      setUserCode(problem.starterCode.py);
     }
   }, [id, user, problem.starterCode, selectedLang]);
 
@@ -322,7 +322,6 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
       <EditorFooter
         handleExecution={handleExecution}
         isLoading={isLoading}
-        isAllTestCasesAccepted={isAllTestCasesAccepted}
         setSuccess={setSuccess}
       />
     </div>

@@ -16,7 +16,6 @@ import {
   useSearchParams,
   useParams,
 } from "next/navigation";
-import { problems } from "@/utils/problems";
 import { Problem } from "@/utils/types/problem";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -29,6 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { User } from "@/utils/types/global";
+import useGetProblems from "@/hooks/useGetProblems";
 type TopbarProps = {
   isProblemPage?: boolean;
 };
@@ -42,6 +42,8 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
   const { setTheme } = useTheme();
   const searchParams = useSearchParams();
   const params = useParams<{ pid: string }>();
+  const [isProblemsLoading, setIsProblemsLoading] = useState(false);
+  const problems = useGetProblems(setIsProblemsLoading);
 
   const handleProblemChange = (isForward: boolean) => {
     const pid = params?.pid; // 當下題目的 pid

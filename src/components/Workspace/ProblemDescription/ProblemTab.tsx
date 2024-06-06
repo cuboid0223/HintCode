@@ -10,10 +10,16 @@ import ProblemHelp from "./ProblemHelp";
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { SubmissionData } from "@/utils/types/testcase";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
+import useGetUserProblems from "@/hooks/useGetUserProblems";
+import {
+  submissionsDataState,
+  SubmissionsDataState,
+} from "@/atoms/submissionsDataAtom";
+import isAllTestCasesAccepted from "@/utils/isAllTestCasesAccepted";
 
 type ProblemTabProps = {
   _solved: boolean;
@@ -32,12 +38,15 @@ export type MessageProps = {
 
 const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
   const problem = useRecoilValue(problemDataState);
+  const userProblems = useGetUserProblems();
   const [user] = useAuthState(auth);
   const { resolvedTheme } = useTheme();
   const [threadId, setThreadId] = useState("");
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [problemTab, setProblemTab] = useState("description");
-
+  const [remainTimes, setRemainTimes] = useState(20);
+  const [{ submissions }, setSubmissionsData] =
+    useRecoilState<SubmissionsDataState>(submissionsDataState);
   // create a new threadID when chat component created
   useEffect(() => {
     console.log("create thread");
@@ -148,6 +157,32 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
     getMessages();
   }, [threadId]);
 
+  useEffect(() => {
+    /*
+    防止題目太簡單，使用者在從未點開提示介面的情況下
+    通過題目而未更新該題的分數
+    */
+
+    const updateUserProblemScore = async () => {
+      if (!user) return;
+      const userProblemRef = doc(
+        firestore,
+        "users",
+        user.uid,
+        "problems",
+        problem.id
+      );
+      console.log(" update score");
+      await updateDoc(userProblemRef, {
+        score: remainTimes * (problem.score / problem.totalTimes),
+      });
+    };
+
+    if (isAllTestCasesAccepted(submissions)) {
+      updateUserProblemScore();
+    }
+  }, [problem, remainTimes, userProblems, user, submissions]);
+
   return (
     <div className="relative flex flex-col ">
       {/* TABs */}
@@ -183,6 +218,8 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
           {/* GPT 提示區 */}
           {problemTab === "getHelp" && (
             <ProblemHelp
+              remainTimes={remainTimes}
+              setRemainTimes={setRemainTimes}
               threadId={threadId}
               messages={messages}
               setMessages={setMessages}

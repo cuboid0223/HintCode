@@ -110,7 +110,7 @@ function RankingList() {
   }, [top10UsersData]);
 
   return (
-    <div className="grid grid-cols-3 grid-rows-1 min-h-[400px]">
+    <div className="grid grid-cols-3 grid-rows-1 min-h-[400px] bg-slate-400">
       <Table className="h-full text-center ">
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader className="">
@@ -151,9 +151,9 @@ function RankingList() {
         <View orbit className="relative h-full  sm:w-full">
           <Suspense fallback={null}>
             <Trophy
-              scale={1}
+              scale={0.75}
               position={[0, -1.6, 0]}
-              rotation={[0.0, -0.3, 0]}
+              rotation={[0.0, 10, 0]}
             />
             <Common color={resolvedTheme === "dark" ? "#030711" : "#f6f6f6"} />
           </Suspense>
@@ -163,10 +163,12 @@ function RankingList() {
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader className="">
           <TableRow className="grid grid-cols-4">
-            <TableHead className="p-0 text-center">總分</TableHead>
-            <TableHead className="p-0 text-center">名字</TableHead>
-            <TableHead className="p-0 text-center">Avatar</TableHead>
-            <TableHead className="p-0 text-center w-[100px]">排名</TableHead>
+            <TableHead className="p-0 text-center order-4">總分</TableHead>
+            <TableHead className="p-0 text-center order-3">名字</TableHead>
+            <TableHead className="p-0 text-center order-2">Avatar</TableHead>
+            <TableHead className="p-0 text-center w-[100px] order-1">
+              排名
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="relative">
@@ -180,9 +182,9 @@ function RankingList() {
                 ...styles,
               }}
             >
-              <TableCell className="">{user.totalScore}</TableCell>
-              <TableCell className="">{user.displayName}</TableCell>
-              <TableCell className="flex place-content-center">
+              <TableCell className="order-4">{user.totalScore}</TableCell>
+              <TableCell className="order-3">{user.displayName}</TableCell>
+              <TableCell className="flex place-content-center order-2">
                 <div
                   className="rounded-full h-8 w-8"
                   dangerouslySetInnerHTML={{
@@ -190,7 +192,9 @@ function RankingList() {
                   }}
                 ></div>
               </TableCell>
-              <TableCell className="font-bold text-xl ">{index + 5}</TableCell>
+              <TableCell className="font-bold text-xl order-1">
+                {index + 5}
+              </TableCell>
             </animated.tr>
           ))}
         </TableBody>
