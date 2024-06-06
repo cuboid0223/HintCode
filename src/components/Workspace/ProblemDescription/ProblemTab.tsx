@@ -11,7 +11,7 @@ import ProblemHelp from "./ProblemHelp";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
-import { SubmissionData } from "@/utils/types/testcase";
+import { SubmissionData } from "@/utils/types/testCase";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import useGetUserProblems from "@/hooks/useGetUserProblems";
@@ -19,7 +19,7 @@ import {
   submissionsDataState,
   SubmissionsDataState,
 } from "@/atoms/submissionsDataAtom";
-import isAllTestCasesAccepted from "@/utils/isAllTestCasesAccepted";
+import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 
 type ProblemTabProps = {
   _solved: boolean;

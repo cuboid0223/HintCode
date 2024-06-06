@@ -13,7 +13,7 @@ import {
   SubmissionsDataState,
   submissionsDataState,
 } from "@/atoms/submissionsDataAtom";
-import { SubmissionData } from "@/utils/types/testcase";
+import { SubmissionData } from "@/utils/types/testCase";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import { Input } from "@/components/ui/input";
 import Message from "../Playground/components/Message";
@@ -33,7 +33,7 @@ import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { v4 as uuidv4 } from "uuid";
 import { problemDataState } from "@/atoms/ProblemData";
-import getWrongTestCases from "@/utils/getWrongTestcases";
+import getWrongTestCases from "@/utils/testCases/getWrongTestcases";
 type ProblemHelpProps = {
   threadId: string;
   remainTimes: number;

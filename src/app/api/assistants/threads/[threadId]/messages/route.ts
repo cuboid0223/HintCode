@@ -1,5 +1,5 @@
-import { assistantId } from "@/app/assistant-config";
-import { openai } from "@/app/openai";
+import { assistantId } from "@/lib/assistant-config";
+import { openai } from "@/lib/openai";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";

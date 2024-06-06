@@ -48,7 +48,7 @@ export default function Home() {
             <ProblemsTable setLoadingProblems={setLoadingProblems} />
           </Table>
           {/* 排行榜 */}
-          <RankingList />
+          {/* <RankingList /> */}
         </div>
       </main>
     </>

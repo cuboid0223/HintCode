@@ -10,7 +10,7 @@ import {
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import isAllTestCasesAccepted from "@/utils/isAllTestCasesAccepted";
+import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 type TimerProps = {};
 
 const Timer: React.FC<TimerProps> = () => {

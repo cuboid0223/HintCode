@@ -1,18 +1,29 @@
 "use client";
 
 import { Text, useGLTF } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useMemo, useRef, useState } from "react";
 import { Line, useCursor, MeshDistortMaterial } from "@react-three/drei";
+import { AsciiRenderer } from "@react-three/drei";
 
 export function Trophy(props) {
   const { scene } = useGLTF("/trophy.glb");
-  useFrame((state, delta) => (scene.rotation.y += delta));
-  return <primitive object={scene} {...props} />;
+  const viewport = useThree((state) => state.viewport);
+  useFrame((state, delta) => (scene.rotation.y += delta / 5));
+  return (
+    <>
+      <primitive
+        object={scene}
+        scale={Math.min(viewport.width, viewport.height) / 5}
+        {...props}
+      />
+      {/* <AsciiRenderer fgColor="white" bgColor="transparent" /> */}
+    </>
+  );
 }
 
-export function StrokeText3D(props) {
+export function StrokeText3D({ text }) {
   return (
     <>
       <Text
@@ -29,7 +40,7 @@ export function StrokeText3D(props) {
         strokeWidth={"2.5%"}
         strokeColor="#ffffff"
       >
-        Just go ahead and type in whatever comes to mind.
+        {text}
       </Text>
     </>
   );

@@ -13,7 +13,7 @@ import useLocalStorage from "../../../hooks/useLocalStorage";
 import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TestCaseList from "./components/TestCaseList";
-import { SubmissionData } from "@/utils/types/testcase";
+import { SubmissionData } from "@/utils/types/testCase";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   submissionsDataState,

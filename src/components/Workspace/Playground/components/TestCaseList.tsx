@@ -1,6 +1,6 @@
 "use client";
 import { Problem } from "@/utils/types/problem";
-import { SubmissionData } from "@/utils/types/testcase";
+import { SubmissionData } from "@/utils/types/testCase";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { CircleSlash, CircleCheckBig } from "lucide-react";

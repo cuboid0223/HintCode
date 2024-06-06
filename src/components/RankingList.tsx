@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import {
   Table,
@@ -25,7 +26,7 @@ import { Suspense } from "react";
 import { useTheme } from "next-themes";
 import { View } from "./canvas/View";
 import { useTransition, animated } from "react-spring";
-import CSSstyles from "./styles.module.css";
+
 const Trophy = dynamic(
   () => import("@/components/canvas/Models").then((mod) => mod.Trophy),
   { ssr: false }
@@ -110,7 +111,8 @@ function RankingList() {
   }, [top10UsersData]);
 
   return (
-    <div className="grid grid-cols-3 grid-rows-1 min-h-[400px] bg-slate-400">
+    <div className="grid grid-cols-3 grid-rows-1 min-h-[400px] mt-5">
+      {/* 1 - 5 名的 table */}
       <Table className="h-full text-center ">
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader className="">
@@ -147,6 +149,7 @@ function RankingList() {
           ))}
         </TableBody>
       </Table>
+      {/* 3D 獎盃 */}
       <div className="">
         <View orbit className="relative h-full  sm:w-full">
           <Suspense fallback={null}>
@@ -155,10 +158,12 @@ function RankingList() {
               position={[0, -1.6, 0]}
               rotation={[0.0, 10, 0]}
             />
+
             <Common color={resolvedTheme === "dark" ? "#030711" : "#f6f6f6"} />
           </Suspense>
         </View>
       </div>
+      {/* 6 - 10 名的 table */}
       <Table className="h-full text-center ">
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader className="">
@@ -193,7 +198,7 @@ function RankingList() {
                 ></div>
               </TableCell>
               <TableCell className="font-bold text-xl order-1">
-                {index + 5}
+                {index + 6}
               </TableCell>
             </animated.tr>
           ))}

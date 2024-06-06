@@ -1,4 +1,4 @@
-import { TestCaseCode } from "./testcase";
+import { TestCaseCode } from "./testCase";
 
 export type Example = {
   id: number;

@@ -14,12 +14,12 @@ const StrokeText3DCommon = dynamic(
   { ssr: false }
 );
 
-function OrbitControlText() {
+function OrbitControlText({ text }) {
   return (
     <div className="overflow-hidden">
       <View orbit className="relative h-screen sm:w-full overflow-hidden">
         <Suspense fallback={null}>
-          <CustomText3D />
+          <CustomText3D text={text} />
           <StrokeText3DCommon color={"#000000"} />
         </Suspense>
       </View>

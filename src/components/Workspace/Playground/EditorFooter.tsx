@@ -5,7 +5,7 @@ import {
 } from "@/atoms/submissionsDataAtom";
 import { Button } from "@/components/ui/button";
 import { auth, firestore } from "@/firebase/firebase";
-import isAllTestCasesAccepted from "@/utils/isAllTestCasesAccepted";
+import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { doc, updateDoc } from "firebase/firestore";
 import React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
