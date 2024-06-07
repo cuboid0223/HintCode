@@ -98,7 +98,9 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="py">Python</SelectItem>
-          <SelectItem value="js">JavaScript</SelectItem>
+          <SelectItem value="js" disabled>
+            JavaScript
+          </SelectItem>
         </SelectContent>
       </Select>
 

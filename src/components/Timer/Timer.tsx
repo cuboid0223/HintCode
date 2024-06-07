@@ -103,7 +103,7 @@ const Timer: React.FC<TimerProps> = () => {
       if (!user) return;
 
       // 更新 elapsedTime 到 localStorage
-      if (problemId === params.pid && isAllTestCasesAccepted) {
+      if (problemId === params.pid && isAllTestCasesAccepted(submissions)) {
         stopTimer();
         return updateDoc(userProblemRef, {
           acceptedTime: Number(
@@ -153,7 +153,7 @@ const Timer: React.FC<TimerProps> = () => {
           </svg>
         </div>
       )}
-      <button onClick={resetTimer}>Reset Timer</button>
+      {/* <button onClick={resetTimer}>Reset Timer</button> */}
     </div>
   );
 };
