@@ -34,17 +34,19 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { v4 as uuidv4 } from "uuid";
 import { problemDataState } from "@/atoms/ProblemData";
 import getWrongTestCases from "@/utils/testCases/getWrongTestcases";
+import { Message as MessageType } from "@/utils/types/message";
+import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 type ProblemHelpProps = {
   threadId: string;
   remainTimes: number;
   setRemainTimes: Dispatch<SetStateAction<number>>;
-  messages: MessageProps[];
-  setMessages: Dispatch<SetStateAction<MessageProps[]>>;
+  messages: MessageType[];
+  setMessages: Dispatch<SetStateAction<MessageType[]>>;
 };
 
 const ProblemHelp: React.FC<ProblemHelpProps> = ({
   threadId,
-  messages,
+  // messages,
   setMessages,
   setRemainTimes,
   remainTimes,
@@ -66,7 +68,12 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const [isMounted, setIsMounted] = useState(false);
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const problemRef = doc(firestore, "users", user.uid, "problems", problem.id);
-
+  const [isMessageLoading, setIsMessageLoading] = useState(false);
+  const messages = useGetProblemMessages(
+    user.uid,
+    problem.id,
+    setIsMessageLoading
+  );
   const [graduallyPrompt, setGraduallyPrompt] = useState(
     "請不要給我答案，請隱晦的提示我，讓我反思問題所在"
   );
@@ -80,6 +87,9 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   };
 
   const formatSubmissions = (data: SubmissionData[]) => {
+    /*
+    將測試資料的結果轉成純文字，方便 GPT 讀取
+    */
     const formattedData = data.map((ele, id) => {
       const output = ele.stdout ? ele.stdout : "空";
       const error = ele.stderr ? ele.stderr : "空";
@@ -168,7 +178,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
         [
           ...prevMessages,
           { role, text, id: uuidv4(), created_at: Timestamp.now().toMillis() },
-        ] as MessageProps[]
+        ] as MessageType[]
     );
   };
 
@@ -267,7 +277,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
       },
     ]);
 
-    setUserInput("");
+    // setUserInput("");
     setInputDisabled(true);
     scrollToBottom();
     setIsLoading(false);
@@ -280,7 +290,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   */
 
   useEffect(() => {
-    const updateMessagesFromFirestore = async (msgs: MessageProps[]) => {
+    const updateMessagesFromFirestore = async (msgs: MessageType[]) => {
       if (!user || !problem || !msgs) return;
       console.log(msgs);
       try {
@@ -369,6 +379,9 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     scrollToBottom();
   }, [messages]);
 
+  // get messages
+  useEffect(() => {}, []);
+
   // solve react-hydration-error
   useEffect(() => {
     // https://stackoverflow.com/questions/73162551/how-to-solve-react-hydration-error-in-nextjs
@@ -389,9 +402,10 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
           {messages.map((msg, index) => (
             <Message
               key={index}
-              role={msg.role}
-              text={msg.text}
-              code={latestTestCode}
+              msg={msg}
+              // role={msg.role}
+              // text={msg.text}
+              // code={latestTestCode}
               theme={resolvedTheme}
             />
           ))}

@@ -1,28 +1,7 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { BsCheckCircle } from "react-icons/bs";
-import { IoClose } from "react-icons/io5";
-import YouTube from "react-youtube";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  orderBy,
-  query,
-} from "firebase/firestore";
-import { auth, firestore } from "../../firebase/firebase";
-import { UserProblem } from "@/utils/types/problem";
-import { useAuthState } from "react-firebase-hooks/auth";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 import useGetUserProblems from "@/hooks/useGetUserProblems";
 import useGetProblems from "@/hooks/useGetProblems";
 type ProblemsTableProps = {

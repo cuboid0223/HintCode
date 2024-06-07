@@ -1,4 +1,4 @@
-import { openai } from "@/lib/openai";
+import { openai } from "@/utils/AI/openai";
 
 export const runtime = "nodejs";
 

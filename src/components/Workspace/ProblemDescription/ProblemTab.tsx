@@ -20,20 +20,10 @@ import {
   SubmissionsDataState,
 } from "@/atoms/submissionsDataAtom";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
+import { Message } from "@/utils/types/message";
 
 type ProblemTabProps = {
   _solved: boolean;
-};
-
-export type MessageProps = {
-  id?: string;
-  role: "user" | "assistant" | "code";
-  text?: string;
-  theme?: string;
-  code?: string;
-  created_at: number;
-  submissions?: SubmissionData[]; // 只有 role 為 user 才有
-  // 把以前資料刪掉 不要給我都是 ?
 };
 
 const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
@@ -42,7 +32,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
   const [user] = useAuthState(auth);
   const { resolvedTheme } = useTheme();
   const [threadId, setThreadId] = useState("");
-  const [messages, setMessages] = useState<MessageProps[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [problemTab, setProblemTab] = useState("description");
   const [remainTimes, setRemainTimes] = useState(20);
   const [{ submissions }, setSubmissionsData] =
@@ -129,32 +119,20 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
   }, [threadId, user, problem.id]);
 
   useEffect(() => {
-    const getMessages = async () => {
-      if (!threadId) return;
-      // console.log("threadId from getMessages ", threadId);
-      const messages = await fetch(
-        `/api/assistants/threads/${threadId}/messages`,
-        {
-          method: "GET",
-        }
-      );
-      const msgs = await messages.json();
-      console.log(msgs);
-      // console.log(messages.data[1].role);
-      // console.log(messages.data[0].content[0].text.value);
-      let temp = [] as MessageProps[];
-      msgs.data.forEach((msg) => {
-        temp.push({
-          id: msg.id,
-          role: msg.role,
-          text: msg.content[0].text.value,
-          created_at: msg.created_at,
-        });
-      });
-      setMessages(temp.reverse());
-    };
-
-    getMessages();
+    // const getMessages = async () => {
+    //   if (!threadId) return;
+    //   // console.log("threadId from getMessages ", threadId);
+    //   const messages = await fetch(
+    //     `/api/assistants/threads/${threadId}/messages`,
+    //     {
+    //       method: "GET",
+    //     }
+    //   );
+    //   const msgs = await messages.json();
+    //   console.log(msgs.data);
+    //   setMessages(msgs.data.reverse());
+    // };
+    // getMessages();
   }, [threadId]);
 
   useEffect(() => {

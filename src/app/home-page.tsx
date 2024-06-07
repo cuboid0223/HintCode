@@ -1,20 +1,42 @@
 "use client";
-import ProblemsTable from "@/components/ProblemsTable/ProblemsTable";
 import Topbar from "@/components/Topbar/Topbar";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import RankingList from "@/components/RankingList";
+import Link from "next/link";
+import { BsCheckCircle } from "react-icons/bs";
+
+import useGetUserProblems from "@/hooks/useGetUserProblems";
+import useGetProblems from "@/hooks/useGetProblems";
+
 export default function Home() {
   const [loadingProblems, setLoadingProblems] = useState(true);
+  const [youtubePlayer, setYoutubePlayer] = useState({
+    isOpen: false,
+    videoId: "",
+  });
+  const problems = useGetProblems(setLoadingProblems);
+  const userProblems = useGetUserProblems();
+  console.log("problems", problems);
+  console.log("userProblems", userProblems);
+  const closeModal = () => {
+    setYoutubePlayer({ isOpen: false, videoId: "" });
+  };
 
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeModal();
+    };
+    window.addEventListener("keydown", handleEsc);
+
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
   return (
     <>
       <main className="">
@@ -45,10 +67,52 @@ export default function Home() {
                 </TableHeader>
               </>
             )}
-            <ProblemsTable setLoadingProblems={setLoadingProblems} />
+            <TableBody className="text-white">
+              {problems.map((problem, idx) => {
+                const userProblem = userProblems.find(
+                  (e) => e.id === problem.id
+                );
+                const difficultyColor =
+                  problem.difficulty === "Easy"
+                    ? "text-dark-green-s"
+                    : problem.difficulty === "Medium"
+                      ? "text-dark-yellow"
+                      : "text-dark-pink";
+                return (
+                  <TableRow
+                    key={problem.id}
+                    className={`grid grid-cols-5 gap-4 text-foreground   ${
+                      idx % 2 == 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""
+                    }`}
+                  >
+                    <TableCell className=" font-medium whitespace-nowrap text-dark-green-s">
+                      {userProblem?.is_solved && (
+                        <BsCheckCircle fontSize={"18"} width="18" />
+                      )}
+                    </TableCell>
+                    <TableCell className=" dark:text-white">
+                      <Link
+                        className="block cursor-pointer  "
+                        target="_blank"
+                        href={`/problems/${problem.id}`}
+                      >
+                        <p className="hover:text-blue-600">{problem.title}</p>
+                      </Link>
+                    </TableCell>
+                    <TableCell className={` ${difficultyColor} `}>
+                      {problem.difficulty}
+                    </TableCell>
+                    <TableCell className={"dark:text-white"}>
+                      {problem.category}
+                    </TableCell>
+                    <TableCell className={"dark:text-white"}>
+                      {`${userProblem?.score || 0} / ${problem.score}`}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
           </Table>
-          {/* 排行榜 */}
-          {/* <RankingList /> */}
         </div>
       </main>
     </>

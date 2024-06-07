@@ -2,12 +2,12 @@ import RecoilRootProvider from "../providers/RecoilRootProvider";
 import { ThemeProvider } from "../providers/ThemeProvider";
 import { Metadata } from "next";
 import type { Viewport } from "next";
+// import Document from "next/document";
 
 import "@/styles/globals.css";
 import "@/styles/prism.css";
 
 import ToastProvider from "@/providers/ToastProvider";
-import Topbar from "@/components/Topbar/Topbar";
 import { SceneLayout } from "@/components/dom/SceneLayout";
 
 export const metadata: Metadata = {
@@ -57,7 +57,7 @@ export default function RootLayout({
         <RecoilRootProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >
