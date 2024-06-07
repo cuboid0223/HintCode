@@ -33,12 +33,12 @@ import { problemDataState } from "@/atoms/ProblemData";
 import { useRecoilValue } from "recoil";
 const EDITOR_FONT_SIZES = [
   "12px",
-  "13px",
   "14px",
-  "15px",
   "16px",
-  "17px",
   "18px",
+  "20px",
+  "22px",
+  "24px",
 ];
 
 type PreferenceNavProps = {
@@ -98,7 +98,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between w-full pt-2 ">
+    <div className="flex items-center justify-between w-full ">
       <Select onValueChange={handleSelectedLang}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Python" />

@@ -211,14 +211,11 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ _solved }) => {
 
   return (
     <div className="flex px-5 py-4  overflow-y-auto">
-      <div>
+      <div className="flex-1">
         {/* Problem heading */}
         <div className="w-full">
-          <div className="flex space-x-4">
-            <div className="flex-1 mr-2 text-lg  font-medium">
-              {problem?.title}
-            </div>
-          </div>
+          <h1 className="mr-2 text-lg  font-medium">{problem?.title}</h1>
+
           {/* Difficulty / likes / dislikes / star */}
           {!loading && currentProblem && (
             <div className="flex items-center my-3">
@@ -232,7 +229,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ _solved }) => {
                   <BsCheck2Circle />
                 </div>
               )}
-              <div
+              {/* <div
                 className="flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px]  ml-4 text-lg transition-colors duration-200 text-dark-gray-6"
                 onClick={handleLike}
               >
@@ -271,7 +268,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ _solved }) => {
                 {updating && (
                   <AiOutlineLoading3Quarters className="animate-spin" />
                 )}
-              </div>
+              </div> */}
             </div>
           )}
 

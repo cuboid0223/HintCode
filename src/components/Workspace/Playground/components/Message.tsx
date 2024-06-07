@@ -30,19 +30,14 @@ const Message: React.FC<MessageProps> = ({ msg, theme }) => {
 const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
   const { code, result } = msg;
   const { submissions } = result;
-  const handleCodeFromText = (text: string) => {
-    // 將 prompt templete 字串提取 python 程式碼部分
-    const codeMatch = text?.match(
-      /=+code start=+\n([\s\S]*?)\n\s*=+code end=+/
-    );
-    let extractedCode = codeMatch ? codeMatch[1] : "no code";
-
-    // 將提取的程式碼轉換為正常的格式
-    extractedCode = extractedCode
+  const handleFormatCode = (text: string) => {
+    // 將程式碼轉換為正常的格式
+    if (!text) return;
+    const code = text
       .replace(/\\n/g, "\n")
-      .replace(/\\"/g, '"')
+      .replace(/\\"/g, "'")
       .replace(/\\t/g, "\t");
-    return extractedCode;
+    return code;
   };
 
   return (
@@ -50,7 +45,7 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
       className={`h-fit max-w-2xl p-2 justify-self-end dark:text-white overflow-x-auto `}
     >
       <CustomMarkdown theme={theme}>
-        {`~~~py\n ${msg?.code}\n~~~`}
+        {`~~~py\n ${handleFormatCode(code)}\n~~~`}
       </CustomMarkdown>
       <div className="flex justify-end space-x-3 mt-3">
         {/* <CopyCheck /> */}
