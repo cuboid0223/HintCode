@@ -47,25 +47,23 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
 
   const handleProblemChange = (isForward: boolean) => {
     const pid = params?.pid; // 當下題目的 pid
-    const { order } = problems[pid as string] as Problem;
+    if (!pid || !problems) return;
+    console.log(problems);
+    const problem = problems.find((p) => p.id === pid);
     const direction = isForward ? 1 : -1;
-    const nextProblemOrder = order + direction;
-    const nextProblemKey = Object.keys(problems).find(
-      (key) => problems[key].order === nextProblemOrder
-    );
+    const nextProblemOrder = problem.order + direction;
+    const nextProblem = problems.find((p) => p.order === nextProblemOrder);
 
-    if (isForward && !nextProblemKey) {
-      const firstProblemKey = Object.keys(problems).find(
-        (key) => problems[key].order === 1
-      );
-      router.push(`/problems/${firstProblemKey}`);
-    } else if (!isForward && !nextProblemKey) {
-      const lastProblemKey = Object.keys(problems).find(
-        (key) => problems[key].order === Object.keys(problems).length
-      );
-      router.push(`/problems/${lastProblemKey}`);
+    if (isForward && !nextProblem) {
+      //  處理 edge case 當沒有下一個問題且是點 "往前" 給使用者第一個 problem
+      const firstProblem = problems.find((p) => p.order === 1);
+      router.push(`/problems/${firstProblem.id}`);
+    } else if (!isForward && !nextProblem) {
+      //  處理 edge case 當沒有下一個問題且是點 "往後" 給使用者最後一個 problem
+      const lastProblem = problems.find((p) => p.order === problems.length);
+      router.push(`/problems/${lastProblem.id}`);
     } else {
-      router.push(`/problems/${nextProblemKey}`);
+      router.push(`/problems/${nextProblem.id}`);
     }
   };
 
