@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  AiOutlineFullscreen,
-  AiOutlineFullscreenExit,
-  AiOutlineSetting,
-} from "react-icons/ai";
 import { Settings } from "../Playground";
-import SettingsModal from "@/components/Modals/SettingsModal";
 import {
   Select,
   SelectContent,
@@ -34,10 +28,18 @@ import {
 import * as Radix_Tooltip from "@radix-ui/react-tooltip";
 import CustomMarkdown from "@/components/CustomMarkdown";
 import { useTheme } from "next-themes";
-import { Problem } from "@/utils/types/problem";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { problemDataState } from "@/atoms/ProblemData";
 import { useRecoilValue } from "recoil";
+const EDITOR_FONT_SIZES = [
+  "12px",
+  "13px",
+  "14px",
+  "15px",
+  "16px",
+  "17px",
+  "18px",
+];
 
 type PreferenceNavProps = {
   settings: Settings;
@@ -54,7 +56,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
   const [isFullScreen, setIsFullScreen] = useState(false);
   const { resolvedTheme } = useTheme();
   const [selectedLang, setSelectedLang] = useLocalStorage("selectedLang", "py");
-
+  const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
   // const handleFullScreen = () => {
   //   if (isFullScreen) {
   //     document.exitFullscreen();
@@ -88,6 +90,11 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
 
   const handleRecoveryInitCode = () => {
     setUserCode(problem.starterCode[selectedLang]);
+  };
+
+  const handleSelectedFontSize = (fontSize: string) => {
+    setFontSize(fontSize);
+    setSettings({ ...settings, fontSize });
   };
 
   return (
@@ -142,45 +149,50 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
           </Tooltip>
 
           <Tooltip>
-            <TooltipTrigger
-              className="font-bold mr-3"
-              type="submit"
-              onClick={() =>
-                setSettings({ ...settings, settingsModalIsOpen: true })
-              }
-            >
-              <SettingsIcon size={15} />
-            </TooltipTrigger>
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <Radix_Tooltip.Trigger
+                  asChild
+                  className="font-bold mr-3"
+                  type="submit"
+                >
+                  <SettingsIcon size={15} />
+                </Radix_Tooltip.Trigger>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>字體大小</AlertDialogTitle>
+                  <AlertDialogDescription className="flex justify-between items-center">
+                    <h3 className="">選擇編輯器字體大小</h3>
+                    <Select onValueChange={handleSelectedFontSize}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder={fontSize} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {EDITOR_FONT_SIZES.map((fs, idx) => (
+                          <SelectItem value={fs} key={idx}>
+                            {fs}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>取消</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleRecoveryInitCode}>
+                    確定
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             <TooltipContent>設定</TooltipContent>
           </Tooltip>
         </TooltipProvider>
-
-        {/* <button
-          className="preferenceBtn group"
-          onClick={() =>
-            setSettings({ ...settings, settingsModalIsOpen: true })
-          }
-        >
-          <div className="h-4 w-4 text-dark-gray-6 font-bold text-lg">
-            <AiOutlineSetting />
-          </div>
-          <div className="preferenceBtn-tooltip">Settings</div>
-        </button> */}
-
-        {/* <button className="preferenceBtn group" onClick={handleFullScreen}>
-          <div className="h-4 w-4 text-dark-gray-6 font-bold text-lg">
-            {!isFullScreen ? (
-              <AiOutlineFullscreen />
-            ) : (
-              <AiOutlineFullscreenExit />
-            )}
-          </div>
-          <div className="preferenceBtn-tooltip">Full Screen</div>
-        </button> */}
       </div>
-      {settings.settingsModalIsOpen && (
-        <SettingsModal settings={settings} setSettings={setSettings} />
-      )}
+      {/* {settings.settingsModalIsOpen && (
+        <SettingsModal  />
+      )} */}
     </div>
   );
 };

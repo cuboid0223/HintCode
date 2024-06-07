@@ -59,7 +59,7 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
           <PopoverTrigger>
             <FileJson2 />
           </PopoverTrigger>
-          <PopoverContent>
+          <PopoverContent className=" max-h-[400px] overflow-auto">
             {/* 測試結果區 */}
             <div className="flex items-center mb-3">
               <h2
