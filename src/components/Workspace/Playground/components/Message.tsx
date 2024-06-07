@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/popover";
 import { Copy, CopyCheck, FileJson2 } from "lucide-react";
 import { Message as MessageType } from "@/utils/types/message";
+import TestCaseList from "./TestCaseList";
+import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 type MessageProps = {
   theme: string;
   msg: MessageType;
@@ -26,6 +28,8 @@ const Message: React.FC<MessageProps> = ({ msg, theme }) => {
 };
 
 const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
+  const { code, result } = msg;
+  const { submissions } = result;
   const handleCodeFromText = (text: string) => {
     // 將 prompt templete 字串提取 python 程式碼部分
     const codeMatch = text?.match(
@@ -55,7 +59,45 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
           <PopoverTrigger>
             <FileJson2 />
           </PopoverTrigger>
-          <PopoverContent></PopoverContent>
+          <PopoverContent>
+            {/* 測試結果區 */}
+            <div className="flex items-center mb-3">
+              <h2
+                className={`font-bold  text-xl 
+                  ${
+                    // id: 3 是 Accepted
+                    isAllTestCasesAccepted(submissions)
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }  
+                  ${submissions.length === 0 && "hidden"}`}
+              >
+                {isAllTestCasesAccepted(submissions)
+                  ? "Accepted"
+                  : "Wrong Answer"}
+              </h2>
+            </div>
+            {submissions.length === 0 ? (
+              <h2 className="text-white">沒有測試結果</h2>
+            ) : (
+              <>
+                {submissions[0]?.stderr && (
+                  <div className="bg-red-100 rounded-lg">
+                    <div
+                      className="text-rose-500 p-6"
+                      dangerouslySetInnerHTML={{
+                        __html: submissions[0].stderr,
+                      }}
+                    />
+                  </div>
+                )}
+
+                {!submissions[0]?.stderr && (
+                  <TestCaseList isTestResult submissions={submissions} />
+                )}
+              </>
+            )}
+          </PopoverContent>
         </Popover>
       </div>
     </Card>

@@ -280,7 +280,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
             {/* <ScrollArea className="flex bg-red-300"> */}
             <TabsContent value="testcase" className=" flex flex-col  px-3  ">
               {/* 測試資料區 */}
-              <TestCaseList />
+              <TestCaseList submissions={submissions} />
             </TabsContent>
             {/* </ScrollArea> */}
             <TabsContent value="testResult" className=" flex flex-col  px-3  ">
@@ -312,7 +312,9 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
                     </div>
                   )}
 
-                  {!submissions[0]?.stderr && <TestCaseList isTestResult />}
+                  {!submissions[0]?.stderr && (
+                    <TestCaseList isTestResult submissions={submissions} />
+                  )}
                 </>
               )}
             </TabsContent>

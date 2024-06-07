@@ -15,15 +15,17 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 type TestCaseListProps = {
   isTestResult?: boolean;
+  submissions: SubmissionData[];
 };
 
 const TestCaseList: React.FC<TestCaseListProps> = ({
   isTestResult, // 用在測試結果區而非測試資料區
+  submissions,
 }) => {
   const problem = useRecoilValue(problemDataState);
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
-  const [{ submissions }, setSubmissionsData] =
-    useRecoilState<SubmissionsDataState>(submissionsDataState);
+  // const [{ submissions }, setSubmissionsData] =
+  //   useRecoilState<SubmissionsDataState>(submissionsDataState);
 
   // automitcally scroll to bottom of testCase
   const testCaseEndRef = useRef(null);
