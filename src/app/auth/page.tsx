@@ -13,7 +13,7 @@ const AuthPage = () => {
   // const authModal = useRecoilValue(authModalState);
   const [authModal, setAuthModal] = useState<AuthModalType>({
     type: "login",
-    isOpen: false,
+    isOpen: true,
   });
   const [user, loading, error] = useAuthState(auth);
   const [pageLoading, setPageLoading] = useState(true);
@@ -27,15 +27,14 @@ const AuthPage = () => {
   if (pageLoading) return null;
 
   return (
-    <div className="bg-gradient-to-b from-gray-600 to-black h-screen relative">
-      <div className="max-w-7xl mx-auto">
-        <Topbar setAuthModal={setAuthModal} />
-
+    <main className="h-screen dark:bg-gradient-to-b from-gray-600 to-black relative">
+      <Topbar authModal={authModal} setAuthModal={setAuthModal} />
+      <section className="h-full container max-w-xl ">
         {authModal.isOpen && (
           <AuthModal setAuthModal={setAuthModal} authModal={authModal} />
         )}
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
 export default AuthPage;

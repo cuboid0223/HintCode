@@ -148,16 +148,21 @@ const Signup: React.FC<SignupProps> = ({ setAuthModal }) => {
   }, [name]);
 
   return (
-    <section className="flex flex-col items-center justify-center">
-      <h3 className="text-xl font-medium text-white">創造 HintCode 角色</h3>
+    <section className="p-2 flex flex-col space-y-5 border-4 mt-28 dark:border-none">
+      <h2 className="text-2xl font-medium dark:text-white mb-3">
+        創造屬於你的 HintCode 角色 !
+      </h2>
       <div
-        className="rounded-full"
+        className="rounded-full mb-3"
         dangerouslySetInnerHTML={{
           __html: thumbnail,
         }}
       ></div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4 w-full"
+        >
           <FormField
             control={form.control}
             name="unit"
@@ -197,7 +202,9 @@ const Signup: React.FC<SignupProps> = ({ setAuthModal }) => {
                     value={field.value}
                   />
                 </FormControl>
-
+                <FormDescription>
+                  我們會根據您的暱稱產生最適合你的頭像
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -221,7 +228,7 @@ const Signup: React.FC<SignupProps> = ({ setAuthModal }) => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>password</FormLabel>
+                <FormLabel>密碼</FormLabel>
                 <FormControl>
                   <Input placeholder="********" {...field} type="password" />
                 </FormControl>
@@ -229,11 +236,13 @@ const Signup: React.FC<SignupProps> = ({ setAuthModal }) => {
               </FormItem>
             )}
           />
-          <Button type="submit">{loading ? "創造中..." : "創造"}</Button>
+          <Button className="w-full" type="submit">
+            {loading ? "創造中..." : "創造"}
+          </Button>
         </form>
       </Form>
 
-      <div className="text-sm font-medium text-gray-300">
+      <div className="text-sm font-medium dark:text-gray-300">
         已經有帳號了嗎?{" "}
         <a
           href="#"

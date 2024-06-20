@@ -24,10 +24,15 @@ import useGetProblems from "@/hooks/useGetProblems";
 
 type TopbarProps = {
   isProblemPage?: boolean;
+  authModal?: AuthModal;
   setAuthModal?: React.Dispatch<React.SetStateAction<AuthModal>>;
 };
 
-const Topbar: React.FC<TopbarProps> = ({ isProblemPage, setAuthModal }) => {
+const Topbar: React.FC<TopbarProps> = ({
+  isProblemPage,
+  setAuthModal,
+  authModal,
+}) => {
   const [user] = useAuthState(auth);
   const [userData, setUserData] = useState<User | null>(null);
 
@@ -62,7 +67,10 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage, setAuthModal }) => {
 
   useEffect(() => {
     const handleUserData = async () => {
-      if (!user) return;
+      if (!user) {
+        router.push("/auth");
+        return;
+      }
       const userRef = doc(firestore, "users", user?.uid);
       const docSnap = await getDoc(userRef);
       if (docSnap.exists()) {
@@ -74,7 +82,7 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage, setAuthModal }) => {
       }
     };
     handleUserData();
-  }, [user]);
+  }, [user, router]);
 
   return (
     <nav className="relative flex h-[50px] w-full shrink-0 items-center px-5 dark:bg-dark-layer-1 bg-card text-dark-gray-7">
@@ -114,11 +122,13 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage, setAuthModal }) => {
         )}
 
         <div className="flex items-center space-x-4 flex-1 justify-end">
-          <Link href="/rank">
-            <Button variant="outline" size="icon">
-              <Trophy className="h-[1.2rem] w-[1.2rem]" />
-            </Button>
-          </Link>
+          {user && (
+            <Link href="/rank">
+              <Button variant="outline" size="icon">
+                <Trophy className="h-[1.2rem] w-[1.2rem]" />
+              </Button>
+            </Link>
+          )}
 
           <DropdownMenu>
             {/* box-shadow:  -23px 23px 46px #d0d0d0,
