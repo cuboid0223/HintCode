@@ -4,19 +4,11 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Logout from "../Buttons/Logout";
-import { useSetRecoilState } from "recoil";
-import { authModalState } from "@/atoms/authModalAtom";
 import Image from "next/image";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { BsList } from "react-icons/bs";
 import Timer from "../Timer/Timer";
-import {
-  useRouter,
-  usePathname,
-  useSearchParams,
-  useParams,
-} from "next/navigation";
-import { Problem } from "@/utils/types/problem";
+import { useRouter, useParams } from "next/navigation";
 import { Moon, Sun, Trophy } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
@@ -26,21 +18,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { User } from "@/utils/types/global";
+import { doc, getDoc } from "firebase/firestore";
+import { AuthModal, User } from "@/utils/types/global";
 import useGetProblems from "@/hooks/useGetProblems";
+
 type TopbarProps = {
   isProblemPage?: boolean;
+  setAuthModal?: React.Dispatch<React.SetStateAction<AuthModal>>;
 };
 
-const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
+const Topbar: React.FC<TopbarProps> = ({ isProblemPage, setAuthModal }) => {
   const [user] = useAuthState(auth);
   const [userData, setUserData] = useState<User | null>(null);
 
-  const setAuthModalState = useSetRecoilState(authModalState);
+  // const setAuthModalState = useSetRecoilState(authModalState);
   const router = useRouter();
   const { setTheme } = useTheme();
-  const searchParams = useSearchParams();
   const params = useParams<{ pid: string }>();
   const [isProblemsLoading, setIsProblemsLoading] = useState(false);
   const problems = useGetProblems(setIsProblemsLoading);
@@ -153,7 +146,7 @@ const Topbar: React.FC<TopbarProps> = ({ isProblemPage }) => {
             <Link
               href="/auth"
               onClick={() =>
-                setAuthModalState((prev) => ({
+                setAuthModal((prev) => ({
                   ...prev,
                   isOpen: true,
                   type: "login",

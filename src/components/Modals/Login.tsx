@@ -5,12 +5,15 @@ import React, { useEffect, useState } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useSetRecoilState } from "recoil";
 import { toast } from "react-toastify";
-type LoginProps = {};
+import { AuthModal } from "@/utils/types/global";
+type LoginProps = {
+  setAuthModal?: React.Dispatch<React.SetStateAction<AuthModal>>;
+};
 
-const Login: React.FC<LoginProps> = () => {
-  const setAuthModalState = useSetRecoilState(authModalState);
+const Login: React.FC<LoginProps> = ({ setAuthModal }) => {
+  // const setAuthModalState = useSetRecoilState(authModalState);
   const handleClick = (type: "login" | "register" | "forgotPassword") => {
-    setAuthModalState((prev) => ({ ...prev, type }));
+    setAuthModal((prev) => ({ ...prev, type }));
   };
   const [inputs, setInputs] = useState({ email: "", password: "" });
   const [signInWithEmailAndPassword, user, loading, error] =
@@ -94,7 +97,7 @@ const Login: React.FC<LoginProps> = () => {
       <button
         type="submit"
         className="w-full text-white focus:ring-blue-300 font-medium rounded-lg
-                text-sm px-5 py-2.5 text-center bg-brand-orange hover:bg-brand-orange-s
+                text-sm px-5 py-2.5 text-center 
             "
       >
         {loading ? "載入中..." : "登入"}

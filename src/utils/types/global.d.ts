@@ -13,3 +13,8 @@ export type User = {
   updatedAt: number;
   thumbnail: string;
 };
+
+export type AuthModal = {
+  type: "login" | "register" | "forgotPassword";
+  isOpen: boolean;
+};

@@ -1,7 +1,5 @@
-import { authModalState } from "@/atoms/authModalAtom";
 import { auth, firestore } from "../../firebase/firebase";
 import { useEffect, useState } from "react";
-import { useSetRecoilState } from "recoil";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { doc, setDoc, collection } from "firebase/firestore";
 import { toast } from "react-toastify";
@@ -9,60 +7,106 @@ import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { createAvatar } from "@dicebear/core";
 import { thumbs } from "@dicebear/collection";
+import { AuthModal } from "@/utils/types/global";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-type SignupProps = {};
-const avatar = createAvatar(thumbs, {
-  // ... options
-  seed: "Felix",
-  flip: true,
-  size: 32,
-  backgroundColor: ["b6e3f4", "c0aede", "d1d4f9", "ffd5dc", "ffdfbf"],
-  backgroundType: ["gradientLinear", "solid"],
-  randomizeIds: true,
-  eyesColor: ["000000", "ffffff"],
-  shapeColor: ["0a5b83", "1c799f", "69d2e7", "f1f4dc"],
-  radius: 50,
+const formSchema = z.object({
+  password: z.string(),
+  email: z.string().email({ message: "email 格式錯誤" }),
+  displayName: z
+    .string({
+      required_error: "請輸入暱稱",
+      invalid_type_error: "暱稱必須是字串",
+    })
+    .trim()
+    .min(2, {
+      message: "暱稱必須多於兩個字",
+    })
+    .max(5, { message: "暱稱必須少於五個字" }),
+  unit: z
+    .string({
+      required_error: "請選擇學校單位",
+    })
+    .min(1, { message: "請選擇學校單位" }),
 });
-const svg = avatar.toString();
 
-const Signup: React.FC<SignupProps> = () => {
-  const setAuthModalState = useSetRecoilState(authModalState);
+type SignupProps = {
+  setAuthModal?: React.Dispatch<React.SetStateAction<AuthModal>>;
+};
+
+const Signup: React.FC<SignupProps> = ({ setAuthModal }) => {
+  const [name, setName] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
   const handleClick = () => {
-    setAuthModalState((prev) => ({ ...prev, type: "login" }));
+    setAuthModal((prev) => ({ ...prev, type: "login" }));
   };
-  const [inputs, setInputs] = useState({
-    email: "",
-    displayName: "",
-    password: "",
-  });
   const router = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      password: "",
+      email: "",
+      displayName: "",
+      unit: "",
+    },
+  });
   const [createUserWithEmailAndPassword, user, loading, error] =
     useCreateUserWithEmailAndPassword(auth);
-  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
 
-  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!inputs.email || !inputs.password || !inputs.displayName)
-      return alert("請填寫 Email 或是 密碼");
+  const createThumbnail = (seed: string, size: 32 | 64) => {
+    const avatar = createAvatar(thumbs, {
+      // 隨機頭像設定
+      seed: seed,
+      flip: true,
+      size: size,
+      backgroundColor: ["b6e3f4", "c0aede", "d1d4f9", "ffd5dc", "ffdfbf"],
+      backgroundType: ["gradientLinear", "solid"],
+      randomizeIds: true,
+      eyesColor: ["000000", "ffffff"],
+      shapeColor: ["0a5b83", "1c799f", "69d2e7", "f1f4dc"],
+      radius: 50,
+    });
+
+    return avatar.toString();
+  };
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // console.log(`handleOnSubmit -> ${JSON.stringify(values)}`);
     try {
       toast.loading("正在創建帳號", {
         position: "top-center",
         toastId: "loadingToast",
       });
       const newUser = await createUserWithEmailAndPassword(
-        inputs.email,
-        inputs.password
+        values.email,
+        values.password
       );
       if (!newUser) return;
       const userRef = doc(firestore, "users", newUser.user.uid);
-      const problemId = uuidv4();
 
       const userData = {
         uid: newUser.user.uid,
         email: newUser.user.email,
-        displayName: inputs.displayName,
+        displayName: values.displayName,
         createdAt: Date.now(),
         updatedAt: Date.now(),
         likedProblems: [],
@@ -70,28 +114,20 @@ const Signup: React.FC<SignupProps> = () => {
         solvedProblems: [],
         starredProblems: [],
         totalScore: 0,
-        thumbnail: svg,
+        thumbnail: createThumbnail(name, 32),
+        thumbnail_64px: createThumbnail(name, 64),
+        unit: values.unit,
       };
       await setDoc(userRef, userData);
 
       // 空的 historyData
-      const problemsData = {
-        name: "greet-n-times",
-        threadId: "",
-      };
-      const problemsCollectionRef = collection(userRef, "problems");
-      const problemDocRef = doc(problemsCollectionRef, problemId);
-      await setDoc(problemDocRef, problemsData);
-
-      // // 空的 messageData
-      // const messageData = {
-      //   content: "",
-      //   role: "",
-      //   createdAt: Date.now(),
+      // const problemsData = {
+      //   name: "greet-n-times",
+      //   threadId: "",
       // };
-      // const messagesCollectionRef = collection(historyDocRef, "messages");
-      // const messagesDocRef = doc(messagesCollectionRef, messageId);
-      // await setDoc(messagesDocRef, messageData);
+      // const problemsCollectionRef = collection(userRef, "problems");
+      // const problemDocRef = doc(problemsCollectionRef, problemId);
+      // await setDoc(problemDocRef, problemsData);
 
       router.push("/");
     } catch (error: any) {
@@ -106,87 +142,108 @@ const Signup: React.FC<SignupProps> = () => {
     if (error) alert(error.message);
   }, [error]);
 
-  return (
-    <form className="space-y-6 px-6 pb-4" onSubmit={handleRegister}>
-      <h3 className="text-xl font-medium text-white">Register to LeetClone</h3>
-      <div>
-        <label
-          htmlFor="email"
-          className="text-sm font-medium block mb-2 text-gray-300"
-        >
-          Email
-        </label>
-        <input
-          onChange={handleChangeInput}
-          type="email"
-          name="email"
-          id="email"
-          className="
-        border-2 outline-none sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
-        bg-gray-600 border-gray-500 placeholder-gray-400 text-white
-    "
-          placeholder="name@company.com"
-        />
-      </div>
-      <div>
-        <label
-          htmlFor="displayName"
-          className="text-sm font-medium block mb-2 text-gray-300"
-        >
-          Display Name
-        </label>
-        <input
-          onChange={handleChangeInput}
-          type="displayName"
-          name="displayName"
-          id="displayName"
-          className="
-        border-2 outline-none sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
-        bg-gray-600 border-gray-500 placeholder-gray-400 text-white
-    "
-          placeholder="John Doe"
-        />
-      </div>
-      <div>
-        <label
-          htmlFor="password"
-          className="text-sm font-medium block mb-2 text-gray-300"
-        >
-          Password
-        </label>
-        <input
-          onChange={handleChangeInput}
-          type="password"
-          name="password"
-          id="password"
-          className="
-        border-2 outline-none sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
-        bg-gray-600 border-gray-500 placeholder-gray-400 text-white
-    "
-          placeholder="*******"
-        />
-      </div>
+  useEffect(() => {
+    const svg_64px = createThumbnail(name, 64);
+    setThumbnail(svg_64px);
+  }, [name]);
 
-      <button
-        type="submit"
-        className="w-full text-white focus:ring-blue-300 font-medium rounded-lg
-            text-sm px-5 py-2.5 text-center bg-brand-orange hover:bg-brand-orange-s
-        "
-      >
-        {loading ? "Registering..." : "Register"}
-      </button>
+  return (
+    <section className="flex flex-col items-center justify-center">
+      <h3 className="text-xl font-medium text-white">創造 HintCode 角色</h3>
+      <div
+        className="rounded-full"
+        dangerouslySetInnerHTML={{
+          __html: thumbnail,
+        }}
+      ></div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="unit"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>單位</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange}>
+                    <SelectTrigger className="">
+                      <SelectValue placeholder="學校" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="中興大學">中興大學</SelectItem>
+                      <SelectItem value="台中科技大學">台中科技大學</SelectItem>
+                      <SelectItem value="台中教育大學">台中教育大學</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="displayName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>暱稱</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="王大明"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setName(e.target.value);
+                    }}
+                    value={field.value}
+                  />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>email</FormLabel>
+                <FormControl>
+                  <Input placeholder="studentid@gmail.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>password</FormLabel>
+                <FormControl>
+                  <Input placeholder="********" {...field} type="password" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">{loading ? "創造中..." : "創造"}</Button>
+        </form>
+      </Form>
 
       <div className="text-sm font-medium text-gray-300">
-        Already have an account?{" "}
+        已經有帳號了嗎?{" "}
         <a
           href="#"
           className="text-blue-700 hover:underline"
           onClick={handleClick}
         >
-          Log In
+          登入
         </a>
       </div>
-    </form>
+    </section>
   );
 };
 export default Signup;
