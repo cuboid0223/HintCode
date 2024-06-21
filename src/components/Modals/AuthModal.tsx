@@ -1,9 +1,7 @@
-
 import React from "react";
 import Login from "./Login";
 import ResetPassword from "./ResetPassword";
 import Signup from "./Signup";
-
 import { AuthModal as AuthModalType } from "@/utils/types/global";
 
 type AuthModalProps = {
@@ -12,7 +10,6 @@ type AuthModalProps = {
 };
 
 const AuthModal: React.FC<AuthModalProps> = ({ authModal, setAuthModal }) => {
- 
   switch (authModal.type) {
     case "login":
       return <Login setAuthModal={setAuthModal} />;

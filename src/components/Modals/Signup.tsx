@@ -1,13 +1,17 @@
 import { auth, firestore } from "../../firebase/firebase";
 import { useEffect, useState } from "react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { doc, setDoc, collection } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid";
 import { createAvatar } from "@dicebear/core";
 import { thumbs } from "@dicebear/collection";
 import { AuthModal } from "@/utils/types/global";
+
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
 import {
   Select,
   SelectContent,
@@ -15,10 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -29,6 +29,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
   password: z.string(),
@@ -57,7 +58,7 @@ type SignupProps = {
 const Signup: React.FC<SignupProps> = ({ setAuthModal }) => {
   const [name, setName] = useState("");
   const [thumbnail, setThumbnail] = useState("");
-  const handleClick = () => {
+  const handleChangeModal = () => {
     setAuthModal((prev) => ({ ...prev, type: "login" }));
   };
   const router = useRouter();
@@ -247,7 +248,7 @@ const Signup: React.FC<SignupProps> = ({ setAuthModal }) => {
         <a
           href="#"
           className="text-blue-700 hover:underline"
-          onClick={handleClick}
+          onClick={handleChangeModal}
         >
           登入
         </a>
