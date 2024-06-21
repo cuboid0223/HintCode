@@ -35,6 +35,7 @@ import { problemDataState } from "@/atoms/ProblemData";
 import getWrongTestCases from "@/utils/testCases/getWrongTestcases";
 import { Message as MessageType } from "@/utils/types/message";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
+import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 type ProblemHelpProps = {
   threadId: string;
   remainTimes: number;
@@ -343,16 +344,17 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
         setIsHelpBtnHidden(true);
       }
     };
-    // const updateUserProblemScore = async () => {
-    //   await updateDoc(userProblemRef, {
-    //     score: remainTimes * (problem.score / problem.totalTimes),
-    //   });
-    // };
 
     updateRemainingTimes();
-    // updateUserProblemScore();
     updateGraduallyPrompt();
   }, [messages, userProblemRef, problem, remainTimes, setRemainTimes]);
+
+  // 當通過所有測資，將請求幫助按鈕 disable
+  useEffect(() => {
+    if (isAllTestCasesAccepted(submissionsData.submissions)) {
+      setIsHelpBtnEnable(false);
+    }
+  }, [submissionsData.submissions, setIsHelpBtnEnable]);
 
   // automatically scroll to bottom of chat
   const messagesEndRef = useRef(null);
@@ -396,7 +398,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
           disabled // 目前先關起來
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
-          placeholder={`剩下 ${remainTimes} 次提示次數，得分為 ${remainTimes * (problem.score / problem.totalTimes)}`}
+          placeholder={`剩餘 ${remainTimes} 次提示機會 `}
         />
         <TooltipProvider>
           <Tooltip>
@@ -413,7 +415,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
               )}
             </TooltipTrigger>
             <TooltipContent>
-              {isHelpBtnEnable ? "" : <p>需要按下執行按鈕</p>}
+              {isHelpBtnEnable ? "" : <p>需要按下執行按鈕或是您已通過測試</p>}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
