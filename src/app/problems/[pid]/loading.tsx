@@ -1,8 +1,14 @@
-export default function LoadingSkeleton() {
+import Topbar from "@/components/Topbar/Topbar";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function LoadingWorkspaceSkeleton() {
   return (
     <>
-      <div className="max-w-[1200px] mx-auto sm:w-7/12 w-full animate-pulse">
-        loading page from src\app\problems\[pid]\loading.tsx
+      <Topbar />
+      <div className="grid grid-cols-2 grid-rows-2 gap-3 h-screen overflow-hidden w-full p-4">
+        <Skeleton className="h-full row-span-2 " />
+        <Skeleton className=" " />
+        <Skeleton className=" " />
       </div>
     </>
   );

@@ -15,16 +15,16 @@ const AuthPage = () => {
     type: "login",
     isOpen: true,
   });
-  const [user, loading, error] = useAuthState(auth);
-  const [pageLoading, setPageLoading] = useState(true);
-  const router = useRouter();
+  // const [user, loading, error] = useAuthState(auth);
+  // const [pageLoading, setPageLoading] = useState(true);
+  // const router = useRouter();
 
-  useEffect(() => {
-    if (user) router.push("/");
-    if (!loading && !user) setPageLoading(false);
-  }, [user, router, loading]);
+  // useEffect(() => {
+  // if (user) router.push("/");
+  //   if (!loading && !user) setPageLoading(false);
+  // }, [user, router, loading]);
 
-  if (pageLoading) return null;
+  // if (pageLoading) return null;
 
   return (
     <main className="h-screen dark:bg-gradient-to-b from-gray-600 to-black relative">

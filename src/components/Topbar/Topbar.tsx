@@ -66,9 +66,9 @@ const Topbar: React.FC<TopbarProps> = ({
   };
 
   useEffect(() => {
-    const handleUserData = async () => {
+    const getUserData = async () => {
       if (!user) {
-        router.push("/auth");
+        // router.push("/auth");
         return;
       }
       const userRef = doc(firestore, "users", user?.uid);
@@ -81,7 +81,7 @@ const Topbar: React.FC<TopbarProps> = ({
         return false;
       }
     };
-    handleUserData();
+    getUserData();
   }, [user, router]);
 
   return (

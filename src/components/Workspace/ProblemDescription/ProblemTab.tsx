@@ -37,10 +37,6 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
   const [remainTimes, setRemainTimes] = useState(20);
   const [{ submissions }, setSubmissionsData] =
     useRecoilState<SubmissionsDataState>(submissionsDataState);
-  // create a new threadID when chat component created
-  useEffect(() => {
-    console.log("create thread");
-  }, []);
 
   async function checkIsDocumentExists(userId: string, problemId: string) {
     if (!userId || !problemId) {
@@ -98,14 +94,11 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
       return data.threadId;
     };
 
-    const checkAndCreateProblemDocument = async () => {
+    const handleProblemDocument = async () => {
       try {
         const isExist = await checkIsDocumentExists(user.uid, problem.id);
-        if (isExist) {
-          // 有存在
-          // console.log("Document exists");
-        } else {
-          // 沒有， create threadId 加入至 problems/[pid]
+        if (!isExist) {
+          // 沒有存在， create threadId 加入至 users/userId/problems/[pid]
           console.log("Document does not exist, creating...");
           const newThreadId = await createThread();
           await createProblemDocument(newThreadId);
@@ -115,25 +108,8 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
         console.error("Error checking or creating document:", error);
       }
     };
-    checkAndCreateProblemDocument();
+    handleProblemDocument();
   }, [threadId, user, problem.id]);
-
-  useEffect(() => {
-    // const getMessages = async () => {
-    //   if (!threadId) return;
-    //   // console.log("threadId from getMessages ", threadId);
-    //   const messages = await fetch(
-    //     `/api/assistants/threads/${threadId}/messages`,
-    //     {
-    //       method: "GET",
-    //     }
-    //   );
-    //   const msgs = await messages.json();
-    //   console.log(msgs.data);
-    //   setMessages(msgs.data.reverse());
-    // };
-    // getMessages();
-  }, [threadId]);
 
   useEffect(() => {
     /*

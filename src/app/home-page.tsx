@@ -11,45 +11,21 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import { BsCheckCircle } from "react-icons/bs";
-
 import useGetUserProblems from "@/hooks/useGetUserProblems";
 import useGetProblems from "@/hooks/useGetProblems";
+import { LoadingTableSkeleton } from "./loading";
 
 export default function Home() {
   const [loadingProblems, setLoadingProblems] = useState(true);
-  const [youtubePlayer, setYoutubePlayer] = useState({
-    isOpen: false,
-    videoId: "",
-  });
   const problems = useGetProblems(setLoadingProblems);
   const userProblems = useGetUserProblems();
-  console.log("problems", problems);
-  console.log("userProblems", userProblems);
-  const closeModal = () => {
-    setYoutubePlayer({ isOpen: false, videoId: "" });
-  };
 
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeModal();
-    };
-    window.addEventListener("keydown", handleEsc);
-
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, []);
   return (
     <>
       <main className="">
         <Topbar />
-
         <div className="container relative overflow-x-auto mx-auto">
-          {loadingProblems && (
-            <div className="max-w-[1200px] mx-auto sm:w-7/12 w-full animate-pulse">
-              {[...Array(10)].map((_, idx) => (
-                <LoadingSkeleton key={idx} />
-              ))}
-            </div>
-          )}
+          {loadingProblems && <LoadingTableSkeleton />}
           {/* 問題列表 */}
           <Table className="my-6 ">
             {!loadingProblems && (
@@ -93,7 +69,7 @@ export default function Home() {
                     <TableCell className=" dark:text-white">
                       <Link
                         className="block cursor-pointer  "
-                        target="_blank"
+                        // target="_blank"
                         href={`/problems/${problem.id}`}
                       >
                         <p className="hover:text-blue-600">{problem.title}</p>
@@ -118,15 +94,3 @@ export default function Home() {
     </>
   );
 }
-
-const LoadingSkeleton = () => {
-  return (
-    <div className="flex items-center space-x-12 mt-4 px-6">
-      <div className="w-6 h-6 shrink-0 rounded-full bg-dark-layer-1"></div>
-      <div className="h-4 sm:w-52  w-32  rounded-full bg-dark-layer-1"></div>
-      <div className="h-4 sm:w-52  w-32 rounded-full bg-dark-layer-1"></div>
-      <div className="h-4 sm:w-52 w-32 rounded-full bg-dark-layer-1"></div>
-      <span className="sr-only">Loading...</span>
-    </div>
-  );
-};
