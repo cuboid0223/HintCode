@@ -67,10 +67,8 @@ const Topbar: React.FC<TopbarProps> = ({
 
   useEffect(() => {
     const getUserData = async () => {
-      if (!user) {
-        // router.push("/auth");
-        return;
-      }
+      if (!user) return;
+
       const userRef = doc(firestore, "users", user?.uid);
       const docSnap = await getDoc(userRef);
       if (docSnap.exists()) {

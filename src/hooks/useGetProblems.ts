@@ -1,6 +1,6 @@
 import { firestore } from "@/firebase/firebase";
 import { Problem } from "@/utils/types/problem";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 function useGetProblems(
@@ -14,7 +14,8 @@ function useGetProblems(
       setLoadingProblems(true);
       const q = query(
         collection(firestore, "problems"),
-        orderBy("order", "desc")
+        where("isPublished", "==", true),
+        orderBy("order", "asc")
       );
       const querySnapshot = await getDocs(q);
       const tmp: Problem[] = [];

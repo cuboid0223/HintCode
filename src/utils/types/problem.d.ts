@@ -19,7 +19,6 @@ export type Problem = {
   diffmode: string;
   problemStatement: string;
   examples: Example[];
-  // constraints: string;
   order: number;
   totalTimes: number;
   starterCode: {
@@ -27,7 +26,6 @@ export type Problem = {
     js: string;
     [key: string]: string;
   };
-  // handlerFunction: ((fn: any) => boolean) | string;
   starterFunctionName: {
     py: string;
     js: string;
@@ -35,6 +33,7 @@ export type Problem = {
   };
   testCaseCode: TestCaseCode;
   score: number;
+  isPublished: boolean;
 };
 
 // user -> problem
