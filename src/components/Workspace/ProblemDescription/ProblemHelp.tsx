@@ -415,7 +415,11 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
               )}
             </TooltipTrigger>
             <TooltipContent>
-              {isHelpBtnEnable ? "" : <p>需要按下執行按鈕或是您已通過測試</p>}
+              {isAllTestCasesAccepted(submissionsData.submissions) ? (
+                <p>您已通過測試</p>
+              ) : (
+                <p>需要按下執行按鈕產生結果</p>
+              )}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
