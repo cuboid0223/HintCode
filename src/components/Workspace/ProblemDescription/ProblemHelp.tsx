@@ -20,7 +20,6 @@ import Message from "../Playground/components/Message";
 import { RingLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
-import { MessageProps } from "./ProblemTab";
 import {
   Tooltip,
   TooltipContent,
@@ -67,7 +66,13 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const [finalText, setFinalText] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const problemRef = doc(firestore, "users", user.uid, "problems", problem.id);
+  const userProblemRef = doc(
+    firestore,
+    "users",
+    user.uid,
+    "problems",
+    problem.id
+  );
   const [isMessageLoading, setIsMessageLoading] = useState(false);
   const messages = useGetProblemMessages(
     user.uid,
@@ -119,27 +124,12 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     );
     const stream = AssistantStream.fromReadableStream(response.body);
     handleReadableStream(stream);
-    // setInputDisabled(false);
   };
 
   const handleReadableStream = (stream: AssistantStream) => {
     // messages
     stream.on("textCreated", handleTextCreated);
     stream.on("textDelta", handleTextDelta);
-
-    // image
-    // stream.on("imageFileDone", handleImageFileDone);
-
-    // code interpreter
-    // stream.on("toolCallCreated", toolCallCreated);
-    // stream.on("toolCallDelta", toolCallDelta);
-
-    // events without helpers yet (e.g. requires_action and run.done)
-    // stream.on("event", (event) => {
-    //   if (event.event === "thread.run.requires_action")
-    //     handleRequiresAction(event);
-    //   if (event.event === "thread.run.completed") handleRunCompleted();
-    // });
   };
 
   // handleRunCompleted - re-enable the input form
@@ -252,12 +242,6 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     ${graduallyPrompt}
     `;
 
-    // sendMessageToGPT(userInput); // 目前禁止學生直接接觸 GPT
-    // setMessages((prevMessages) => [
-    //   ...prevMessages,
-    //   { role: "user", text: userInput },
-    // ]);
-
     sendMessageToGPT(promptTemplate);
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -339,7 +323,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   // update remaining times and gradually prompt
   useEffect(() => {
     const updateRemainingTimes = async () => {
-      await updateDoc(problemRef, {
+      await updateDoc(userProblemRef, {
         remainTimes: problem.totalTimes - messages.length / 2,
       });
       setRemainTimes(problem.totalTimes - messages.length / 2);
@@ -359,16 +343,16 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
         setIsHelpBtnHidden(true);
       }
     };
-    const updateUserProblemScore = async () => {
-      await updateDoc(problemRef, {
-        score: remainTimes * (problem.score / problem.totalTimes),
-      });
-    };
+    // const updateUserProblemScore = async () => {
+    //   await updateDoc(userProblemRef, {
+    //     score: remainTimes * (problem.score / problem.totalTimes),
+    //   });
+    // };
 
     updateRemainingTimes();
-    updateUserProblemScore();
+    // updateUserProblemScore();
     updateGraduallyPrompt();
-  }, [messages, problemRef, problem, remainTimes, setRemainTimes]);
+  }, [messages, userProblemRef, problem, remainTimes, setRemainTimes]);
 
   // automatically scroll to bottom of chat
   const messagesEndRef = useRef(null);
@@ -378,9 +362,6 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  // get messages
-  useEffect(() => {}, []);
 
   // solve react-hydration-error
   useEffect(() => {
@@ -393,21 +374,13 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   }
   return (
     <section className="flex-1 px-5 flex flex-col ">
-      {/* {messages.length === 0 && <OrbitControlText />} */}
       {/* GPT output */}
       <div className="flex-1">
         <div
           className={`grid gap-4 justify-items-stretch ${messages.length === 0 ? "overflow-hidden" : "overflow-y-auto"} `}
         >
           {messages.map((msg, index) => (
-            <Message
-              key={index}
-              msg={msg}
-              // role={msg.role}
-              // text={msg.text}
-              // code={latestTestCode}
-              theme={resolvedTheme}
-            />
+            <Message key={index} msg={msg} theme={resolvedTheme} />
           ))}
         </div>
       </div>
