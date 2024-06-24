@@ -26,6 +26,7 @@ import { Suspense } from "react";
 import { useTheme } from "next-themes";
 import { View } from "./canvas/View";
 import { useTransition, animated } from "react-spring";
+import Thumbnail from "./Thumbnail";
 
 const Trophy = dynamic(
   () => import("@/components/canvas/Models").then((mod) => mod.Trophy),
@@ -40,17 +41,7 @@ const Common = dynamic(
 function RankingList() {
   const [top10UsersData, setTop10UsersData] = useState<User[]>([]);
   const { resolvedTheme } = useTheme();
-  //   const handleRanking = () => {
-  //     const rankedUsers = users.sort((a, b) => b.totalScore - a.totalScore);
-  //     // 取前10名
-  //     const top10 = rankedUsers.slice(0, 10);
 
-  //     // 分成兩個陣列：前五名和第六到第十名
-  //     const top5 = top10.slice(0, 5);
-  //     const second5 = top10.slice(5, 10);
-  //     setRankingList({ top5, second5 });
-  //     return { top5, second5 };
-  //   };
   const getTop10UsersData = async () => {
     // 按 score 降序排序並限制結果數量為 10
     const usersRef = collection(firestore, "users");
@@ -137,12 +128,7 @@ function RankingList() {
               <TableCell className="">{user.totalScore}</TableCell>
               <TableCell className="">{user.displayName}</TableCell>
               <TableCell className="flex place-content-center">
-                <div
-                  className="rounded-full h-8 w-8"
-                  dangerouslySetInnerHTML={{
-                    __html: user.thumbnail || "<div className='h-8 w-8'></div>",
-                  }}
-                ></div>
+                <Thumbnail svg={user?.thumbnail} />
               </TableCell>
               <TableCell className="font-bold text-xl ">{index + 1}</TableCell>
             </animated.tr>

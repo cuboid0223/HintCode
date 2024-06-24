@@ -4,10 +4,11 @@ import useGetUserInfo from "@/hooks/useGetUserInfo";
 import React from "react";
 
 function PersonalInfo() {
-  const useInfo = useGetUserInfo();
+  const useeInfo = useGetUserInfo();
   return (
     <div>
       {/* thumbnail 64px */}
+
       <div className="flex place-content-center">
         {/* problems */}
         {/* <OrbitControlText text={"9/10"} /> */}
