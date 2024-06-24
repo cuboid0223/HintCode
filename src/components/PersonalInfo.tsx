@@ -1,8 +1,10 @@
 "use client";
 
+import useGetUserInfo from "@/hooks/useGetUserInfo";
 import React from "react";
 
 function PersonalInfo() {
+  const useInfo = useGetUserInfo();
   return (
     <div>
       {/* thumbnail 64px */}

@@ -26,15 +26,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import OrbitControlText from "@/components/OrbitControlText";
 import { doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { v4 as uuidv4 } from "uuid";
 import { problemDataState } from "@/atoms/ProblemData";
-import getWrongTestCases from "@/utils/testCases/getWrongTestcases";
+
 import { Message as MessageType } from "@/utils/types/message";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
+
+import getWrongTestCases from "@/utils/testCases/getWrongTestCases";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 type ProblemHelpProps = {
   threadId: string;
@@ -52,9 +53,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   remainTimes,
 }) => {
   const problem = useRecoilValue(problemDataState);
-  const lang = localStorage.getItem("selectedLang");
   const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
-  const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
   const [user] = useAuthState(auth);
   const { resolvedTheme } = useTheme();
   const [submissionsData, setSubmissionsData] =
@@ -131,12 +130,6 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
     // messages
     stream.on("textCreated", handleTextCreated);
     stream.on("textDelta", handleTextDelta);
-  };
-
-  // handleRunCompleted - re-enable the input form
-  const handleRunCompleted = () => {
-    // setInputDisabled(false);
-    console.log("assistant messages all done");
   };
 
   /* Stream Event Handlers */

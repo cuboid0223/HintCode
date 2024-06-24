@@ -1,7 +1,7 @@
 "use client";
-import { auth, firestore } from "../../firebase/firebase";
+import { auth } from "../../firebase/firebase";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Logout from "../Buttons/Logout";
 import Image from "next/image";
@@ -18,9 +18,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { doc, getDoc } from "firebase/firestore";
-import { AuthModal, User } from "@/utils/types/global";
+import { AuthModal } from "@/utils/types/global";
 import useGetProblems from "@/hooks/useGetProblems";
+import useGetUserInfo from "@/hooks/useGetUserInfo";
 
 type TopbarProps = {
   isProblemPage?: boolean;
@@ -34,9 +34,7 @@ const Topbar: React.FC<TopbarProps> = ({
   authModal,
 }) => {
   const [user] = useAuthState(auth);
-  const [userData, setUserData] = useState<User | null>(null);
-
-  // const setAuthModalState = useSetRecoilState(authModalState);
+  const userData = useGetUserInfo();
   const router = useRouter();
   const { setTheme } = useTheme();
   const params = useParams<{ pid: string }>();
@@ -64,23 +62,6 @@ const Topbar: React.FC<TopbarProps> = ({
       router.push(`/problems/${nextProblem.id}`);
     }
   };
-
-  useEffect(() => {
-    const getUserData = async () => {
-      if (!user) return;
-
-      const userRef = doc(firestore, "users", user?.uid);
-      const docSnap = await getDoc(userRef);
-      if (docSnap.exists()) {
-        console.log("User data:", docSnap.data());
-        setUserData(docSnap.data() as User);
-      } else {
-        console.log("No User data!");
-        return false;
-      }
-    };
-    getUserData();
-  }, [user, router]);
 
   return (
     <nav className="relative flex h-[50px] w-full shrink-0 items-center px-5 dark:bg-dark-layer-1 bg-card text-dark-gray-7">

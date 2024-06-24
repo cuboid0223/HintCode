@@ -19,7 +19,8 @@ const HighlightedDiff: React.FC<HighlightedDiffProps> = ({
   if (!output) return <p>{output}</p>;
   let diff;
   if (diffMode === "line") {
-    diff = diffLines(output, expectedOutput);
+    diff = diffWords(output, expectedOutput);
+    // diff = diffLines(output, expectedOutput);
   } else {
     diff = diffWords(output, expectedOutput);
   }
@@ -27,12 +28,6 @@ const HighlightedDiff: React.FC<HighlightedDiffProps> = ({
   const result = diff.map((part, index) => {
     if (part.added) {
       return (
-        // <span
-        //   key={index}
-        //   className={`bg-green-600  ${addedHidden ? "hidden" : ""}`}
-        // >
-        //   {part.value}
-        // </span>
         <div
           key={index}
           className={`bg-green-600 w-fit 
@@ -45,12 +40,6 @@ const HighlightedDiff: React.FC<HighlightedDiffProps> = ({
       );
     } else if (part.removed) {
       return (
-        // <span
-        //   key={index}
-        //   className={`bg-red-600  ${removedHidden ? "hidden" : ""}`}
-        // >
-        //   {part.value}
-        // </span>
         <div
           key={index}
           className={`bg-red-600 w-fit inline-block ${
@@ -73,6 +62,8 @@ const HighlightedDiff: React.FC<HighlightedDiffProps> = ({
       );
     }
   });
+
+  console.log("result: ", result);
 
   return <div>{result}</div>;
 };
