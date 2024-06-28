@@ -9,22 +9,9 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useTransition } from "react-spring";
-const HEIGHT_FOR_ANIMATION = 64;
+const DEFAULT_HEIGHT_FOR_ANIMATION = 64;
 
-const usersWithHeight = (users: User[]) => {
-  const updatedUsers = users.map((user) => ({
-    ...user,
-    height: HEIGHT_FOR_ANIMATION,
-  }));
-
-  return updatedUsers;
-};
-
-const userWithHeight = (user: User) => {
-  return { ...user, height: HEIGHT_FOR_ANIMATION };
-};
-
-const fetchAndSubscribeToUsers = async (setUsers: React.Dispatch<User[]>) => {
+const fetchSubscribedUsers = async (setUsers: React.Dispatch<User[]>) => {
   try {
     const q = query(
       collection(firestore, "users"),
@@ -34,7 +21,7 @@ const fetchAndSubscribeToUsers = async (setUsers: React.Dispatch<User[]>) => {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const usersList: User[] = [];
       querySnapshot.forEach((doc) => {
-        usersList.push(userWithHeight(doc.data() as User));
+        usersList.push(doc.data() as User);
       });
 
       console.log("users: ", usersList);
@@ -54,7 +41,7 @@ const useGetSubscribedUsers = () => {
     let unsubscribe: (() => void) | undefined;
 
     const fetchAndSubscribe = async () => {
-      unsubscribe = await fetchAndSubscribeToUsers(setSubscribedUsers);
+      unsubscribe = await fetchSubscribedUsers(setSubscribedUsers);
     };
 
     fetchAndSubscribe();
@@ -70,6 +57,14 @@ const useGetSubscribedUsers = () => {
 };
 
 // handle row change animation
+const usersWithHeight = (users: User[]) => {
+  const updatedUsers = users.map((user) => ({
+    ...user,
+    height: DEFAULT_HEIGHT_FOR_ANIMATION,
+  }));
+
+  return updatedUsers;
+};
 const useUserTransitions = (
   usersData: User[],
   startIndex: number = 0,
@@ -107,7 +102,6 @@ function useGetUsers() {
       querySnapshot.forEach((doc) => {
         tmp.push(doc.data() as User);
       });
-      // console.log("problems from Firestore", tmp);
       setUsers(tmp);
     };
 
@@ -117,9 +111,4 @@ function useGetUsers() {
 }
 
 export default useGetUsers;
-export {
-  useGetSubscribedUsers,
-  userWithHeight,
-  usersWithHeight,
-  useUserTransitions,
-};
+export { useGetSubscribedUsers, useUserTransitions };
