@@ -36,6 +36,7 @@ import PersonalInfo from "../PersonalInfo";
 import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import LogoutButton from "../LogoutBtn";
+import { submissionsDataState } from "@/atoms/submissionsDataAtom";
 
 type TopbarProps = {
   isProblemPage?: boolean;
@@ -53,7 +54,8 @@ const Topbar: React.FC<TopbarProps> = ({
   const router = useRouter();
   const { setTheme } = useTheme();
   const params = useParams<{ pid: string }>();
-
+  const [submissionsData, setSubmissionsData] =
+    useRecoilState(submissionsDataState);
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
   const [isProblemsLoading, setIsProblemsLoading] = useState(false);
@@ -62,12 +64,13 @@ const Topbar: React.FC<TopbarProps> = ({
   const handleProblemChange = (isForward: boolean) => {
     const pid = params?.pid; // 當下題目的 pid
     if (!pid || !problems) return;
-    console.log(problems);
+
     const problem = problems.find((p) => p.id === pid);
+
     const direction = isForward ? 1 : -1;
     const nextProblemOrder = problem.order + direction;
     const nextProblem = problems.find((p) => p.order === nextProblemOrder);
-
+    setSubmissionsData({ problemId: pid, submissions: [] });
     if (isForward && !nextProblem) {
       //  處理 edge case 當沒有下一個問題且是點 "往前" 給使用者第一個 problem
       const firstProblem = problems.find((p) => p.order === 1);
