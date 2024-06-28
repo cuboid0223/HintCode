@@ -24,7 +24,7 @@ import { useTheme } from "next-themes";
 import { View } from "./canvas/View";
 import { animated } from "react-spring";
 import Thumbnail from "./Thumbnail";
-import { useUserTransitions } from "@/hooks/useGetUsers";
+import { useUserTransitions } from "@/hooks/useUsers";
 
 const Trophy = dynamic(
   () => import("@/components/canvas/Models").then((mod) => mod.Trophy),

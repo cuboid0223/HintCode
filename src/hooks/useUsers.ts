@@ -47,6 +47,7 @@ const fetchAndSubscribeToUsers = async (setUsers: React.Dispatch<User[]>) => {
   }
 };
 
+// 隨時監聽 users 變化
 const useGetSubscribedUsers = () => {
   const [subscribedUsers, setSubscribedUsers] = useState<User[]>([]);
   useEffect(() => {
@@ -68,6 +69,7 @@ const useGetSubscribedUsers = () => {
   return subscribedUsers;
 };
 
+// handle row change animation
 const useUserTransitions = (
   usersData: User[],
   startIndex: number = 0,

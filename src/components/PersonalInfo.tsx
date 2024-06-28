@@ -2,9 +2,9 @@
 
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import React, { useEffect, useState } from "react";
-import { useTransition, animated } from "react-spring";
+import { animated } from "react-spring";
 import Thumbnail from "./Thumbnail";
-import { useGetSubscribedUsers, usersWithHeight } from "@/hooks/useGetUsers";
+import { useGetSubscribedUsers, useUserTransitions } from "@/hooks/useUsers";
 import { User } from "@/utils/types/global";
 import {
   Table,
@@ -21,52 +21,31 @@ function PersonalInfo() {
   const [nearbyUsers, setNearbyUsers] = useState<User[]>([]);
   const [userIndex, setUserIndex] = useState(0);
 
-  const handleUserIndex = (users: User[], target: User) => {
-    return users.findIndex((user) => user.uid === target?.uid);
-  };
-  let heightAccumulator = 0;
-  const transitionsNearbyUsers = useTransition(
-    nearbyUsers.map((data: any) => ({
-      ...data,
-      y: (heightAccumulator += data.height) - data.height,
-    })),
-    {
-      keys: (user: any) => user.uid,
-      from: { height: 0, opacity: 0 },
-      enter: ({ y, height }) => ({ y, height, opacity: 1 }),
-      leave: { height: 0, opacity: 0 },
-      update: ({ y, height }) => ({ y, height }),
-    }
-  );
+  const transitionsNearbyUsers = useUserTransitions(nearbyUsers);
 
   useEffect(() => {
-    const handleNearbyUsers = (
+    const findUserIndex = (users: User[], target: User) => {
+      return users.findIndex((user) => user.uid === target?.uid);
+    };
+    const findNearbyUsers = (
       users: User[],
       target: User,
-      range: number
+      range: number = 2
     ): User[] => {
       if (!users) return;
-      const targetIndex = handleUserIndex(users, target);
+      const targetIndex = findUserIndex(users, target);
       const startIndex = Math.max(0, targetIndex - range);
       const endIndex = Math.min(users.length - 1, targetIndex + range);
+
       return users.slice(startIndex, endIndex + 1);
     };
 
-    const nearbyUsersWithHeight = (users: User[]) => {
-      const nearbyUsers = handleNearbyUsers(users, targetUserInfo, 2);
-      const updatedUsers = usersWithHeight(nearbyUsers);
-
-      return updatedUsers;
-    };
-    const result = nearbyUsersWithHeight(users);
-    setNearbyUsers(result);
-    setUserIndex(handleUserIndex(users, targetUserInfo));
+    setNearbyUsers(findNearbyUsers(users, targetUserInfo));
+    setUserIndex(findUserIndex(users, targetUserInfo));
   }, [users, targetUserInfo]);
 
   return (
     <div className="bg-red-500 flex ">
-      {/* thumbnail 64px */}
-
       <section className="">
         <Thumbnail svg={targetUserInfo?.thumbnail_64px} />
 
