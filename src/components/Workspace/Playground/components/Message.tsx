@@ -9,6 +9,7 @@ import { Copy, CopyCheck, FileJson2 } from "lucide-react";
 import { Message as MessageType } from "@/utils/types/message";
 import TestCaseList from "./TestCaseList";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
+import { useState } from "react";
 type MessageProps = {
   theme: string;
   msg: MessageType;

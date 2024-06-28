@@ -26,6 +26,7 @@ import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { problemDataState } from "@/atoms/ProblemData";
 import useGetUserProblems from "@/hooks/useGetUserProblems";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
+import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
@@ -55,7 +56,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   let [userCode, setUserCode] = useState<string>(problem.starterCode.py);
-  const [isAllTestCasesAccepted, setIsAllTestCasesAccepted] = useState(false);
+  const [isAccepted, setIsAccepted] = useState(false);
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
 
   const [testTab, setTestTab] = useState("testcase");
@@ -163,21 +164,9 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   };
 
   useEffect(() => {
-    // console.log("submissions: ", submissions);
-    // console.log("isAllTestCasesAccepted: ", isAllTestCasesAccepted);
-    const handleIsAllTestCasesAccepted = () => {
-      if (submissions.length === 0) {
-        setIsAllTestCasesAccepted(false);
-        return;
-      }
-      const isAllTestCasesAccepted = submissions.every(
-        // 全部測資都通過 isAllTestCasesAccepted 才會是 true
-        (submission) => submission?.status.id === 3
-      );
-
-      setIsAllTestCasesAccepted(isAllTestCasesAccepted);
-    };
-    handleIsAllTestCasesAccepted();
+    // 確認是否全部測資都通過
+    if (submissions.length === 0) return;
+    setIsAccepted(isAllTestCasesAccepted(submissions));
   }, [submissions]);
 
   useEffect(() => {
@@ -188,7 +177,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
       const userSolvedProblems = userProblems.filter(
         (p) => p.is_solved === true
       );
-      if (isAllTestCasesAccepted) {
+      if (isAccepted) {
         const userRef = doc(firestore, "users", user.uid);
         await updateDoc(userRef, {
           // reduce 加總陣列裡的分數
@@ -198,7 +187,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     };
 
     updateUserTotalScore();
-  }, [isAllTestCasesAccepted, userProblems, user, setIsPersonalInfoDialogOpen]);
+  }, [userProblems, user, isAccepted]);
 
   useEffect(() => {
     const code = localStorage.getItem(`${selectedLang}-code-${problem.id}`);
@@ -296,11 +285,11 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
                   className={`font-bold  text-xl 
                   ${
                     // id: 3 是 Accepted
-                    isAllTestCasesAccepted ? "text-green-600" : "text-red-600"
+                    isAccepted ? "text-green-600" : "text-red-600"
                   }  
                   ${submissions.length === 0 && "hidden"}`}
                 >
-                  {isAllTestCasesAccepted ? "Accepted" : "Wrong Answer"}
+                  {isAccepted ? "Accepted" : "Wrong Answer"}
                 </h2>
               </div>
               {submissions.length === 0 ? (

@@ -37,8 +37,8 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
     useRecoilState(isPersonalInfoDialogOpenState);
   const [isMessageLoading, setIsMessageLoading] = useState(false);
   const messages = useGetProblemMessages(
-    user.uid,
-    problem.id,
+    user?.uid,
+    problem?.id,
     setIsMessageLoading
   );
   const handleSubmitCode = async () => {

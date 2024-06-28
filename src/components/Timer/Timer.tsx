@@ -1,6 +1,6 @@
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useParams } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FiRefreshCcw } from "react-icons/fi";
 import { useRecoilState } from "recoil";
 import {
@@ -51,12 +51,12 @@ const Timer: React.FC<TimerProps> = () => {
     }
   };
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     stopTimer();
     intervalIdRef.current = setInterval(() => {
       setElapsedTime((prevTime) => prevTime + 1);
     }, 1000);
-  };
+  }, []);
 
   const resetTimer = () => {
     stopTimer();
@@ -92,7 +92,7 @@ const Timer: React.FC<TimerProps> = () => {
     checkAcceptedTime();
 
     return () => stopTimer();
-  }, [userProblemRef]);
+  }, [userProblemRef, startTimer]);
 
   useEffect(() => {
     const handleAcceptedTime = ({

@@ -3,7 +3,6 @@ import { auth } from "../../firebase/firebase";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import Logout from "../Buttons/Logout";
 import Image from "next/image";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { BsList } from "react-icons/bs";
@@ -30,14 +29,13 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import PersonalInfo from "../PersonalInfo";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
+import LogoutButton from "../LogoutBtn";
 
 type TopbarProps = {
   isProblemPage?: boolean;
@@ -195,7 +193,7 @@ const Topbar: React.FC<TopbarProps> = ({
             </Dialog>
           )}
 
-          {user && <Logout />}
+          {user && <LogoutButton />}
         </div>
       </div>
     </nav>

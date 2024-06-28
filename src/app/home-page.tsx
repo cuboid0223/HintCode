@@ -66,13 +66,15 @@ export default function Home() {
                         <BsCheckCircle fontSize={"18"} width="18" />
                       )}
                     </TableCell>
-                    <TableCell className=" dark:text-white">
+                    <TableCell className="p-0  dark:text-white ">
                       <Link
-                        className="block cursor-pointer  "
+                        className="h-full flex cursor-pointer   "
                         // target="_blank"
                         href={`/problems/${problem.id}`}
                       >
-                        <p className="hover:text-blue-600">{problem.title}</p>
+                        <p className="place-content-center hover:text-blue-600">
+                          {problem.title}
+                        </p>
                       </Link>
                     </TableCell>
                     <TableCell className={` ${difficultyColor} `}>
