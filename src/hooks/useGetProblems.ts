@@ -10,7 +10,6 @@ function useGetProblems(
 
   useEffect(() => {
     const getProblems = async () => {
-      // fetching data logic
       setLoadingProblems(true);
       const q = query(
         collection(firestore, "problems"),
@@ -22,7 +21,7 @@ function useGetProblems(
       querySnapshot.forEach((doc) => {
         tmp.push({ id: doc.id, ...doc.data() } as Problem);
       });
-      console.log("problems from Firestore", tmp);
+      // console.log("problems from Firestore", tmp);
       setProblems(tmp);
       setLoadingProblems(false);
     };

@@ -22,6 +22,20 @@ import { AuthModal } from "@/utils/types/global";
 import useGetProblems from "@/hooks/useGetProblems";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import Thumbnail from "../Thumbnail";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import PersonalInfo from "../PersonalInfo";
 
 type TopbarProps = {
   isProblemPage?: boolean;
@@ -62,6 +76,10 @@ const Topbar: React.FC<TopbarProps> = ({
     } else {
       router.push(`/problems/${nextProblem.id}`);
     }
+  };
+
+  const handlePersonalInfoModal = () => {
+    alert(1);
   };
 
   return (
@@ -150,17 +168,28 @@ const Topbar: React.FC<TopbarProps> = ({
           )}
           {user && isProblemPage && <Timer />}
           {user && (
-            <div className="cursor-pointer group relative">
-              <Thumbnail svg={userData?.thumbnail} />
-              <div
-                className="absolute top-10 left-2/4 -translate-x-2/4  mx-auto bg-dark-layer-1 text-brand-orange p-2 rounded shadow-lg 
-								z-40 group-hover:scale-100 scale-0 
-								transition-all duration-300 ease-in-out"
-              >
-                <p className="text-sm">{userData?.email}</p>
-              </div>
-            </div>
+            <Dialog>
+              <HoverCard>
+                <HoverCardTrigger className="cursor-pointer">
+                  <DialogTrigger>
+                    <Thumbnail svg={userData?.thumbnail} />
+                  </DialogTrigger>
+                </HoverCardTrigger>
+                <HoverCardContent className="flex min-w-xs">
+                  {/* <Thumbnail svg={userData?.thumbnail} /> */}
+                  <div>
+                    <p>暱稱: {userData?.displayName}</p>
+                    <p>email: {userData?.email}</p>
+                  </div>
+                </HoverCardContent>
+                <DialogContent className="max-w-2xl max-h-96">
+                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <PersonalInfo />
+                </DialogContent>
+              </HoverCard>
+            </Dialog>
           )}
+
           {user && <Logout />}
         </div>
       </div>

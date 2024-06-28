@@ -10,7 +10,6 @@ export default async function Page() {
     <>
       <SceneLayout>
         <Topbar />
-        <PersonalInfo />
         <RankingList />
       </SceneLayout>
     </>

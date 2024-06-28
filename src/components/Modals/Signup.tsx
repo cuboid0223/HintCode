@@ -110,25 +110,12 @@ const Signup: React.FC<SignupProps> = ({ setAuthModal }) => {
         displayName: values.displayName,
         createdAt: Date.now(),
         updatedAt: Date.now(),
-        likedProblems: [],
-        dislikedProblems: [],
-        solvedProblems: [],
-        starredProblems: [],
         totalScore: 0,
         thumbnail: createThumbnail(name, 32),
         thumbnail_64px: createThumbnail(name, 64),
         unit: values.unit,
       };
       await setDoc(userRef, userData);
-
-      // 空的 historyData
-      // const problemsData = {
-      //   name: "greet-n-times",
-      //   threadId: "",
-      // };
-      // const problemsCollectionRef = collection(userRef, "problems");
-      // const problemDocRef = doc(problemsCollectionRef, problemId);
-      // await setDoc(problemDocRef, problemsData);
 
       router.push("/");
     } catch (error: any) {
