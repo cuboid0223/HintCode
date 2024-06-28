@@ -7,29 +7,8 @@ import {
   getDocs,
   onSnapshot,
 } from "firebase/firestore";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 const HEIGHT_FOR_ANIMATION = 64;
-/*
-
-    const usersRef = collection(firestore, "users");
-    const q = query(usersRef, orderBy("totalScore", "desc"), limit(10));
-
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const usersList = [];
-      querySnapshot.forEach((doc) => {
-        usersList.push({ ...doc.data(), height: 64 });
-      });
-
-      // 如果獲取到的用戶數少於 10，使用 mock data 補足
-      if (usersList.length < 10) {
-        const additionalUsers = mockUsersData.slice(0, 10 - usersList.length);
-        setTop10UsersData([...usersList, ...additionalUsers]);
-        // setTop10UsersData([...additionalUsers]);
-      } else {
-        setTop10UsersData(usersList);
-      }
-    });
-*/
 
 const usersWithHeight = (users: User[]) => {
   const updatedUsers = users.map((user) => ({
@@ -111,4 +90,5 @@ function useGetUsers() {
   return users;
 }
 
-export { useGetUsers, useGetSubscribedUsers, usersWithHeight };
+export default useGetUsers;
+export { useGetSubscribedUsers, usersWithHeight };

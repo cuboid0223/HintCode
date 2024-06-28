@@ -39,32 +39,20 @@ const Common = dynamic(
 );
 
 function RankingList() {
+  let heightTop5Accumulator = 0;
+  let heightTop6_10Accumulator = 0;
   const [top10UsersData, setTop10UsersData] = useState<User[]>([]);
   const { resolvedTheme } = useTheme();
 
-  const getTop10UsersData = async () => {
-    // 按 score 降序排序並限制結果數量為 10
-    const usersRef = collection(firestore, "users");
-    const q = query(usersRef, orderBy("totalScore", "desc"), limit(10));
-
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const usersList = [];
-      querySnapshot.forEach((doc) => {
-        usersList.push({ ...doc.data(), height: 64 });
-      });
-
-      // 如果獲取到的用戶數少於 10，使用 mock data 補足
-      if (usersList.length < 10) {
-        const additionalUsers = mockUsersData.slice(0, 10 - usersList.length);
-        setTop10UsersData([...usersList, ...additionalUsers]);
-        // setTop10UsersData([...additionalUsers]);
-      } else {
-        setTop10UsersData(usersList);
-      }
-    });
+  const fillWithMockUsers = (users) => {
+    if (users.length < 10) {
+      const additionalUsers = mockUsersData.slice(0, 10 - users.length);
+      setTop10UsersData([...users, ...additionalUsers]);
+    } else {
+      setTop10UsersData(users);
+    }
   };
-  let heightTop5Accumulator = 0;
-  let heightTop6_10Accumulator = 0;
+
   const transitionsTop5 = useTransition(
     top10UsersData.slice(0, 5).map((data: any) => ({
       ...data,
@@ -94,6 +82,21 @@ function RankingList() {
   );
 
   useEffect(() => {
+    const getTop10UsersData = async () => {
+      // 按 score 降序排序並限制結果數量為 10
+      const usersRef = collection(firestore, "users");
+      const q = query(usersRef, orderBy("totalScore", "desc"), limit(10));
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const usersList = [];
+        querySnapshot.forEach((doc) => {
+          usersList.push({ ...doc.data(), height: 64 });
+        });
+
+        // 如果獲取到的用戶數少於 10，使用 mock data 補足
+        fillWithMockUsers(usersList);
+      });
+    };
     getTop10UsersData();
   }, []);
 
