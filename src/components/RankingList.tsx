@@ -47,9 +47,9 @@ function RankingList() {
   const fillWithMockUsers = (users, minNumber: number) => {
     if (users.length < minNumber) {
       const additionalUsers = mockUsersData.slice(0, 10 - users.length);
-      setTop10UsersData([...users, ...additionalUsers]);
+      return [...users, ...additionalUsers];
     } else {
-      setTop10UsersData(users);
+      return users;
     }
   };
 
@@ -94,7 +94,7 @@ function RankingList() {
         });
 
         // 如果獲取到的用戶數少於 10，使用 mock data 補足
-        fillWithMockUsers(usersList, 10);
+        setTop10UsersData(fillWithMockUsers(usersList, 10));
       });
     };
     getTop10UsersData();
