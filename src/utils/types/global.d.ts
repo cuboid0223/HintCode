@@ -4,10 +4,6 @@ export type User = {
   createdAt: number;
   displayName: string;
   email: string;
-  // dislikedProblems: [];
-  // likedProblems: [];
-  // solvedProblems: [];
-  // starredProblems: [];
   totalScore: number;
   uid: number;
   updatedAt: number;

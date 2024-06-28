@@ -8,6 +8,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { useTransition } from "react-spring";
 const HEIGHT_FOR_ANIMATION = 64;
 
 const usersWithHeight = (users: User[]) => {
@@ -67,6 +68,29 @@ const useGetSubscribedUsers = () => {
   return subscribedUsers;
 };
 
+const useUserTransitions = (
+  usersData: User[],
+  startIndex: number = 0,
+  endIndex: number = usersData.length
+) => {
+  let heightAccumulator = 0;
+  return useTransition(
+    usersWithHeight(usersData)
+      .slice(startIndex, endIndex)
+      .map((data) => ({
+        ...data,
+        y: (heightAccumulator += data.height) - data.height,
+      })),
+    {
+      keys: (user) => user.uid,
+      from: { height: 0, opacity: 0 },
+      enter: ({ y, height }) => ({ y, height, opacity: 1 }),
+      leave: { height: 0, opacity: 0 },
+      update: ({ y, height }) => ({ y, height }),
+    }
+  );
+};
+
 function useGetUsers() {
   const [users, setUsers] = useState<User[]>([]);
 
@@ -91,4 +115,9 @@ function useGetUsers() {
 }
 
 export default useGetUsers;
-export { useGetSubscribedUsers, usersWithHeight };
+export {
+  useGetSubscribedUsers,
+  userWithHeight,
+  usersWithHeight,
+  useUserTransitions,
+};

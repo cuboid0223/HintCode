@@ -9,9 +9,7 @@ import { User } from "@/utils/types/global";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -24,7 +22,7 @@ function PersonalInfo() {
   const [userIndex, setUserIndex] = useState(0);
 
   const handleUserIndex = (users: User[], target: User) => {
-    return users.findIndex((user) => user.uid === target.uid);
+    return users.findIndex((user) => user.uid === target?.uid);
   };
   let heightAccumulator = 0;
   const transitionsNearbyUsers = useTransition(

@@ -3,9 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -14,7 +12,6 @@ import { User } from "@/utils/types/global";
 import { mockUsersData } from "@/mockProblems/mockUsersData";
 import {
   collection,
-  getDocs,
   limit,
   onSnapshot,
   orderBy,
@@ -25,8 +22,9 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { useTheme } from "next-themes";
 import { View } from "./canvas/View";
-import { useTransition, animated } from "react-spring";
+import { animated } from "react-spring";
 import Thumbnail from "./Thumbnail";
+import { useUserTransitions } from "@/hooks/useGetUsers";
 
 const Trophy = dynamic(
   () => import("@/components/canvas/Models").then((mod) => mod.Trophy),
@@ -37,72 +35,60 @@ const Common = dynamic(
   () => import("@/components/canvas/Commons").then((mod) => mod.Common),
   { ssr: false }
 );
+const RANKING_LIST_MAX_NUMBER = 10;
 
 function RankingList() {
-  let heightTop5Accumulator = 0;
-  let heightTop6_10Accumulator = 0;
   const [top10UsersData, setTop10UsersData] = useState<User[]>([]);
   const { resolvedTheme } = useTheme();
 
-  const fillWithMockUsers = (users, minNumber: number) => {
-    if (users.length < minNumber) {
-      const additionalUsers = mockUsersData.slice(0, 10 - users.length);
-      return [...users, ...additionalUsers];
-    } else {
-      return users;
-    }
-  };
-
-  const transitionsTop5 = useTransition(
-    top10UsersData.slice(0, 5).map((data: any) => ({
-      ...data,
-      y: (heightTop5Accumulator += data.height) - data.height,
-    })),
-    {
-      keys: (user: any) => user.uid,
-      from: { height: 0, opacity: 0 },
-      enter: ({ y, height }) => ({ y, height, opacity: 1 }),
-      leave: { height: 0, opacity: 0 },
-      update: ({ y, height }) => ({ y, height }),
-    }
+  const transitionsTop5 = useUserTransitions(
+    top10UsersData,
+    0,
+    RANKING_LIST_MAX_NUMBER / 2
   );
-
-  const transitionsTop6_10 = useTransition(
-    top10UsersData.slice(5, 10).map((data: any) => ({
-      ...data,
-      y: (heightTop6_10Accumulator += data.height) - data.height,
-    })),
-    {
-      keys: (user: any) => user.uid,
-      from: { height: 0, opacity: 0 },
-      enter: ({ y, height }) => ({ y, height, opacity: 1 }),
-      leave: { height: 0, opacity: 0 },
-      update: ({ y, height }) => ({ y, height }),
-    }
+  const transitionsTop6_10 = useUserTransitions(
+    top10UsersData,
+    RANKING_LIST_MAX_NUMBER / 2,
+    RANKING_LIST_MAX_NUMBER
   );
 
   useEffect(() => {
-    const getTop10UsersData = async () => {
-      // 按 score 降序排序並限制結果數量為 10
+    const fillWithMockUsers = (users, minNumber: number) => {
+      if (users.length < minNumber) {
+        const additionalUsers = mockUsersData.slice(
+          0,
+          RANKING_LIST_MAX_NUMBER / 2 - users.length
+        );
+        return [...users, ...additionalUsers];
+      } else {
+        return users;
+      }
+    };
+
+    const fetchTop10UsersData = async () => {
+      // 按 score 降序排序並限制結果數量為 RANKING_LIST_LIMIT
       const usersRef = collection(firestore, "users");
-      const q = query(usersRef, orderBy("totalScore", "desc"), limit(10));
+      const q = query(
+        usersRef,
+        orderBy("totalScore", "desc"),
+        limit(RANKING_LIST_MAX_NUMBER)
+      );
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const usersList = [];
         querySnapshot.forEach((doc) => {
-          usersList.push({ ...doc.data(), height: 64 });
+          // height for row change animation
+          usersList.push(doc.data() as User);
         });
 
-        // 如果獲取到的用戶數少於 10，使用 mock data 補足
-        setTop10UsersData(fillWithMockUsers(usersList, 10));
+        // 如果獲取到的用戶數少於 RANKING_LIST_MAX_NUMBER，使用 mock data 補足
+        setTop10UsersData(
+          fillWithMockUsers(usersList, RANKING_LIST_MAX_NUMBER)
+        );
       });
     };
-    getTop10UsersData();
+    fetchTop10UsersData();
   }, []);
-
-  useEffect(() => {
-    console.log("top10UsersData: ", top10UsersData.slice(6, 11));
-  }, [top10UsersData]);
 
   return (
     <div className="grid grid-cols-3 grid-rows-1 min-h-[400px] mt-5">
