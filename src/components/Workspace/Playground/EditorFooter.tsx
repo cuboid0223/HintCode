@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { auth, firestore } from "@/firebase/firebase";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
+import updateUserProblemScore from "@/utils/User/updateUserProblemScore";
 import { doc, updateDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -15,8 +16,6 @@ import { BsChevronUp } from "react-icons/bs";
 import { DotLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { useRecoilState, useRecoilValue } from "recoil";
-
-const ACCEPTED_BASIC_SCORE_RATE = 0.8;
 
 type EditorFooterProps = {
   handleExecution: () => void;
@@ -78,15 +77,15 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
     (所以使用者該題有完成最低得分會是 80 分) 
     */
 
-    const updateUserProblemScore = async () => {
-      const basicScore = problem.score * ACCEPTED_BASIC_SCORE_RATE;
-      const extraScore = problem.score * (1 - ACCEPTED_BASIC_SCORE_RATE);
-      await updateDoc(userProblemRef, {
-        score: basicScore + (extraScore - messages.length),
-      });
-    };
+    // const updateUserProblemScore = async () => {
+    //   const basicScore = problem.score * ACCEPTED_BASIC_SCORE_RATE;
+    //   const extraScore = problem.score * (1 - ACCEPTED_BASIC_SCORE_RATE);
+    //   await updateDoc(userProblemRef, {
+    //     score: basicScore + (extraScore - messages.length),
+    //   });
+    // };
     setIsPersonalInfoDialogOpen(true);
-    updateUserProblemScore();
+    updateUserProblemScore(userProblemRef, problem.score, messages.length);
     setSuccess(true);
     setTimeout(() => {
       setSuccess(false);

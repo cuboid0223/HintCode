@@ -21,6 +21,7 @@ import {
 } from "@/atoms/submissionsDataAtom";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { Message } from "@/utils/types/message";
+import updateUserProblemScore from "@/utils/User/updateUserProblemScore";
 
 type ProblemTabProps = {
   _solved: boolean;
@@ -117,25 +118,24 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
     通過題目而未更新該題的分數
     */
 
-    const updateUserProblemScore = async () => {
-      if (!user) return;
-      const userProblemRef = doc(
-        firestore,
-        "users",
-        user.uid,
-        "problems",
-        problem.id
-      );
-      console.log(" update score");
-      await updateDoc(userProblemRef, {
-        score: remainTimes * (problem.score / problem.totalTimes),
-      });
-    };
+    // const updateUserProblemScore = async () => {
+    //   if (!user) return;
 
-    if (isAllTestCasesAccepted(submissions)) {
-      updateUserProblemScore();
-    }
-  }, [problem, remainTimes, userProblems, user, submissions]);
+    //   if (isAllTestCasesAccepted(submissions)) {
+    //     await updateDoc(userProblemRef, {
+    //       score: remainTimes * (problem.score / problem.totalTimes),
+    //     });
+    //   }
+    // };
+    const userProblemRef = doc(
+      firestore,
+      "users",
+      user.uid,
+      "problems",
+      problem.id
+    );
+    updateUserProblemScore(userProblemRef, problem.score, messages.length);
+  }, [messages.length, problem.id, problem.score, user.uid]);
 
   return (
     <div className="relative flex flex-col ">
