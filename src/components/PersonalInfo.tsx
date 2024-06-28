@@ -1,6 +1,5 @@
 "use client";
-
-import useGetUserInfo from "@/hooks/useGetUserInfo";
+import { useGetSubscribedUser } from "@/hooks/useGetUserInfo";
 import React, { useEffect, useState } from "react";
 import { animated } from "react-spring";
 import Thumbnail from "./Thumbnail";
@@ -16,17 +15,17 @@ import {
 } from "@/components/ui/table";
 
 function PersonalInfo() {
-  const targetUserInfo = useGetUserInfo();
+  const targetUser = useGetSubscribedUser();
   const users = useGetSubscribedUsers();
   const [nearbyUsers, setNearbyUsers] = useState<User[]>([]);
   const [userIndex, setUserIndex] = useState(0);
-
   const transitionsNearbyUsers = useUserTransitions(nearbyUsers);
 
   useEffect(() => {
     const findUserIndex = (users: User[], target: User) => {
       return users.findIndex((user) => user.uid === target?.uid);
     };
+
     const findNearbyUsers = (
       users: User[],
       target: User,
@@ -40,28 +39,28 @@ function PersonalInfo() {
       return users.slice(startIndex, endIndex + 1);
     };
 
-    setNearbyUsers(findNearbyUsers(users, targetUserInfo));
-    setUserIndex(findUserIndex(users, targetUserInfo));
-  }, [users, targetUserInfo]);
+    setNearbyUsers(findNearbyUsers(users, targetUser));
+    setUserIndex(findUserIndex(users, targetUser));
+  }, [users, targetUser]);
 
   return (
-    <div className="bg-red-500 flex ">
-      <section className="">
-        <Thumbnail svg={targetUserInfo?.thumbnail_64px} />
+    <div className="flex ">
+      <section className="flex-1  p-2">
+        <Thumbnail svg={targetUser?.thumbnail_64px} />
 
         {/* score */}
         <pre>總分: </pre>
         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-          {targetUserInfo?.totalScore}
+          {targetUser?.totalScore}
         </h1>
         {/* users rank */}
         <pre>排名: </pre>
         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-          {userIndex + 1} / {users?.length}
+          {userIndex + 1}/{users?.length}
         </h1>
       </section>
       {/* rank list  */}
-      <Table className="h-full text-center max-w-xs">
+      <Table className=" text-center  ">
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader className="">
           <TableRow className="grid grid-cols-3">

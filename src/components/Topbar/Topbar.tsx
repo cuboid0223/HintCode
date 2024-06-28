@@ -177,13 +177,10 @@ const Topbar: React.FC<TopbarProps> = ({
                 </HoverCardTrigger>
                 <HoverCardContent className="flex min-w-xs">
                   {/* <Thumbnail svg={userData?.thumbnail} /> */}
-                  <div>
-                    <p>暱稱: {userData?.displayName}</p>
-                    <p>email: {userData?.email}</p>
-                  </div>
+                  <p>email: {userData?.email}</p>
                 </HoverCardContent>
                 <DialogContent className="max-w-2xl max-h-96">
-                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogTitle>{userData?.displayName}</DialogTitle>
                   <PersonalInfo />
                 </DialogContent>
               </HoverCard>
