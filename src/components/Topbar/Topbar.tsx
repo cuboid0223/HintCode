@@ -36,6 +36,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import PersonalInfo from "../PersonalInfo";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 
 type TopbarProps = {
   isProblemPage?: boolean;
@@ -53,6 +55,9 @@ const Topbar: React.FC<TopbarProps> = ({
   const router = useRouter();
   const { setTheme } = useTheme();
   const params = useParams<{ pid: string }>();
+
+  const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
+    useRecoilState(isPersonalInfoDialogOpenState);
   const [isProblemsLoading, setIsProblemsLoading] = useState(false);
   const problems = useGetProblems(setIsProblemsLoading);
 
@@ -78,8 +83,8 @@ const Topbar: React.FC<TopbarProps> = ({
     }
   };
 
-  const handlePersonalInfoModal = () => {
-    alert(1);
+  const togglePersonalInfoDialog = () => {
+    setIsPersonalInfoDialogOpen(!isPersonalInfoDialogOpen);
   };
 
   return (
@@ -168,7 +173,10 @@ const Topbar: React.FC<TopbarProps> = ({
           )}
           {user && isProblemPage && <Timer />}
           {user && (
-            <Dialog>
+            <Dialog
+              open={isPersonalInfoDialogOpen}
+              onOpenChange={togglePersonalInfoDialog}
+            >
               <HoverCard>
                 <HoverCardTrigger className="cursor-pointer">
                   <DialogTrigger>

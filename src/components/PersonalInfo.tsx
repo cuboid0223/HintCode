@@ -1,6 +1,6 @@
 "use client";
 import { useGetSubscribedUser } from "@/hooks/useGetUserInfo";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { animated } from "react-spring";
 import Thumbnail from "./Thumbnail";
 import { useGetSubscribedUsers, useUserTransitions } from "@/hooks/useUsers";
@@ -44,8 +44,8 @@ function PersonalInfo() {
   }, [users, targetUser]);
 
   return (
-    <div className="flex ">
-      <section className="flex-1  p-2">
+    <div className="flex">
+      <section className="p-2">
         <Thumbnail svg={targetUser?.thumbnail_64px} />
 
         {/* score */}
@@ -73,7 +73,6 @@ function PersonalInfo() {
         <TableBody className="relative">
           {transitionsNearbyUsers((styles, user, state, index) => (
             <animated.tr
-              // key={user.uid}
               className="grid grid-cols-3  absolute w-full  border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
               style={{
                 zIndex: 5 - index,

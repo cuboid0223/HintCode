@@ -1,3 +1,4 @@
+import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import { problemDataState } from "@/atoms/ProblemData";
 import {
   submissionsDataState,
@@ -32,6 +33,8 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
   const problem = useRecoilValue(problemDataState);
   const [{ submissions }, setSubmissionsData] =
     useRecoilState<SubmissionsDataState>(submissionsDataState);
+  const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
+    useRecoilState(isPersonalInfoDialogOpenState);
   const [isMessageLoading, setIsMessageLoading] = useState(false);
   const messages = useGetProblemMessages(
     user.uid,
@@ -47,7 +50,7 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
       problem.id
     );
     if (!isAllTestCasesAccepted(submissions)) {
-      toast.warning("需要通過所有測試資料才能繳交", {
+      toast.warning("通過所有測試資料才能繳交", {
         position: "top-center",
         autoClose: 3000,
         theme: "dark",
@@ -82,6 +85,7 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
         score: basicScore + (extraScore - messages.length),
       });
     };
+    setIsPersonalInfoDialogOpen(true);
     updateUserProblemScore();
     setSuccess(true);
     setTimeout(() => {

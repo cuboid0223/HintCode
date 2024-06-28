@@ -1,14 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import PreferenceNav from "./components/PreferenceNav";
 import Split from "react-split";
 import EditorFooter from "./EditorFooter";
-import { Problem } from "@/utils/types/problem";
+
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, firestore } from "../../../firebase/firebase";
 import { toast } from "react-toastify";
-import { problems } from "@/utils/problems";
-import { useRouter } from "next/navigation";
-import { arrayUnion, doc, updateDoc } from "firebase/firestore";
+
+import { doc, updateDoc } from "firebase/firestore";
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,6 +25,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { problemDataState } from "@/atoms/ProblemData";
 import useGetUserProblems from "@/hooks/useGetUserProblems";
+import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,8 +41,10 @@ export type Settings = {
 
 const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const problem = useRecoilValue(problemDataState);
+  const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
+    useRecoilState(isPersonalInfoDialogOpenState);
   const userProblems = useGetUserProblems();
-  const { id } = problem;
+
   const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
   const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
   const { resolvedTheme } = useTheme();
@@ -150,7 +152,10 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
 
   const onChange = (value: string) => {
     setUserCode(value);
-    localStorage.setItem(`${selectedLang}-code-${id}`, JSON.stringify(value));
+    localStorage.setItem(
+      `${selectedLang}-code-${problem.id}`,
+      JSON.stringify(value)
+    );
   };
 
   const handleTestTabChange = (value: string) => {
@@ -178,7 +183,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   useEffect(() => {
     // 如果全部測資都通過且按了繳交按鈕 則重新計算使用者總分
 
-    const updateUserScore = async () => {
+    const updateUserTotalScore = async () => {
       if (!user) return;
       const userSolvedProblems = userProblems.filter(
         (p) => p.is_solved === true
@@ -191,17 +196,18 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
         });
       }
     };
-    updateUserScore();
-  }, [isAllTestCasesAccepted, userProblems, user]);
+
+    updateUserTotalScore();
+  }, [isAllTestCasesAccepted, userProblems, user, setIsPersonalInfoDialogOpen]);
 
   useEffect(() => {
-    const code = localStorage.getItem(`${selectedLang}-code-${id}`);
+    const code = localStorage.getItem(`${selectedLang}-code-${problem.id}`);
     if (user) {
       setUserCode(code ? JSON.parse(code) : problem.starterCode.py);
     } else {
       setUserCode(problem.starterCode.py);
     }
-  }, [id, user, problem.starterCode, selectedLang]);
+  }, [problem.id, user, problem.starterCode, selectedLang]);
 
   return (
     <div className="flex flex-col relative overflow-x-hidden ">
