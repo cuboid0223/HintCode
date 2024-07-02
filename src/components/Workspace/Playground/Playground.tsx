@@ -122,7 +122,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
             expectedOutput: testCase.output,
           })) as string;
           if (!token) {
-            console.log("或許你用到流量上限了!!");
+            // console.log("或許你用到流量上限了!!");
             throw new Error("或許你用到流量上限了!!");
           }
 
@@ -175,7 +175,8 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     const updateUserTotalScore = async () => {
       if (!user) return;
       const solvedProblems = userProblems.filter((p) => p.is_solved === true);
-      if (isAccepted) {
+      console.log("solvedProblems: ", solvedProblems);
+      if (isAccepted && solvedProblems.length !== 0) {
         const userRef = doc(firestore, "users", user.uid);
         await updateDoc(userRef, {
           // reduce 加總陣列裡的分數

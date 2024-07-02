@@ -35,7 +35,7 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
   const [user] = useAuthState(auth);
   const [loadingProblemMessages, setLoadingProblemMessages] = useState(false);
   const problemMessages = useGetProblemMessages(
-    user.uid,
+    user?.uid,
     problem.id,
     setLoadingProblemMessages
   );
@@ -108,7 +108,9 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
         const isExist = await checkIsDocumentExists(user.uid, problem.id);
         if (!isExist) {
           // 沒有存在， create threadId 加入至 users/userId/problems/[pid]
-          console.log("Document does not exist, creating...");
+          console.log(
+            ` ${user.uid} / ${problem.id} 文件不存在，正在創造該文件並產生 thread ID`
+          );
           const newThreadId = await createThread();
           await createProblemDocument(newThreadId);
           setThreadId(newThreadId);
@@ -120,34 +122,20 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
     handleProblemDocument();
   }, [threadId, user, problem.id]);
 
-  useEffect(() => {
-    /*
-    防止題目太簡單，使用者在從未點開提示介面的情況下
-    通過題目而未更新該題的分數
-    */
-
-    // const updateUserProblemScore = async () => {
-    //   if (!user) return;
-
-    //   if (isAllTestCasesAccepted(submissions)) {
-    //     await updateDoc(userProblemRef, {
-    //       score: remainTimes * (problem.score / problem.totalTimes),
-    //     });
-    //   }
-    // };
-    const userProblemRef = doc(
-      firestore,
-      "users",
-      user.uid,
-      "problems",
-      problem.id
-    );
-    updateUserProblemScore(
-      userProblemRef,
-      problem.score,
-      problemMessages.length
-    );
-  }, [problemMessages, problem.id, problem.score, user?.uid]);
+  // useEffect(() => {
+  //   const userProblemRef = doc(
+  //     firestore,
+  //     "users",
+  //     user.uid,
+  //     "problems",
+  //     problem.id
+  //   );
+  //   updateUserProblemScore(
+  //     userProblemRef,
+  //     problem.score,
+  //     problemMessages.length
+  //   );
+  // }, [problemMessages, problem.id, problem.score, user?.uid]);
 
   return (
     <div className="relative flex flex-col ">
