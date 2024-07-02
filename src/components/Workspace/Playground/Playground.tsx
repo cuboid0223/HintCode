@@ -174,14 +174,12 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
 
     const updateUserTotalScore = async () => {
       if (!user) return;
-      const userSolvedProblems = userProblems.filter(
-        (p) => p.is_solved === true
-      );
+      const solvedProblems = userProblems.filter((p) => p.is_solved === true);
       if (isAccepted) {
         const userRef = doc(firestore, "users", user.uid);
         await updateDoc(userRef, {
           // reduce 加總陣列裡的分數
-          totalScore: userSolvedProblems.reduce((acc, p) => acc + p.score, 0),
+          totalScore: solvedProblems.reduce((acc, p) => acc + p.score, 0),
         });
       }
     };

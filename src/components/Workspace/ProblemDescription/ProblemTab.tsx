@@ -22,15 +22,23 @@ import {
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { Message } from "@/utils/types/message";
 import updateUserProblemScore from "@/utils/User/updateUserProblemScore";
+import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 
 type ProblemTabProps = {
-  _solved: boolean;
+  // _solved: boolean;
 };
 
-const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
+const ProblemTab: React.FC<ProblemTabProps> = () => {
   const problem = useRecoilValue(problemDataState);
+
   const userProblems = useGetUserProblems();
   const [user] = useAuthState(auth);
+  const [loadingProblemMessages, setLoadingProblemMessages] = useState(false);
+  const problemMessages = useGetProblemMessages(
+    user.uid,
+    problem.id,
+    setLoadingProblemMessages
+  );
   const { resolvedTheme } = useTheme();
   const [threadId, setThreadId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -134,8 +142,12 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
       "problems",
       problem.id
     );
-    updateUserProblemScore(userProblemRef, problem.score, messages.length);
-  }, [messages.length, problem.id, problem.score, user.uid]);
+    updateUserProblemScore(
+      userProblemRef,
+      problem.score,
+      problemMessages.length
+    );
+  }, [problemMessages, problem.id, problem.score, user?.uid]);
 
   return (
     <div className="relative flex flex-col ">
@@ -165,9 +177,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
         <div className="overflow-y-auto overflow-x-hidden">
           {/* 程式題目敘述區 */}
 
-          {problemTab === "description" && (
-            <ProblemDescription _solved={_solved} />
-          )}
+          {problemTab === "description" && <ProblemDescription />}
 
           {/* GPT 提示區 */}
           {problemTab === "getHelp" && (
@@ -178,18 +188,6 @@ const ProblemTab: React.FC<ProblemTabProps> = ({ _solved }) => {
               messages={messages}
               setMessages={setMessages}
             />
-            // <motion.div
-            //   className="flex-1 flex "
-            //   key={problemTab}
-            //   initial={{ x: 5, opacity: 1 }}
-            //   animate={{ x: 0, opacity: 1 }}
-            //   exit={{ x: -5, opacity: 0 }}
-            //   transition={{ duration: 0.5 }}
-            //   layout
-            //   layoutScroll
-            // >
-
-            // </motion.div>
           )}
         </div>
       </Tabs>
