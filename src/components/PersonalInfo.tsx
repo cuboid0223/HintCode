@@ -16,9 +16,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import AnimatedNumbers from "react-animated-numbers";
+import CountUp, { useCountUp } from "react-countup";
+import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
+import {
+  submissionsDataState,
+  SubmissionsDataState,
+} from "@/atoms/submissionsDataAtom";
+import { useRecoilState } from "recoil";
+
 function PersonalInfo() {
   const targetUser = useGetUserInfo();
+  const currentUser = useGetSubscribedUser();
+  const [{ submissions }, setSubmissionsData] =
+    useRecoilState<SubmissionsDataState>(submissionsDataState);
   const users = useGetUsers();
   const [nearbyUsers, setNearbyUsers] = useState<User[]>([]);
   const [userIndex, setUserIndex] = useState(0);
@@ -42,10 +52,24 @@ function PersonalInfo() {
 
       return users.slice(startIndex, endIndex + 1);
     };
-    console.log(findUserIndex(users, targetUser));
+
     setNearbyUsers(findNearbyUsers(users, targetUser));
     setUserIndex(findUserIndex(users, targetUser));
   }, [users, targetUser]);
+
+  useEffect(() => {
+    if (!targetUser) return;
+
+    setNearbyUsers((prevNearbyUsers) => {
+      const updatedUsers = prevNearbyUsers.map((user) =>
+        user.uid === targetUser.uid
+          ? { ...user, totalScore: currentUser.totalScore }
+          : user
+      );
+
+      return updatedUsers.sort((a, b) => b.totalScore - a.totalScore);
+    });
+  }, [currentUser?.totalScore, targetUser]);
 
   return (
     <div className="flex">
@@ -55,7 +79,24 @@ function PersonalInfo() {
         {/* score */}
         <pre>總分: </pre>
         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-          {targetUser?.totalScore}
+          <CountUp
+            start={targetUser?.totalScore}
+            end={currentUser?.totalScore}
+            duration={1}
+            separator=" "
+            // decimals={4}
+            // decimal=","
+            // prefix="EUR "
+            // suffix=" left"
+            // onEnd={() => console.log("Ended! 👏")}
+            // onStart={() => console.log("Started! 💨")}
+          >
+            {({ countUpRef, start }) => (
+              <div>
+                <span ref={countUpRef} />
+              </div>
+            )}
+          </CountUp>
         </h1>
         {/* users rank */}
         <pre>排名: </pre>
@@ -70,7 +111,7 @@ function PersonalInfo() {
           <TableRow className="grid grid-cols-3">
             <TableHead className="p-0 text-center">總分</TableHead>
             <TableHead className="p-0 text-center">名字</TableHead>
-            <TableHead className="p-0 text-center">Avatar</TableHead>
+            <TableHead className="p-0 text-center">頭像</TableHead>
             {/* <TableHead className="p-0 text-center">排名</TableHead> */}
           </TableRow>
         </TableHeader>

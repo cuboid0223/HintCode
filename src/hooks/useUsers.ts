@@ -95,7 +95,7 @@ function useGetUsers() {
     const getUsers = async () => {
       const q = query(
         collection(firestore, "users"),
-        orderBy("totalScore", "asc")
+        orderBy("totalScore", "desc")
       );
       const querySnapshot = await getDocs(q);
       const tmp: User[] = [];
