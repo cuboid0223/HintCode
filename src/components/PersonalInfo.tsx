@@ -17,29 +17,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import CountUp, { useCountUp } from "react-countup";
-import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import {
-  submissionsDataState,
-  SubmissionsDataState,
-} from "@/atoms/submissionsDataAtom";
-import { useRecoilState } from "recoil";
 
 function PersonalInfo() {
   const targetUser = useGetUserInfo();
   const currentUser = useGetSubscribedUser();
-  const [{ submissions }, setSubmissionsData] =
-    useRecoilState<SubmissionsDataState>(submissionsDataState);
   const users = useGetUsers();
+  const currentUsers = useGetSubscribedUsers();
   const [nearbyUsers, setNearbyUsers] = useState<User[]>([]);
   const [userIndex, setUserIndex] = useState(0);
   const transitionsNearbyUsers = useUserTransitions(nearbyUsers);
-
+  const findUserIndex = (users: User[], target: User) => {
+    if (users.length === 0 || !target) return;
+    return users.findIndex((user) => user.uid === target?.uid);
+  };
   useEffect(() => {
-    const findUserIndex = (users: User[], target: User) => {
-      if (users.length === 0 || !target) return;
-      return users.findIndex((user) => user.uid === target?.uid);
-    };
-
     const findNearbyUsers = (
       users: User[],
       target: User,
@@ -58,7 +49,7 @@ function PersonalInfo() {
   }, [users, targetUser]);
 
   useEffect(() => {
-    if (!targetUser) return;
+    // if (!targetUser) return;
 
     setNearbyUsers((prevNearbyUsers) => {
       const updatedUsers = prevNearbyUsers.map((user) =>
@@ -70,6 +61,10 @@ function PersonalInfo() {
       return updatedUsers.sort((a, b) => b.totalScore - a.totalScore);
     });
   }, [currentUser?.totalScore, targetUser]);
+
+  useEffect(() => {
+    setUserIndex(findUserIndex(currentUsers, targetUser));
+  }, [targetUser, currentUsers]);
 
   return (
     <div className="flex">
