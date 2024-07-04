@@ -72,12 +72,12 @@ function PersonalInfo() {
         <Thumbnail svg={targetUser?.thumbnail_64px} />
 
         {/* score */}
-        <pre>總分: </pre>
+        <pre className="mt-2">總分: </pre>
         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
           <CountUp
             start={targetUser?.totalScore}
             end={currentUser?.totalScore}
-            duration={1}
+            duration={2}
             separator=" "
             // decimals={4}
             // decimal=","

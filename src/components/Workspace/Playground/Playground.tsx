@@ -24,7 +24,9 @@ import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { problemDataState } from "@/atoms/ProblemData";
-import useGetUserProblems from "@/hooks/useGetUserProblems";
+import useGetUserProblems, {
+  useSubscribedUserProblems,
+} from "@/hooks/useGetUserProblems";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 
@@ -44,7 +46,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const problem = useRecoilValue(problemDataState);
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
-  const userProblems = useGetUserProblems();
+  const userProblems = useSubscribedUserProblems();
 
   const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
   const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
@@ -176,7 +178,13 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
       if (!user) return;
       const solvedProblems = userProblems.filter((p) => p.is_solved === true);
       console.log("solvedProblems: ", solvedProblems);
-      if (isAccepted && solvedProblems.length !== 0) {
+      console.log(
+        "我在外面",
+        isAllTestCasesAccepted(submissions),
+        solvedProblems
+      );
+      if (isAllTestCasesAccepted(submissions) && solvedProblems.length !== 0) {
+        console.log("我進來了");
         const userRef = doc(firestore, "users", user.uid);
         await updateDoc(userRef, {
           // reduce 加總陣列裡的分數
@@ -186,7 +194,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     };
 
     updateUserTotalScore();
-  }, [userProblems, user, isAccepted]);
+  }, [userProblems, user, submissions]);
 
   useEffect(() => {
     const code = localStorage.getItem(`${selectedLang}-code-${problem.id}`);

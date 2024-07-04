@@ -192,9 +192,13 @@ const Topbar: React.FC<TopbarProps> = ({
               </HoverCard>
               <DialogContent className="max-w-2xl max-h-96">
                 <DialogHeader>
-                  <VisuallyHidden.Root asChild>
-                    <DialogTitle>sss</DialogTitle>
-                  </VisuallyHidden.Root>
+                  <DialogTitle className=" flex justify-between items-center">
+                    <p> {userData?.displayName}</p>
+                    <p className="mr-4">{userData?.unit}</p>
+                  </DialogTitle>
+                  {/* <VisuallyHidden.Root asChild>
+                    <DialogTitle>{userData.displayName}</DialogTitle>
+                  </VisuallyHidden.Root> */}
 
                   <VisuallyHidden.Root asChild>
                     <DialogDescription>

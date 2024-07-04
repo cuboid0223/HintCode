@@ -9,6 +9,7 @@ export type User = {
   updatedAt: number;
   thumbnail: string;
   thumbnail_64px: string;
+  unit: string;
 };
 
 export type AuthModal = {
