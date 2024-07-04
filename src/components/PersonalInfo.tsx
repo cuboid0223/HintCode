@@ -1,9 +1,12 @@
 "use client";
-import { useGetSubscribedUser } from "@/hooks/useGetUserInfo";
+import useGetUserInfo, { useGetSubscribedUser } from "@/hooks/useGetUserInfo";
 import React, { useEffect, useRef, useState } from "react";
 import { animated } from "react-spring";
 import Thumbnail from "./Thumbnail";
-import { useGetSubscribedUsers, useUserTransitions } from "@/hooks/useUsers";
+import useGetUsers, {
+  useGetSubscribedUsers,
+  useUserTransitions,
+} from "@/hooks/useUsers";
 import { User } from "@/utils/types/global";
 import {
   Table,
@@ -13,16 +16,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
+import AnimatedNumbers from "react-animated-numbers";
 function PersonalInfo() {
-  const targetUser = useGetSubscribedUser();
-  const users = useGetSubscribedUsers();
+  const targetUser = useGetUserInfo();
+  const users = useGetUsers();
   const [nearbyUsers, setNearbyUsers] = useState<User[]>([]);
   const [userIndex, setUserIndex] = useState(0);
   const transitionsNearbyUsers = useUserTransitions(nearbyUsers);
 
   useEffect(() => {
     const findUserIndex = (users: User[], target: User) => {
+      if (users.length === 0 || !target) return;
       return users.findIndex((user) => user.uid === target?.uid);
     };
 
@@ -38,7 +42,7 @@ function PersonalInfo() {
 
       return users.slice(startIndex, endIndex + 1);
     };
-
+    console.log(findUserIndex(users, targetUser));
     setNearbyUsers(findNearbyUsers(users, targetUser));
     setUserIndex(findUserIndex(users, targetUser));
   }, [users, targetUser]);

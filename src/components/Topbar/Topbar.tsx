@@ -29,6 +29,8 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -37,7 +39,7 @@ import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import LogoutButton from "../LogoutBtn";
 import { submissionsDataState } from "@/atoms/submissionsDataAtom";
-
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 type TopbarProps = {
   isProblemPage?: boolean;
   authModal?: AuthModal;
@@ -185,14 +187,25 @@ const Topbar: React.FC<TopbarProps> = ({
                   </DialogTrigger>
                 </HoverCardTrigger>
                 <HoverCardContent className="flex min-w-xs">
-                  {/* <Thumbnail svg={userData?.thumbnail} /> */}
                   <p>email: {userData?.email}</p>
                 </HoverCardContent>
-                <DialogContent className="max-w-2xl max-h-96">
-                  <DialogTitle>{userData?.displayName}</DialogTitle>
-                  <PersonalInfo />
-                </DialogContent>
               </HoverCard>
+              <DialogContent className="max-w-2xl max-h-96">
+                <DialogHeader>
+                  <VisuallyHidden.Root asChild>
+                    <DialogTitle>sss</DialogTitle>
+                  </VisuallyHidden.Root>
+
+                  <VisuallyHidden.Root asChild>
+                    <DialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </DialogDescription>
+                  </VisuallyHidden.Root>
+                </DialogHeader>
+
+                <PersonalInfo />
+              </DialogContent>
             </Dialog>
           )}
 
