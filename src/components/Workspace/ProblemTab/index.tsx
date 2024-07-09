@@ -5,8 +5,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "next-themes";
 
-import ProblemDescription from "./ProblemDescription";
-import ProblemHelp from "./ProblemHelp";
+import DescriptionTab from "./DescriptionTab";
+import HelpTab from "./HelpTab";
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -165,11 +165,11 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
         <div className="overflow-y-auto overflow-x-hidden">
           {/* 程式題目敘述區 */}
 
-          {problemTab === "description" && <ProblemDescription />}
+          {problemTab === "description" && <DescriptionTab />}
 
           {/* GPT 提示區 */}
           {problemTab === "getHelp" && (
-            <ProblemHelp
+            <HelpTab
               remainTimes={remainTimes}
               setRemainTimes={setRemainTimes}
               threadId={threadId}

@@ -45,7 +45,7 @@ type ProblemHelpProps = {
   setMessages: Dispatch<SetStateAction<MessageType[]>>;
 };
 
-const ProblemHelp: React.FC<ProblemHelpProps> = ({
+const HelpTab: React.FC<ProblemHelpProps> = ({
   threadId,
   // messages,
   setMessages,
@@ -61,6 +61,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   const [isHelpBtnEnable, setIsHelpBtnEnable] =
     useRecoilState(isHelpBtnEnableState);
   const [userInput, setUserInput] = useState("");
+  const [helpType, setHelpType] = useState("能否提示下一步的邏輯?");
   const [isLoading, setIsLoading] = useState(false);
   const [inputDisabled, setInputDisabled] = useState(false);
   const [finalText, setFinalText] = useState("");
@@ -93,7 +94,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
 
   const formatSubmissions = (data: SubmissionData[]) => {
     /*
-    將測試資料的結果轉成純文字，方便 GPT 讀取
+    將測試資料的結果轉成純文字(自然語言)，方便 GPT 讀取
     */
     const formattedData = data.map((ele, id) => {
       const output = ele.stdout ? ele.stdout : "空";
@@ -136,7 +137,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
 
   // textCreated - create new assistant message
   const handleTextCreated = () => {
-    // assistant message 是先被建立的，在使用者傳程式碼之前，所以整個 array 需要 revert
+    // 在使用者傳程式碼之前，assistant message 是先被建立的，所以整個 array 需要 revert
     appendMessage("assistant", "");
   };
 
@@ -214,7 +215,7 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
       setIsLoading(false);
       return;
     }
-    // 請不要試著更改下方所有字串，包含空格或是格式化
+    // 請不要輕易試著更改下方所有字串，包含空格或是格式化
     const promptTemplate = `
     題目如下:
 =========problem statement start========
@@ -421,4 +422,4 @@ const ProblemHelp: React.FC<ProblemHelpProps> = ({
   );
 };
 
-export default ProblemHelp;
+export default HelpTab;

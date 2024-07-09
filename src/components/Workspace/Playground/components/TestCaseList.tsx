@@ -1,17 +1,12 @@
 "use client";
-import { Problem } from "@/utils/types/problem";
+
 import { SubmissionData } from "@/utils/types/testCase";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { CircleSlash, CircleCheckBig } from "lucide-react";
-import Diff from "../../../HighlightedDiff";
-import HighlightedDiff from "../../../HighlightedDiff";
+import HighlightedDiff from "../../components/HighlightedDiff";
 import { Button } from "@/components/ui/button";
-import {
-  submissionsDataState,
-  SubmissionsDataState,
-} from "@/atoms/submissionsDataAtom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 type TestCaseListProps = {
   isTestResult?: boolean;

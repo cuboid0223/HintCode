@@ -1,6 +1,6 @@
 "use client";
-import Topbar from "@/components/Topbar/Topbar";
-import Workspace from "@/components/Workspace/Workspace";
+import Topbar from "@/components/Topbar";
+import Workspace from "@/components/Workspace";
 import useHasMounted from "../../../hooks/useHasMounted";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { Problem } from "@/utils/types/problem";

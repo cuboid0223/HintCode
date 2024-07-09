@@ -6,7 +6,7 @@ import { auth } from "../../firebase/firebase";
 import { useRecoilValue } from "recoil";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Topbar from "@/components/Topbar/Topbar";
+import Topbar from "@/components/Topbar";
 import { AuthModal as AuthModalType } from "@/utils/types/global";
 
 const AuthPage = () => {

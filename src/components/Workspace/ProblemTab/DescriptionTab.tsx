@@ -8,7 +8,7 @@ import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import { Badge } from "@/components/ui/badge";
 
-const ProblemDescription = () => {
+const DescriptionTab = () => {
   const problem = useRecoilValue(problemDataState);
   const { resolvedTheme } = useTheme();
 
@@ -124,4 +124,4 @@ const ProblemDescription = () => {
     </div>
   );
 };
-export default ProblemDescription;
+export default DescriptionTab;

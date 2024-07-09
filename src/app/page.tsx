@@ -1,5 +1,5 @@
 // Import your Client Component
-import HomePage from "./home-page";
+import HomePage from "./homePage";
 
 export default async function Page() {
   return <HomePage />;

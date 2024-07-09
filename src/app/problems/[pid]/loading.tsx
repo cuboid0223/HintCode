@@ -1,4 +1,4 @@
-import Topbar from "@/components/Topbar/Topbar";
+import Topbar from "@/components/Topbar";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function LoadingWorkspaceSkeleton() {

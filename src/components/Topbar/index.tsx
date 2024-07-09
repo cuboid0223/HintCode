@@ -6,7 +6,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import Image from "next/image";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { BsList } from "react-icons/bs";
-import Timer from "../Timer/Timer";
+import Timer from "../Timer";
 import { useRouter, useParams } from "next/navigation";
 import { Moon, Sun, Trophy } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -37,7 +37,7 @@ import {
 import PersonalInfo from "../PersonalInfo";
 import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
-import LogoutButton from "../LogoutBtn";
+import LogoutButton from "../Topbar/components/LogoutBtn";
 import { submissionsDataState } from "@/atoms/submissionsDataAtom";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 type TopbarProps = {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import PreferenceNav from "./components/PreferenceNav";
 import Split from "react-split";
-import EditorFooter from "./EditorFooter";
+import EditorFooter from "./components/EditorFooter";
 
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, firestore } from "../../../firebase/firebase";
@@ -110,39 +110,34 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     let temp: SubmissionData[] = [];
 
     // 要測試 judge0 請打開
-    if (selectedLang === "py") {
-      checkStarterFunctionName(userCode);
-      // handle python testCase
-      userCode = userCode.slice(
-        userCode.indexOf(problem.starterFunctionName.py)
-      );
+    checkStarterFunctionName(userCode);
+    // handle python testCase
+    userCode = userCode.slice(userCode.indexOf(problem.starterFunctionName.py));
 
-      try {
-        for (const testCase of problem.testCaseCode) {
-          const token = (await testUserCode({
-            userCode: `${userCode.trim()}\n${testCase.inputCode.trim()}`,
-            expectedOutput: testCase.output,
-          })) as string;
-          if (!token) {
-            // console.log("或許你用到流量上限了!!");
-            throw new Error("或許你用到流量上限了!!");
-          }
+    try {
+      for (const testCase of problem.testCaseCode) {
+        const token = (await testUserCode({
+          userCode: `${userCode.trim()}\n${testCase.inputCode.trim()}`,
+          expectedOutput: testCase.output,
+        })) as string;
+        if (!token) {
+          // console.log("或許你用到流量上限了!!");
+          throw new Error("或許你用到流量上限了!!");
+        }
 
-          const data = (await getSubmissionData(token)) as SubmissionData;
-          if (data?.stderr) {
-            temp.push(data);
-            console.log("當第一個測資發生錯誤後應停止後續的測資繼續進行");
-            throw new Error("當第一個測資發生錯誤後應停止後續的測資繼續進行");
-          }
+        const data = (await getSubmissionData(token)) as SubmissionData;
+        if (data?.stderr) {
           temp.push(data);
+          console.log("當第一個測資發生錯誤後應停止後續的測資繼續進行");
+          throw new Error("當第一個測資發生錯誤後應停止後續的測資繼續進行");
         }
-      } catch (e) {
-        if (e instanceof Error) {
-          console.log(e.message);
-        }
+        temp.push(data);
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log(e.message);
       }
     }
-
     localStorage.setItem(
       `latest-test-${selectedLang}-code`,
       JSON.stringify(userCode)

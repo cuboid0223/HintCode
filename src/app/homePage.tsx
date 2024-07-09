@@ -1,5 +1,5 @@
 "use client";
-import Topbar from "@/components/Topbar/Topbar";
+import Topbar from "@/components/Topbar";
 import React, { useState, useEffect } from "react";
 import {
   Table,

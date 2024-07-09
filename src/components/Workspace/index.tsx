@@ -2,10 +2,10 @@
 import { useRef, useState } from "react";
 import Split from "react-split";
 
-import Playground from "./Playground/Playground";
+import Playground from "./Playground";
 import Confetti from "react-confetti";
 import useWindowSize from "../../hooks/useWindowSize";
-import ProblemTab from "./ProblemDescription/ProblemTab";
+import ProblemTab from "./ProblemTab";
 import { useTheme } from "next-themes";
 
 const Workspace = () => {

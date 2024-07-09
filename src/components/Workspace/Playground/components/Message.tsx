@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import CustomMarkdown from "@/components/CustomMarkdown";
+import CustomMarkdown from "@/components/Workspace/components/CustomMarkdown";
 import {
   Popover,
   PopoverContent,

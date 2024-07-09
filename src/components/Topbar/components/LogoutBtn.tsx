@@ -1,9 +1,9 @@
-import { auth } from "../firebase/firebase";
+import { auth } from "@/firebase/firebase";
 import React from "react";
 import { useSignOut } from "react-firebase-hooks/auth";
 import { FiLogOut } from "react-icons/fi";
 import { useRouter } from "next/navigation";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,

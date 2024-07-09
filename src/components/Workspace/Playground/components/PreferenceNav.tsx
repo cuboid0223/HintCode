@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Settings } from "../Playground";
+import { Settings } from "..";
 import {
   Select,
   SelectContent,
@@ -26,7 +26,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import * as Radix_Tooltip from "@radix-ui/react-tooltip";
-import CustomMarkdown from "@/components/CustomMarkdown";
+import CustomMarkdown from "@/components/Workspace/components/CustomMarkdown";
 import { useTheme } from "next-themes";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { problemDataState } from "@/atoms/ProblemData";

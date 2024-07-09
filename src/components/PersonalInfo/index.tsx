@@ -2,7 +2,7 @@
 import useGetUserInfo, { useGetSubscribedUser } from "@/hooks/useGetUserInfo";
 import React, { useEffect, useRef, useState } from "react";
 import { animated } from "react-spring";
-import Thumbnail from "./Thumbnail";
+import Thumbnail from "../Thumbnail";
 import useGetUsers, {
   useGetSubscribedUsers,
   useUserTransitions,

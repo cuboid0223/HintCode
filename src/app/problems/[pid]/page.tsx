@@ -1,5 +1,5 @@
 import { firestore } from "@/firebase/firebase";
-import ProblemPage from "./problem-page";
+import ProblemPage from "./problemPage";
 import { doc, getDoc } from "firebase/firestore";
 
 export default async function Page({ params }) {
