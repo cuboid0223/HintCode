@@ -1,5 +1,7 @@
 declare module "*.md";
 
+export type ThemeType = "light" | "dark";
+
 export type User = {
   createdAt: number;
   displayName: string;

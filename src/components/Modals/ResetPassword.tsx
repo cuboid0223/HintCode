@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "../ui/input";
 import { useTheme } from "next-themes";
+import { ThemeType } from "@/utils/types/global";
 
 const formSchema = z.object({
   email: z.string().email({ message: "email 格式錯誤" }),
@@ -38,7 +39,7 @@ const ResetPassword = () => {
       toast.success("密碼重製信件已傳送", {
         position: "top-center",
         autoClose: 3000,
-        theme: resolvedTheme,
+        theme: resolvedTheme as ThemeType,
       });
     }
   };

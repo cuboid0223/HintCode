@@ -37,6 +37,7 @@ import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 
 import getWrongTestCases from "@/utils/testCases/getWrongTestCases";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
+import { ThemeType } from "@/utils/types/global";
 type ProblemHelpProps = {
   threadId: string;
   remainTimes: number;
@@ -210,7 +211,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
       toast.warn("沒有測試結果，請按執行按鈕", {
         position: "top-center",
         autoClose: 3000,
-        theme: resolvedTheme,
+        theme: resolvedTheme as ThemeType,
       });
       setIsLoading(false);
       return;

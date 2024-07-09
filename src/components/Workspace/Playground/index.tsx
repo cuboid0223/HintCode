@@ -29,6 +29,7 @@ import useGetUserProblems, {
 } from "@/hooks/useGetUserProblems";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
+import { ThemeType } from "@/utils/types/global";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
@@ -91,7 +92,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
       toast.error("登入後才能執行程式", {
         position: "top-center",
         autoClose: 3000,
-        theme: resolvedTheme,
+        theme: resolvedTheme as ThemeType,
       });
       return;
     }
@@ -99,7 +100,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
       toast.warn("與之前的程式碼相同", {
         position: "top-center",
         autoClose: 3000,
-        theme: resolvedTheme,
+        theme: resolvedTheme as ThemeType,
       });
       setIsLoading(false);
       return;
