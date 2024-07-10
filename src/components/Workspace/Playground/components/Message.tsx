@@ -30,7 +30,7 @@ const Message: React.FC<MessageProps> = ({ msg, theme }) => {
 
 const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
   const { code, result } = msg;
-  const { submissions } = result;
+
   const handleFormatCode = (text: string) => {
     // 將程式碼轉換為正常的格式
     if (!text) return;
@@ -51,50 +51,55 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
       <div className="flex justify-end space-x-3 mt-3">
         {/* <CopyCheck /> */}
         <Copy />
-        <Popover>
-          <PopoverTrigger>
-            <FileJson2 />
-          </PopoverTrigger>
-          <PopoverContent className=" max-h-[400px] overflow-auto">
-            {/* 測試結果區 */}
-            <div className="flex items-center mb-3">
-              <h2
-                className={`font-bold  text-xl 
+        {result?.submissions.length !== 0 && (
+          <Popover>
+            <PopoverTrigger>
+              <FileJson2 />
+            </PopoverTrigger>
+            <PopoverContent className=" max-h-[400px] overflow-auto">
+              {/* 測試結果區 */}
+              <div className="flex items-center mb-3">
+                <h2
+                  className={`font-bold  text-xl 
                   ${
                     // id: 3 是 Accepted
-                    isAllTestCasesAccepted(submissions)
+                    isAllTestCasesAccepted(result?.submissions)
                       ? "text-green-600"
                       : "text-red-600"
                   }  
-                  ${submissions.length === 0 && "hidden"}`}
-              >
-                {isAllTestCasesAccepted(submissions)
-                  ? "Accepted"
-                  : "Wrong Answer"}
-              </h2>
-            </div>
-            {submissions.length === 0 ? (
-              <h2 className="text-white">沒有測試結果</h2>
-            ) : (
-              <>
-                {submissions[0]?.stderr && (
-                  <div className="bg-red-100 rounded-lg">
-                    <div
-                      className="text-rose-500 p-6"
-                      dangerouslySetInnerHTML={{
-                        __html: submissions[0].stderr,
-                      }}
-                    />
-                  </div>
-                )}
+                  ${result?.submissions.length === 0 && "hidden"}`}
+                >
+                  {isAllTestCasesAccepted(result?.submissions)
+                    ? "Accepted"
+                    : "Wrong Answer"}
+                </h2>
+              </div>
+              {result?.submissions.length === 0 ? (
+                <h2 className="text-white">沒有測試結果</h2>
+              ) : (
+                <>
+                  {result?.submissions[0]?.stderr && (
+                    <div className="bg-red-100 rounded-lg">
+                      <div
+                        className="text-rose-500 p-6"
+                        dangerouslySetInnerHTML={{
+                          __html: result?.submissions[0].stderr,
+                        }}
+                      />
+                    </div>
+                  )}
 
-                {!submissions[0]?.stderr && (
-                  <TestCaseList isTestResult submissions={submissions} />
-                )}
-              </>
-            )}
-          </PopoverContent>
-        </Popover>
+                  {!result?.submissions[0]?.stderr && (
+                    <TestCaseList
+                      isTestResult
+                      submissions={result?.submissions}
+                    />
+                  )}
+                </>
+              )}
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
     </Card>
   );
