@@ -21,9 +21,9 @@ import { firestore } from "@/firebase/firebase";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { useTheme } from "next-themes";
-import { View } from "./canvas/View";
+import { View } from "@/components/canvas/View";
 import { animated } from "react-spring";
-import Thumbnail from "./Thumbnail";
+import Thumbnail from "@/components/Thumbnail";
 import { useUserTransitions } from "@/hooks/useUsers";
 
 const Trophy = dynamic(

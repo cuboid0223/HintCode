@@ -98,13 +98,7 @@ const Topbar: React.FC<TopbarProps> = ({
         }`}
       >
         <Link href="/" className="h-[45px] flex-1 flex items-center">
-          <Image
-            className="bg-red-300"
-            src="/HINTCode.png"
-            alt="Logo"
-            height={45}
-            width={45}
-          />
+          <Image src="/HINTCode.png" alt="Logo" height={45} width={45} />
           <h1>HintCode</h1>
         </Link>
 
