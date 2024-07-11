@@ -97,8 +97,15 @@ const Topbar: React.FC<TopbarProps> = ({
           !isProblemPage ? "max-w-[1200px] mx-auto" : ""
         }`}
       >
-        <Link href="/" className="h-[22px] flex-1">
-          <Image src="/logo-full.png" alt="Logo" height={100} width={100} />
+        <Link href="/" className="h-[45px] flex-1 flex items-center">
+          <Image
+            className="bg-red-300"
+            src="/HINTCode.png"
+            alt="Logo"
+            height={45}
+            width={45}
+          />
+          <h1>HintCode</h1>
         </Link>
 
         {isProblemPage && (
