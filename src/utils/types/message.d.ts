@@ -7,6 +7,7 @@ type Message = {
   role: "user" | "assistant";
   text: string;
   result?: SubmissionsDataState;
+  type: string;
 };
 
 export { Message, Result };

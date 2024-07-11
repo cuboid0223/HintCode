@@ -56,25 +56,17 @@ const FormSchema = z.object({
 type SelectFormProps = {
   setMessages: Dispatch<SetStateAction<MessageType[]>>;
   threadId: string;
-
   submissionsData: SubmissionsDataState;
 };
-const NEXT_STEP_LOGIC = "nextStepLogic";
-const NEXT_STEP_SYNTAX = "nextStepSyntax";
-const DEBUG_LOGIC = "debugLogic";
-const DEBUG_SYNTAX = "debugSyntax";
+
 const NEXT_STEP = "nextStep";
 const DEBUG_ERROR = "debugError";
 const NEXT_STEP_PROMPT =
-  "請不要跟我講答案，只需要透過提供類似情境和變數名稱的範例程式碼告訴我下一步怎麼做。";
+  "請不要給我正確且完整解法讓我複製，只需告訴我下一步怎麼做，給我的範例程式碼不能是題目的答案，幫助我思考其中的概念。";
 const DEBUG_ERROR_PROMPT =
   "請不要跟我講答案，只需要透過提供類似情境和變數名稱的範例程式碼告訴我哪裡出錯了。";
 
 const HELP_TYPE_MAP = {
-  // [NEXT_STEP_LOGIC]: "下一步邏輯",
-  // [NEXT_STEP_SYNTAX]: "下一步語法",
-  // [DEBUG_LOGIC]: "邏輯除錯",
-  // [DEBUG_SYNTAX]: "語法除錯",
   [NEXT_STEP]: "我不知道下一步要怎麼做",
   [DEBUG_ERROR]: "輸出報錯了，哪裡有問題?",
 };
@@ -163,13 +155,8 @@ export const SelectForm: React.FC<SelectFormProps> = ({
           code: data.code,
           created_at: Timestamp.now().toMillis(),
           result: null,
-          text: `
-==========code start==========
-
-    ${formatCode(data.code)}
-
-===========code end===========
-      `,
+          text: data.prompt,
+          type: data.helpType,
         },
       ]);
     }
@@ -283,9 +270,9 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       appendToLastMessage(delta.value);
       setFinalText((prevText) => prevText + delta.value);
     }
-    if (delta.annotations != null) {
-      annotateLastMessage(delta.annotations);
-    }
+    // if (delta.annotations != null) {
+    //   annotateLastMessage(delta.annotations);
+    // }
   };
   /*
     =======================

@@ -46,16 +46,10 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     useRecoilState(isHelpBtnEnableState);
   const [isMounted, setIsMounted] = useState(false);
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const userProblemRef = doc(
-    firestore,
-    "users",
-    user.uid,
-    "problems",
-    problem.id
-  );
+
   const [isMessageLoading, setIsMessageLoading] = useState(false);
   const prevMessages = useGetProblemMessages(
-    user.uid,
+    user?.uid,
     problem.id,
     setIsMessageLoading
   );
@@ -123,13 +117,21 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
   // update remaining times and gradually prompt
   useEffect(() => {
     const updateRemainingTimes = async () => {
+      if (!user?.uid || !problem) return;
+      const userProblemRef = doc(
+        firestore,
+        "users",
+        user?.uid,
+        "problems",
+        problem.id
+      );
       await updateDoc(userProblemRef, {
         remainTimes: problem.totalTimes - messages.length / 2,
       });
       setRemainTimes(problem.totalTimes - messages.length / 2);
     };
     updateRemainingTimes();
-  }, [messages, userProblemRef, problem, remainTimes, setRemainTimes]);
+  }, [messages, problem, remainTimes, setRemainTimes, user?.uid]);
 
   // 當通過所有測資，將請求幫助按鈕 disable
   useEffect(() => {

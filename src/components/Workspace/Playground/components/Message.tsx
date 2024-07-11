@@ -9,7 +9,7 @@ import { Copy, CopyCheck, FileJson2 } from "lucide-react";
 import { Message as MessageType } from "@/utils/types/message";
 import TestCaseList from "./TestCaseList";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 type MessageProps = {
   theme: string;
   msg: MessageType;
@@ -29,7 +29,7 @@ const Message: React.FC<MessageProps> = ({ msg, theme }) => {
 };
 
 const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
-  const { code, result } = msg;
+  const { code, result, text } = msg;
 
   const handleFormatCode = (text: string) => {
     // 將程式碼轉換為正常的格式
@@ -41,6 +41,10 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
     return code;
   };
 
+  useEffect(() => {
+    console.log(result?.submissions.length);
+  }, [result?.submissions.length]);
+
   return (
     <Card
       className={`h-fit max-w-2xl p-2 justify-self-end dark:text-white overflow-x-auto `}
@@ -48,10 +52,9 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
       <CustomMarkdown theme={theme}>
         {`~~~py\n ${handleFormatCode(code)}\n~~~`}
       </CustomMarkdown>
+      <p>{text}</p>
       <div className="flex justify-end space-x-3 mt-3">
-        {/* <CopyCheck /> */}
-        <Copy />
-        {result?.submissions.length !== 0 && (
+        {result?.submissions && (
           <Popover>
             <PopoverTrigger>
               <FileJson2 />
