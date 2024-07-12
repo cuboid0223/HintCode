@@ -49,9 +49,18 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
     <Card
       className={`h-fit max-w-2xl p-2 justify-self-end dark:text-white overflow-x-auto `}
     >
-      <CustomMarkdown theme={theme}>
-        {`~~~py\n ${handleFormatCode(code)}\n~~~`}
-      </CustomMarkdown>
+      {/* 
+      --> str.replace(/^"(.*)"$/, '$1');  
+        使用 ^ 和 $ 分別匹配字串的開頭和結尾。
+        使用 "(.*)" 匹配整個字串，包括最外層的雙引號。
+        使用 $1 替換匹配到的整個字串，這裡的 $1 代表匹配到的第一個捕獲組，也就是去掉最外層雙引號的字串內容。
+      
+      --> .replace(/\\n/g, "\n") 
+        換行符號並非真的換行符號，需要替換成真的
+      */}
+      <CustomMarkdown
+        theme={theme}
+      >{`~~~py\n ${code.replace(/^"(.*)"$/, "$1").replace(/\\n/g, "\n")}\n~~~`}</CustomMarkdown>
       <p>{text}</p>
       <div className="flex justify-end space-x-3 mt-3">
         {result?.submissions && (

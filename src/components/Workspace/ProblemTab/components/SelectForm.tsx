@@ -62,7 +62,7 @@ type SelectFormProps = {
 const NEXT_STEP = "nextStep";
 const DEBUG_ERROR = "debugError";
 const NEXT_STEP_PROMPT =
-  "請不要給我正確且完整解法讓我複製，只需告訴我下一步怎麼做，給我的範例程式碼不能是題目的答案，幫助我思考其中的概念。";
+  "請告訴我下一步怎麼做，但請不要透漏正確且完整解法讓我複製，給我的範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。不需要給我應用到我的問題或範例的程式碼";
 const DEBUG_ERROR_PROMPT =
   "請不要跟我講答案，只需要透過提供類似情境和變數名稱的範例程式碼告訴我哪裡出錯了。";
 
