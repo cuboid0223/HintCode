@@ -9,6 +9,7 @@ import { FileJson2 } from "lucide-react";
 import { Message as MessageType } from "@/types/message";
 import TestCaseList from "./TestCaseList";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
+import { HELP_TYPE_MAP } from "../../ProblemTab/components/SelectForm";
 
 type MessageProps = {
   theme: string;
@@ -30,17 +31,7 @@ const Message: React.FC<MessageProps> = ({ msg, theme }) => {
 };
 
 const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
-  const { code, submissions, text } = msg;
-
-  // const handleFormatCode = (text: string) => {
-  //   // 將程式碼轉換為正常的格式
-  //   if (!text) return;
-  //   const code = text
-  //     .replace(/\\n/g, "\n")
-  //     .replace(/\\"/g, "'")
-  //     .replace(/\\t/g, "\t");
-  //   return code;
-  // };
+  const { code, submissions, text, type } = msg;
 
   return (
     <Card
@@ -58,7 +49,7 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
       <CustomMarkdown
         theme={theme}
       >{`~~~py\n ${code.replace(/^"(.*)"$/, "$1").replace(/\\n/g, "\n")}\n~~~`}</CustomMarkdown>
-      <p>{text}</p>
+      <p>{HELP_TYPE_MAP[type]}</p>
       <div className="flex justify-end space-x-3 mt-3">
         {submissions && (
           <Popover>

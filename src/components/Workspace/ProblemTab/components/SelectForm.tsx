@@ -66,7 +66,7 @@ const NEXT_STEP_PROMPT =
 const DEBUG_ERROR_PROMPT =
   "請告訴我程式哪裡出錯，但請不要透漏正確且完整解法讓我複製，如果是邏輯錯誤，只需透過文字提示，如果是語法錯誤，給我的範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。不需要給我應用到我的問題或範例的程式碼";
 
-const HELP_TYPE_MAP = {
+export const HELP_TYPE_MAP = {
   [NEXT_STEP]: "我不知道下一步要怎麼做",
   [DEBUG_ERROR]: "輸出報錯了，哪裡有問題?",
 };
@@ -205,63 +205,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       ]);
     }
   };
-  //   const handleSubmit = (data: z.infer<typeof FormSchema>) => {
-  //     // if (!userInput.trim()) return;
-  //     // if (!latestTestCode || !wrongTestCases) {
-  //     //   toast.warn("沒有測試結果，請按執行按鈕", {
-  //     //     position: "top-center",
-  //     //     autoClose: 3000,
-  //     //     theme: resolvedTheme as ThemeType,
-  //     //   });
-  //     //   setIsLoading(false);
-  //     //   return;
-  //     // }
-  //     // 請不要輕易試著更改下方所有字串，包含空格或是格式化
-  //     const promptTemplate = `
-  //     題目如下:
-  // =========problem statement start========
-  //     ${problem.problemStatement}
-  // =========problem statement end==========
 
-  //     以下是我的程式碼:
-  // ==========code start==========
-
-  //     ${formatCode(latestTestCode)}
-
-  // ===========code end===========
-
-  //     以下是經過測試後的輸出:
-  // =========test output start=======
-  //     ${formatSubmissions(wrongTestCases)}
-  // =========test output end=========
-
-  //     ${data.prompt}
-  //     `;
-
-  //     sendMessageToGPT(promptTemplate);
-  //     setMessages((prevMessages) => [
-  //       ...prevMessages,
-  //       {
-  //         id: uuidv4(),
-  //         role: "user",
-  //         code: latestTestCode,
-  //         created_at: Timestamp.now().toMillis(),
-  //         result: submissionsData,
-  //         text: `
-  // ==========code start==========
-
-  //     ${formatCode(latestTestCode)}
-
-  // ===========code end===========
-  //       `,
-  //       },
-  //     ]);
-
-  //     // setUserInput("");
-  //     // setInputDisabled(true);
-  //     // scrollToBottom();
-  //     setIsLoading(false);
-  //   };
   const sendMessageToGPT = async (text: string) => {
     if (!threadId) {
       console.log("no thread id");
@@ -327,25 +271,6 @@ export const SelectForm: React.FC<SelectFormProps> = ({
         text: lastMessage.text + text,
       };
 
-      return [...prevMessages.slice(0, -1), updatedLastMessage];
-    });
-  };
-
-  const annotateLastMessage = () => {
-    setMessages((prevMessages) => {
-      const lastMessage = prevMessages[prevMessages.length - 1];
-      const updatedLastMessage = {
-        ...lastMessage,
-      };
-
-      // annotations.forEach((annotation) => {
-      //   if (annotation.type === "file_path") {
-      //     updatedLastMessage.text = updatedLastMessage.text.replaceAll(
-      //       annotation.text,
-      //       `/api/files/${annotation.file_path.file_id}`
-      //     );
-      //   }
-      // });
       return [...prevMessages.slice(0, -1), updatedLastMessage];
     });
   };
