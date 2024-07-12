@@ -16,13 +16,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useTheme } from "next-themes";
-import { ThemeType } from "@/types/global";
+import { AuthModal, ThemeType } from "@/types/global";
+import { ChevronLeft } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "email 格式錯誤" }),
 });
+type ResetPasswordProps = {
+  setAuthModal?: React.Dispatch<React.SetStateAction<AuthModal>>;
+};
 
-const ResetPassword = () => {
+const ResetPassword: React.FC<ResetPasswordProps> = ({ setAuthModal }) => {
   const { resolvedTheme } = useTheme();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -69,10 +73,23 @@ const ResetPassword = () => {
               </FormItem>
             )}
           />
-
-          <Button className="w-full" type="submit">
-            重製密碼
-          </Button>
+          <div className="flex space-x-3">
+            <Button
+              size="icon"
+              onClick={() =>
+                setAuthModal((prev) => ({
+                  ...prev,
+                  isOpen: true,
+                  type: "login",
+                }))
+              }
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button className="w-full" type="submit">
+              重製密碼
+            </Button>
+          </div>
         </form>
       </Form>
     </section>

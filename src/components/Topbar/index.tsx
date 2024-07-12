@@ -27,17 +27,11 @@ import LogoutButton from "../Topbar/components/LogoutBtn";
 import { submissionsState } from "@/atoms/submissionsDataAtom";
 
 import PersonalInfoModal from "../Modals/PersonalInfoModal";
-type TopbarProps = {
+type TopBarProps = {
   isProblemPage?: boolean;
-  authModal?: AuthModal;
-  setAuthModal?: React.Dispatch<React.SetStateAction<AuthModal>>;
 };
 
-const Topbar: React.FC<TopbarProps> = ({
-  isProblemPage,
-  setAuthModal,
-  authModal,
-}) => {
+const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
   const [user] = useAuthState(auth);
 
   const router = useRouter();
@@ -148,13 +142,13 @@ const Topbar: React.FC<TopbarProps> = ({
           {!user && (
             <Link
               href="/auth"
-              onClick={() =>
-                setAuthModal((prev) => ({
-                  ...prev,
-                  isOpen: true,
-                  type: "login",
-                }))
-              }
+              // onClick={() =>
+              //   setAuthModal((prev) => ({
+              //     ...prev,
+              //     isOpen: true,
+              //     type: "login",
+              //   }))
+              // }
             >
               <button className="bg-dark-fill-3 py-1 px-2 cursor-pointer rounded ">
                 登入
@@ -175,4 +169,4 @@ const Topbar: React.FC<TopbarProps> = ({
     </nav>
   );
 };
-export default Topbar;
+export default TopBar;

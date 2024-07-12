@@ -16,7 +16,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ authModal, setAuthModal }) => {
     case "register":
       return <Signup setAuthModal={setAuthModal} />;
     case "forgotPassword":
-      return <ResetPassword />;
+      return <ResetPassword setAuthModal={setAuthModal} />;
     default:
       return null;
   }
