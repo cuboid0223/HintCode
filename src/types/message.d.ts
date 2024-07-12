@@ -1,4 +1,4 @@
-import { SubmissionsDataState } from "@/atoms/submissionsDataAtom";
+import { Submission } from "./testCase";
 
 type Message = {
   code: string;
@@ -6,7 +6,7 @@ type Message = {
   id: string;
   role: "user" | "assistant";
   text: string;
-  result?: SubmissionsDataState;
+  submissions?: Submission[];
   type: string;
 };
 

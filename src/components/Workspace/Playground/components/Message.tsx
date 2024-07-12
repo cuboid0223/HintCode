@@ -5,45 +5,42 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Copy, CopyCheck, FileJson2 } from "lucide-react";
-import { Message as MessageType } from "../../../../types/message";
+import { FileJson2 } from "lucide-react";
+import { Message as MessageType } from "@/types/message";
 import TestCaseList from "./TestCaseList";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import { useEffect, useState } from "react";
+
 type MessageProps = {
   theme: string;
   msg: MessageType;
 };
 
+const USER = "user";
+const ASSISTANT = "assistant";
+
 const Message: React.FC<MessageProps> = ({ msg, theme }) => {
   switch (msg.role) {
-    case "user":
+    case USER:
       return <UserMessage msg={msg} theme={theme} />;
-    case "assistant":
+    case ASSISTANT:
       return <AssistantMessage msg={msg} theme={theme} />;
-    // case "code":
-    //   return <CodeMessage text={text} theme={theme} />;
     default:
       return null;
   }
 };
 
 const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
-  const { code, result, text } = msg;
+  const { code, submissions, text } = msg;
 
-  const handleFormatCode = (text: string) => {
-    // 將程式碼轉換為正常的格式
-    if (!text) return;
-    const code = text
-      .replace(/\\n/g, "\n")
-      .replace(/\\"/g, "'")
-      .replace(/\\t/g, "\t");
-    return code;
-  };
-
-  useEffect(() => {
-    console.log(result?.submissions.length);
-  }, [result?.submissions.length]);
+  // const handleFormatCode = (text: string) => {
+  //   // 將程式碼轉換為正常的格式
+  //   if (!text) return;
+  //   const code = text
+  //     .replace(/\\n/g, "\n")
+  //     .replace(/\\"/g, "'")
+  //     .replace(/\\t/g, "\t");
+  //   return code;
+  // };
 
   return (
     <Card
@@ -63,7 +60,7 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
       >{`~~~py\n ${code.replace(/^"(.*)"$/, "$1").replace(/\\n/g, "\n")}\n~~~`}</CustomMarkdown>
       <p>{text}</p>
       <div className="flex justify-end space-x-3 mt-3">
-        {result?.submissions && (
+        {submissions && (
           <Popover>
             <PopoverTrigger>
               <FileJson2 />
@@ -75,37 +72,34 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
                   className={`font-bold  text-xl 
                   ${
                     // id: 3 是 Accepted
-                    isAllTestCasesAccepted(result?.submissions)
+                    isAllTestCasesAccepted(submissions)
                       ? "text-green-600"
                       : "text-red-600"
                   }  
-                  ${result?.submissions.length === 0 && "hidden"}`}
+                  ${submissions.length === 0 && "hidden"}`}
                 >
-                  {isAllTestCasesAccepted(result?.submissions)
+                  {isAllTestCasesAccepted(submissions)
                     ? "Accepted"
                     : "Wrong Answer"}
                 </h2>
               </div>
-              {result?.submissions.length === 0 ? (
+              {submissions.length === 0 ? (
                 <h2 className="text-white">沒有測試結果</h2>
               ) : (
                 <>
-                  {result?.submissions[0]?.stderr && (
+                  {submissions[0]?.stderr && (
                     <div className="bg-red-100 rounded-lg">
                       <div
                         className="text-rose-500 p-6"
                         dangerouslySetInnerHTML={{
-                          __html: result?.submissions[0].stderr,
+                          __html: submissions[0].stderr,
                         }}
                       />
                     </div>
                   )}
 
-                  {!result?.submissions[0]?.stderr && (
-                    <TestCaseList
-                      isTestResult
-                      submissions={result?.submissions}
-                    />
+                  {!submissions[0]?.stderr && (
+                    <TestCaseList isTestResult submissions={submissions} />
                   )}
                 </>
               )}

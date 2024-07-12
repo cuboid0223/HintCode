@@ -117,19 +117,16 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
     setIsHelpBtnEnable(false);
-    data["code"] = localStorage.getItem(`py-code-${params.pid}`);
+
     console.log(data);
     handleNextStep(data);
     handleDebugError(data);
-
-    // setUserInput("");
-    // setInputDisabled(true);
-    // scrollToBottom();
     setIsLoading(false);
   };
 
   const handleNextStep = (data: z.infer<typeof FormSchema>) => {
     if (data.helpType === NEXT_STEP) {
+      data["code"] = localStorage.getItem(`py-code-${params.pid}`);
       data["prompt"] = NEXT_STEP_PROMPT;
       const promptTemplate = `
     題目如下:
@@ -164,6 +161,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
   const handleDebugError = (data: z.infer<typeof FormSchema>) => {
     if (data.helpType === DEBUG_ERROR) {
+      data["code"] = latestTestCode;
       if (submissions.length === 0 || !submissions) {
         toast.warn("沒有執行結果，請按下執行按鈕", {
           position: "top-center",
