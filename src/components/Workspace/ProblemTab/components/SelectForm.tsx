@@ -82,11 +82,11 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   const [user] = useAuthState(auth);
   const problem = useRecoilValue(problemDataState);
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
-    `latest-test-py-code-${user.uid}`,
+    `latest-test-py-code-${user?.uid}`,
     ""
   );
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
-    `py-code-${problem.id}-${user.uid}`,
+    `py-code-${problem.id}-${user?.uid}`,
     ""
   );
   // const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
@@ -128,7 +128,16 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   };
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    if (!user) {
+      toast.error("請先登入", {
+        position: "top-center",
+        autoClose: 3000,
+        theme: "dark",
+      });
+      return;
+    }
     setIsLoading(true);
+
     setIsHelpBtnEnable(false);
 
     console.log(data);

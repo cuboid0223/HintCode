@@ -24,9 +24,7 @@ import { Message } from "../../../types/message";
 import updateUserProblemScore from "@/utils/User/updateUserProblemScore";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 
-type ProblemTabProps = {
-  // _solved: boolean;
-};
+type ProblemTabProps = {};
 
 const ProblemTab: React.FC<ProblemTabProps> = () => {
   const problem = useRecoilValue(problemDataState);

@@ -67,7 +67,6 @@ const Timer: React.FC<TimerProps> = () => {
     stopTimer();
     setElapsedTime(0);
     setLocalElapsedTime(0);
-    // localStorage.setItem(`elapsed-time-${params.pid}`, "0");
     if (!intervalIdRef) startTimer();
   };
 

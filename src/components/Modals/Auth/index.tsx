@@ -1,8 +1,8 @@
 import React from "react";
-import Login from "./Login";
-import ResetPassword from "./ResetPassword";
-import Signup from "./Signup";
-import { AuthModal as AuthModalType } from "../../types/global";
+import Login from "./components/Login";
+import ResetPassword from "./components/ResetPassword";
+import Signup from "./components/Signup";
+import { AuthModal as AuthModalType } from "@/types/global";
 
 type AuthModalProps = {
   authModal: AuthModalType;

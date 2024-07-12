@@ -49,17 +49,17 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
   const userProblems = useSubscribedUserProblems();
+  // 最後一次執行的程式碼
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
-    `latest-test-py-code-${user.uid}`,
+    `latest-test-py-code-${user?.uid}`,
     ""
   );
+  // playground 的程式碼
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
-    `py-code-${problem.id}-${user.uid}`,
+    `py-code-${problem.id}-${user?.uid}`,
     ""
   );
 
-  // const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
-  // const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
   const { resolvedTheme } = useTheme();
   const [submissions, setSubmissions] =
     useRecoilState<SubmissionsState>(submissionsState);
@@ -147,10 +147,6 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
       }
     }
     setLocalLatestTestCode(userCode);
-    // localStorage.setItem(
-    //   `latest-test-${selectedLang}-code`,
-    //   JSON.stringify(userCode)
-    // );
     setSubmissions(temp);
     setTestTab("testResult");
     setIsLoading(false);
@@ -159,10 +155,6 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const onChange = (value: string) => {
     setUserCode(value);
     setLocalCurrentCode(value);
-    // localStorage.setItem(
-    //   `${selectedLang}-code-${problem.id}`,
-    //   JSON.stringify(value)
-    // );
   };
 
   const handleTestTabChange = (value: string) => {

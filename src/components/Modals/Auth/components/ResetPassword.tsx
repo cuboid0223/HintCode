@@ -1,11 +1,11 @@
-import { auth } from "../../firebase/firebase";
+import { auth } from "@/firebase/firebase";
 import React, { useEffect } from "react";
 import { useSendPasswordResetEmail } from "react-firebase-hooks/auth";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,9 +14,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 import { useTheme } from "next-themes";
-import { ThemeType } from "../../types/global";
+import { ThemeType } from "@/types/global";
 
 const formSchema = z.object({
   email: z.string().email({ message: "email 格式錯誤" }),

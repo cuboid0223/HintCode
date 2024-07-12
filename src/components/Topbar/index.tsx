@@ -20,26 +20,13 @@ import {
 import { AuthModal } from "../../types/global";
 import useGetProblems from "@/hooks/useGetProblems";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
-import Thumbnail from "../Thumbnail";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import PersonalInfo from "../PersonalInfo";
+
 import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import LogoutButton from "../Topbar/components/LogoutBtn";
 import { submissionsState } from "@/atoms/submissionsDataAtom";
-import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+
+import PersonalInfoModal from "../Modals/PersonalInfoModal";
 type TopbarProps = {
   isProblemPage?: boolean;
   authModal?: AuthModal;
@@ -52,7 +39,7 @@ const Topbar: React.FC<TopbarProps> = ({
   authModal,
 }) => {
   const [user] = useAuthState(auth);
-  const userData = useGetUserInfo();
+
   const router = useRouter();
   const { setTheme } = useTheme();
   const params = useParams<{ pid: string }>();
@@ -176,41 +163,10 @@ const Topbar: React.FC<TopbarProps> = ({
           )}
           {user && isProblemPage && <Timer />}
           {user && (
-            <Dialog
-              open={isPersonalInfoDialogOpen}
-              onOpenChange={togglePersonalInfoDialog}
-            >
-              <HoverCard>
-                <HoverCardTrigger className="cursor-pointer">
-                  <DialogTrigger>
-                    <Thumbnail svg={userData?.thumbnail} />
-                  </DialogTrigger>
-                </HoverCardTrigger>
-                <HoverCardContent className="flex min-w-xs">
-                  <p>email: {userData?.email}</p>
-                </HoverCardContent>
-              </HoverCard>
-              <DialogContent className="max-w-2xl max-h-96">
-                <DialogHeader>
-                  <DialogTitle className=" flex justify-between items-center">
-                    <p> {userData?.displayName}</p>
-                    <p className="mr-4">{userData?.unit}</p>
-                  </DialogTitle>
-                  {/* <VisuallyHidden.Root asChild>
-                    <DialogTitle>{userData.displayName}</DialogTitle>
-                  </VisuallyHidden.Root> */}
-
-                  <VisuallyHidden.Root asChild>
-                    <DialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
-                    </DialogDescription>
-                  </VisuallyHidden.Root>
-                </DialogHeader>
-
-                <PersonalInfo />
-              </DialogContent>
-            </Dialog>
+            <PersonalInfoModal
+              togglePersonalInfoDialog={togglePersonalInfoDialog}
+              isPersonalInfoDialogOpen={isPersonalInfoDialogOpen}
+            />
           )}
 
           {user && <LogoutButton />}

@@ -1,4 +1,4 @@
-import { auth, firestore } from "../../firebase/firebase";
+import { auth, firestore } from "@/firebase/firebase";
 import { useEffect, useState } from "react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { doc, setDoc } from "firebase/firestore";
@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { createAvatar } from "@dicebear/core";
 import { thumbs } from "@dicebear/collection";
-import { AuthModal } from "../../types/global";
+import { AuthModal } from "@/types/global";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";

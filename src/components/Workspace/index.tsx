@@ -30,7 +30,7 @@ const Workspace = () => {
       }}
     >
       {/* 左半 程式題目敘述區與 GPT 提示區 */}
-      <ProblemTab _solved={solved} />
+      <ProblemTab />
 
       {/* 右半 程式碼輸入區與測試資料區 */}
       <Playground setSuccess={setSuccess} setSolved={setSolved} />
