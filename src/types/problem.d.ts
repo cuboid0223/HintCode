@@ -1,4 +1,4 @@
-import { TestCaseCode } from "./testCase";
+import { TestCase } from "./testCase";
 
 export type Example = {
   id: number;
@@ -31,7 +31,7 @@ export type Problem = {
     js: string;
     [key: string]: string;
   };
-  testCaseCode: TestCaseCode;
+  testCaseCode: TestCase[];
   score: number;
   isPublished: boolean;
 };

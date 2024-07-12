@@ -12,11 +12,11 @@ import useLocalStorage from "../../../hooks/useLocalStorage";
 import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TestCaseList from "./components/TestCaseList";
-import { SubmissionData } from "../../../../types/testCase";
+import { Submission } from "@/types/testCase";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
-  submissionsDataState,
-  SubmissionsDataState,
+  submissionsState,
+  SubmissionsState,
 } from "@/atoms/submissionsDataAtom";
 // import { mockSubmissions } from "@/mockProblems/mockSubmissions";
 import { useTheme } from "next-themes";
@@ -29,7 +29,7 @@ import useGetUserProblems, {
 } from "@/hooks/useGetUserProblems";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import { ThemeType } from "../../../../types/global";
+import { ThemeType } from "../../../types/global";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
@@ -52,8 +52,8 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
   const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
   const { resolvedTheme } = useTheme();
-  const [{ submissions }, setSubmissionsData] =
-    useRecoilState<SubmissionsDataState>(submissionsDataState);
+  const [submissions, setSubmissions] =
+    useRecoilState<SubmissionsState>(submissionsState);
   const [isHelpBtnEnable, setIsHelpBtnEnable] =
     useRecoilState(isHelpBtnEnableState);
 
@@ -108,7 +108,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
 
     setIsLoading(true);
     setIsHelpBtnEnable(true);
-    let temp: SubmissionData[] = [];
+    let temp: Submission[] = [];
 
     // 要測試 judge0 請打開
     checkStarterFunctionName(userCode);
@@ -126,7 +126,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
           throw new Error("或許你用到流量上限了!!");
         }
 
-        const data = (await getSubmissionData(token)) as SubmissionData;
+        const data = (await getSubmissionData(token)) as Submission;
         if (data?.stderr) {
           temp.push(data);
           console.log("當第一個測資發生錯誤後應停止後續的測資繼續進行");
@@ -143,8 +143,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
       `latest-test-${selectedLang}-code`,
       JSON.stringify(userCode)
     );
-    setSubmissionsData({ problemId: problem.id, submissions: temp });
-    // setSubmissionsData(mockSubmissions);
+    setSubmissions(temp);
     setTestTab("testResult");
     setIsLoading(false);
   };

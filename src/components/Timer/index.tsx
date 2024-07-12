@@ -4,8 +4,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FiRefreshCcw } from "react-icons/fi";
 import { useRecoilState } from "recoil";
 import {
-  submissionsDataState,
-  SubmissionsDataState,
+  submissionsState,
+  SubmissionsState,
 } from "@/atoms/submissionsDataAtom";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -17,8 +17,8 @@ const Timer: React.FC<TimerProps> = () => {
   //   let intervalId: NodeJS.Timeout;
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
   const [user] = useAuthState(auth);
-  const [submissionsData, setSubmissionsData] =
-    useRecoilState<SubmissionsDataState>(submissionsDataState);
+  const [submissionsData, setSubmissions] =
+    useRecoilState<SubmissionsState>(submissionsState);
   const params = useParams<{ pid: string }>();
   const [elapsedTime, setElapsedTime] = useState(
     () => Number(localStorage.getItem(`elapsed-time-${params.pid}`)) || 0
@@ -95,15 +95,12 @@ const Timer: React.FC<TimerProps> = () => {
   }, [userProblemRef, startTimer]);
 
   useEffect(() => {
-    const handleAcceptedTime = ({
-      submissions,
-      problemId,
-    }: SubmissionsDataState) => {
+    const handleAcceptedTime = (submissions: SubmissionsState) => {
       // 用來記錄每題的通過時間(秒)
       if (!user) return;
 
       // 更新 elapsedTime 到 localStorage
-      if (problemId === params.pid && isAllTestCasesAccepted(submissions)) {
+      if (isAllTestCasesAccepted(submissions)) {
         stopTimer();
         return updateDoc(userProblemRef, {
           acceptedTime: Number(

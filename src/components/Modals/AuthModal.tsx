@@ -2,7 +2,7 @@ import React from "react";
 import Login from "./Login";
 import ResetPassword from "./ResetPassword";
 import Signup from "./Signup";
-import { AuthModal as AuthModalType } from "../../../types/global";
+import { AuthModal as AuthModalType } from "../../types/global";
 
 type AuthModalProps = {
   authModal: AuthModalType;

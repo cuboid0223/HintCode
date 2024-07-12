@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AuthModal } from "../../../types/global";
+import { AuthModal } from "../../types/global";
 import useGetProblems from "@/hooks/useGetProblems";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import Thumbnail from "../Thumbnail";
@@ -38,7 +38,7 @@ import PersonalInfo from "../PersonalInfo";
 import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import LogoutButton from "../Topbar/components/LogoutBtn";
-import { submissionsDataState } from "@/atoms/submissionsDataAtom";
+import { submissionsState } from "@/atoms/submissionsDataAtom";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 type TopbarProps = {
   isProblemPage?: boolean;
@@ -56,8 +56,7 @@ const Topbar: React.FC<TopbarProps> = ({
   const router = useRouter();
   const { setTheme } = useTheme();
   const params = useParams<{ pid: string }>();
-  const [submissionsData, setSubmissionsData] =
-    useRecoilState(submissionsDataState);
+  const [submissionsData, setSubmissions] = useRecoilState(submissionsState);
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
   const [isProblemsLoading, setIsProblemsLoading] = useState(false);
@@ -72,7 +71,7 @@ const Topbar: React.FC<TopbarProps> = ({
     const direction = isForward ? 1 : -1;
     const nextProblemOrder = problem.order + direction;
     const nextProblem = problems.find((p) => p.order === nextProblemOrder);
-    setSubmissionsData({ problemId: pid, submissions: [] });
+    setSubmissions([]);
     if (isForward && !nextProblem) {
       //  處理 edge case 當沒有下一個問題且是點 "往前" 給使用者第一個 problem
       const firstProblem = problems.find((p) => p.order === 1);

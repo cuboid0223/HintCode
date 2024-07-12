@@ -1,15 +1,9 @@
-import { SubmissionData } from "../../types/testCase";
-import { atom, selector } from "recoil";
+import { Submission } from "../types/testCase";
+import { atom } from "recoil";
 
-export type SubmissionsDataState = {
-  problemId: string;
-  submissions: SubmissionData[];
-};
+export type SubmissionsState = Submission[];
 
-export const submissionsDataState = atom<SubmissionsDataState>({
-  key: "submissionsDataState", // unique ID (with respect to other atoms/selectors)
-  default: {
-    problemId: "",
-    submissions: [],
-  }, // default value (aka initial value)
+export const submissionsState = atom<SubmissionsState>({
+  key: "submissionsState", // unique ID (with respect to other atoms/selectors)
+  default: [],
 });

@@ -1,5 +1,5 @@
 import { auth, firestore } from "@/firebase/firebase";
-import { UserProblem } from "../../types/problem";
+import { UserProblem } from "../types/problem";
 import { collection, getDocs, onSnapshot, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";

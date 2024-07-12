@@ -1,5 +1,5 @@
 import { firestore } from "@/firebase/firebase";
-import { Problem } from "../../types/problem";
+import { Problem } from "../types/problem";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 

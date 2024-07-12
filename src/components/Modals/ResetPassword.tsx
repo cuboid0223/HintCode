@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "../ui/input";
 import { useTheme } from "next-themes";
-import { ThemeType } from "../../../types/global";
+import { ThemeType } from "../../types/global";
 
 const formSchema = z.object({
   email: z.string().email({ message: "email 格式錯誤" }),

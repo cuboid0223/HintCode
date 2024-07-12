@@ -1,4 +1,4 @@
-export type SubmissionData = {
+export type Submission = {
   memory: number;
   status: {
     description: string;
@@ -12,9 +12,8 @@ export type SubmissionData = {
   compile_output: string;
 };
 
-type TestCase = {
+export type TestCase = {
   id: string;
   inputCode: string;
   output: string;
 };
-export type TestCaseCode = TestCase[];

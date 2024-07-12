@@ -11,16 +11,16 @@ import HelpTab from "./HelpTab";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
-import { SubmissionData } from "../../../../types/testCase";
+import { Submission } from "@/types/testCase";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import useGetUserProblems from "@/hooks/useGetUserProblems";
 import {
-  submissionsDataState,
-  SubmissionsDataState,
+  submissionsState,
+  SubmissionsState,
 } from "@/atoms/submissionsDataAtom";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import { Message } from "../../../../types/message";
+import { Message } from "../../../types/message";
 import updateUserProblemScore from "@/utils/User/updateUserProblemScore";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 
@@ -44,8 +44,7 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [problemTab, setProblemTab] = useState("description");
   const [remainTimes, setRemainTimes] = useState(20);
-  const [{ submissions }, setSubmissionsData] =
-    useRecoilState<SubmissionsDataState>(submissionsDataState);
+  const [submissions] = useRecoilState<SubmissionsState>(submissionsState);
 
   async function checkIsDocumentExists(userId: string, problemId: string) {
     if (!userId || !problemId) {

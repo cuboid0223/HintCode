@@ -29,25 +29,25 @@ import {
 } from "@/components/ui/select";
 import { RingLoader } from "react-spinners";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import { SubmissionData } from "../../../../../types/testCase";
+import { Submission } from "@/types/testCase";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
-import { ThemeType } from "../../../../../types/global";
+import { ThemeType } from "../../../../types/global";
 import { useTheme } from "next-themes";
 import { Dispatch, useState, SetStateAction, useEffect } from "react";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import getWrongTestCases from "@/utils/testCases/getWrongTestCases";
 import { problemDataState } from "@/atoms/ProblemData";
-import { Message as MessageType } from "../../../../../types/message";
+import { Message as MessageType } from "../../../../types/message";
 import { Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
-import { SubmissionsDataState } from "@/atoms/submissionsDataAtom";
+import { SubmissionsState } from "@/atoms/submissionsDataAtom";
 import { AssistantStream } from "openai/lib/AssistantStream";
 
 const FormSchema = z.object({
   helpType: z.string({
-    required_error: "Please select an helpType to display.",
+    required_error: "您需要何種幫助",
   }),
   code: z.string().optional(),
   prompt: z.string().optional(),
@@ -56,7 +56,7 @@ const FormSchema = z.object({
 type SelectFormProps = {
   setMessages: Dispatch<SetStateAction<MessageType[]>>;
   threadId: string;
-  submissionsData: SubmissionsDataState;
+  submissions: SubmissionsState;
 };
 
 const NEXT_STEP = "nextStep";
@@ -74,7 +74,7 @@ const HELP_TYPE_MAP = {
 export const SelectForm: React.FC<SelectFormProps> = ({
   setMessages,
   threadId,
-  submissionsData,
+  submissions,
 }) => {
   const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
   const problem = useRecoilValue(problemDataState);
@@ -96,7 +96,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       .trim(); // 移除前後的空格
   };
 
-  const formatSubmissions = (data: SubmissionData[]) => {
+  const formatSubmissions = (data: Submission[]) => {
     /*
     將測試資料的結果轉成純文字(自然語言)，方便 GPT 讀取
     */
@@ -164,7 +164,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
   const handleDebugError = (data: z.infer<typeof FormSchema>) => {
     if (data.helpType === DEBUG_ERROR) {
-      if (submissionsData.submissions.length === 0 || !submissionsData) {
+      if (submissions.length === 0 || !submissions) {
         toast.warn("沒有執行結果，請按下執行按鈕", {
           position: "top-center",
           autoClose: 3000,
@@ -172,7 +172,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
         });
         return;
       }
-      data["submissions"] = submissionsData.submissions;
+      data["submissions"] = submissions;
       data["prompt"] = DEBUG_ERROR_PROMPT;
       const promptTemplate = `
     題目如下:
@@ -188,7 +188,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 ===========code end===========
     以下是我的程式經過測試後的輸出
 ==========test start==========  
-    ${formatSubmissions(submissionsData.submissions)}
+    ${formatSubmissions(submissions)}
 ==========test end==========
     ${data.prompt}
     `;
@@ -200,7 +200,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
           role: "user",
           code: data.code,
           created_at: Timestamp.now().toMillis(),
-          result: submissionsData,
+          result: submissions,
           text: data.prompt,
           type: data.helpType,
         },
@@ -398,7 +398,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
               {isLoading ? <RingLoader color="#36d7b7" size={27} /> : "傳送"}
             </TooltipTrigger>
             <TooltipContent>
-              {isAllTestCasesAccepted(submissionsData?.submissions) ? (
+              {isAllTestCasesAccepted(submissions) ? (
                 <p>您已通過測試</p>
               ) : (
                 <p>需要按下執行按鈕產生結果</p>

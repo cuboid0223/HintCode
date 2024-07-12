@@ -7,7 +7,7 @@ import useGetUsers, {
   useGetSubscribedUsers,
   useUserTransitions,
 } from "@/hooks/useUsers";
-import { User } from "../../../types/global";
+import { User } from "../../types/global";
 import {
   Table,
   TableBody,

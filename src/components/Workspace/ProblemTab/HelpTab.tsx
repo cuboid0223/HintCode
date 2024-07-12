@@ -8,8 +8,8 @@ import React, {
 import { useTheme } from "next-themes";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
-  SubmissionsDataState,
-  submissionsDataState,
+  SubmissionsState,
+  submissionsState,
 } from "@/atoms/submissionsDataAtom";
 import Message from "../Playground/components/Message";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
@@ -17,7 +17,7 @@ import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { problemDataState } from "@/atoms/ProblemData";
-import { Message as MessageType } from "../../../../types/message";
+import { Message as MessageType } from "../../../types/message";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { SelectForm } from "./components/SelectForm";
@@ -40,8 +40,8 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
   const problem = useRecoilValue(problemDataState);
   const [user] = useAuthState(auth);
   const { resolvedTheme } = useTheme();
-  const [submissionsData, setSubmissionsData] =
-    useRecoilState<SubmissionsDataState>(submissionsDataState);
+  const [submissions, setSubmissions] =
+    useRecoilState<SubmissionsState>(submissionsState);
   const [isHelpBtnEnable, setIsHelpBtnEnable] =
     useRecoilState(isHelpBtnEnableState);
   const [isMounted, setIsMounted] = useState(false);
@@ -135,10 +135,10 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
 
   // 當通過所有測資，將請求幫助按鈕 disable
   useEffect(() => {
-    if (isAllTestCasesAccepted(submissionsData.submissions)) {
+    if (isAllTestCasesAccepted(submissions)) {
       setIsHelpBtnEnable(false);
     }
-  }, [submissionsData.submissions, setIsHelpBtnEnable]);
+  }, [submissions, setIsHelpBtnEnable]);
 
   // automatically scroll to bottom of chat
   const messagesEndRef = useRef(null);
@@ -177,7 +177,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
       <SelectForm
         setMessages={setMessages}
         threadId={threadId}
-        submissionsData={submissionsData}
+        submissions={submissions}
       />
     </section>
   );

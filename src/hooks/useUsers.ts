@@ -1,5 +1,5 @@
 import { firestore } from "@/firebase/firebase";
-import { User } from "../../types/global";
+import { User } from "../types/global";
 import {
   collection,
   orderBy,

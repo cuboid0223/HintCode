@@ -1,6 +1,6 @@
 "use client";
 
-import { SubmissionData } from "../../../../../types/testCase";
+import { Submission } from "@/types/testCase";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { CircleSlash, CircleCheckBig } from "lucide-react";
@@ -10,7 +10,7 @@ import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 type TestCaseListProps = {
   isTestResult?: boolean;
-  submissions: SubmissionData[];
+  submissions: Submission[];
 };
 
 const TestCaseList: React.FC<TestCaseListProps> = ({
@@ -19,9 +19,6 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
 }) => {
   const problem = useRecoilValue(problemDataState);
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
-  // const [{ submissions }, setSubmissionsData] =
-  //   useRecoilState<SubmissionsDataState>(submissionsDataState);
-
   // automitcally scroll to bottom of testCase
   const testCaseEndRef = useRef(null);
   const scrollToBottom = () => {
@@ -156,7 +153,7 @@ const SubmissionStatusIcon = ({
   submissions,
 }: {
   index: number;
-  submissions: SubmissionData[];
+  submissions: Submission[];
 }) => {
   if (submissions?.length !== 0) {
     const statusId = submissions?.[index]?.status.id;

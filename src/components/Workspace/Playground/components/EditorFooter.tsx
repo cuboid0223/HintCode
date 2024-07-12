@@ -1,8 +1,8 @@
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import { problemDataState } from "@/atoms/ProblemData";
 import {
-  submissionsDataState,
-  SubmissionsDataState,
+  submissionsState,
+  SubmissionsState,
 } from "@/atoms/submissionsDataAtom";
 import { Button } from "@/components/ui/button";
 import { auth, firestore } from "@/firebase/firebase";
@@ -30,8 +30,8 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
 }) => {
   const [user] = useAuthState(auth);
   const problem = useRecoilValue(problemDataState);
-  const [{ submissions }, setSubmissionsData] =
-    useRecoilState<SubmissionsDataState>(submissionsDataState);
+  const [submissions, setSubmissions] =
+    useRecoilState<SubmissionsState>(submissionsState);
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
   const [isMessageLoading, setIsMessageLoading] = useState(false);

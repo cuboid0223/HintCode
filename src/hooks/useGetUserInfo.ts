@@ -1,5 +1,5 @@
 import { auth, firestore } from "@/firebase/firebase";
-import { User } from "../../types/global";
+import { User } from "../types/global";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState, useCallback } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
