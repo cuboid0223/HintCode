@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AuthModal } from "@/utils/types/global";
+import { AuthModal } from "../../../types/global";
 import useGetProblems from "@/hooks/useGetProblems";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import Thumbnail from "../Thumbnail";

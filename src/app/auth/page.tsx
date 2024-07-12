@@ -7,7 +7,7 @@ import { useRecoilValue } from "recoil";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Topbar from "@/components/Topbar";
-import { AuthModal as AuthModalType } from "@/utils/types/global";
+import { AuthModal as AuthModalType } from "../../../types/global";
 
 const AuthPage = () => {
   // const authModal = useRecoilValue(authModalState);

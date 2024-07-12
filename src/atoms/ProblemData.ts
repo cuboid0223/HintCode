@@ -1,4 +1,4 @@
-import { Problem } from "@/utils/types/problem";
+import { Problem } from "../../types/problem";
 import { atom } from "recoil";
 
 type ProblemDataState = Problem | null;

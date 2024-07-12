@@ -1,4 +1,4 @@
-import { SubmissionData } from "../utils/types/testCase";
+import { SubmissionData } from "../../types/testCase";
 import { atom, selector } from "recoil";
 
 export type SubmissionsDataState = {

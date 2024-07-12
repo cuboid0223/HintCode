@@ -3,7 +3,7 @@ import Topbar from "@/components/Topbar";
 import Workspace from "@/components/Workspace";
 import useHasMounted from "../../../hooks/useHasMounted";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { Problem } from "@/utils/types/problem";
+import { Problem } from "../../../../types/problem";
 import React, { useEffect } from "react";
 import { firestore } from "@/firebase/firebase";
 import { useRecoilState } from "recoil";

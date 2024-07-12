@@ -1,5 +1,5 @@
 import { firestore } from "@/firebase/firebase";
-import { Message } from "@/utils/types/message";
+import { Message } from "../../types/message";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 

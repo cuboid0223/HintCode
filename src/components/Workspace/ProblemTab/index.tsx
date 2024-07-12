@@ -11,7 +11,7 @@ import HelpTab from "./HelpTab";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
-import { SubmissionData } from "@/utils/types/testCase";
+import { SubmissionData } from "../../../../types/testCase";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import useGetUserProblems from "@/hooks/useGetUserProblems";
@@ -20,7 +20,7 @@ import {
   SubmissionsDataState,
 } from "@/atoms/submissionsDataAtom";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import { Message } from "@/utils/types/message";
+import { Message } from "../../../../types/message";
 import updateUserProblemScore from "@/utils/User/updateUserProblemScore";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 

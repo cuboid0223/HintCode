@@ -6,7 +6,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Copy, CopyCheck, FileJson2 } from "lucide-react";
-import { Message as MessageType } from "@/utils/types/message";
+import { Message as MessageType } from "../../../../../types/message";
 import TestCaseList from "./TestCaseList";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { useEffect, useState } from "react";

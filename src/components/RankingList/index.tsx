@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User } from "@/utils/types/global";
+import { User } from "../../../types/global";
 import { mockUsersData } from "@/mockProblems/mockUsersData";
 import {
   collection,

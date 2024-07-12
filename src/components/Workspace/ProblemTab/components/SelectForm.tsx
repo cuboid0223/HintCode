@@ -29,17 +29,17 @@ import {
 } from "@/components/ui/select";
 import { RingLoader } from "react-spinners";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import { SubmissionData } from "@/utils/types/testCase";
+import { SubmissionData } from "../../../../../types/testCase";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
-import { ThemeType } from "@/utils/types/global";
+import { ThemeType } from "../../../../../types/global";
 import { useTheme } from "next-themes";
 import { Dispatch, useState, SetStateAction, useEffect } from "react";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import getWrongTestCases from "@/utils/testCases/getWrongTestCases";
 import { problemDataState } from "@/atoms/ProblemData";
-import { Message as MessageType } from "@/utils/types/message";
+import { Message as MessageType } from "../../../../../types/message";
 import { Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { SubmissionsDataState } from "@/atoms/submissionsDataAtom";
@@ -64,7 +64,7 @@ const DEBUG_ERROR = "debugError";
 const NEXT_STEP_PROMPT =
   "請告訴我下一步怎麼做，但請不要透漏正確且完整解法讓我複製，給我的範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。不需要給我應用到我的問題或範例的程式碼";
 const DEBUG_ERROR_PROMPT =
-  "請不要跟我講答案，只需要透過提供類似情境和變數名稱的範例程式碼告訴我哪裡出錯了。";
+  "請告訴我程式哪裡出錯，但請不要透漏正確且完整解法讓我複製，如果是邏輯錯誤，只需透過文字提示，如果是語法錯誤，給我的範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。不需要給我應用到我的問題或範例的程式碼";
 
 const HELP_TYPE_MAP = {
   [NEXT_STEP]: "我不知道下一步要怎麼做",
@@ -164,7 +164,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
   const handleDebugError = (data: z.infer<typeof FormSchema>) => {
     if (data.helpType === DEBUG_ERROR) {
-      if (submissionsData.submissions.length === 0) {
+      if (submissionsData.submissions.length === 0 || !submissionsData) {
         toast.warn("沒有執行結果，請按下執行按鈕", {
           position: "top-center",
           autoClose: 3000,
@@ -174,6 +174,37 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       }
       data["submissions"] = submissionsData.submissions;
       data["prompt"] = DEBUG_ERROR_PROMPT;
+      const promptTemplate = `
+    題目如下:
+=========problem statement start========
+    ${problem.problemStatement}
+=========problem statement end==========
+    
+    以下是我目前的程式碼:
+==========code start==========
+
+    ${formatCode(data.code)}
+
+===========code end===========
+    以下是我的程式經過測試後的輸出
+==========test start==========  
+    ${formatSubmissions(submissionsData.submissions)}
+==========test end==========
+    ${data.prompt}
+    `;
+      sendMessageToGPT(promptTemplate);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: uuidv4(),
+          role: "user",
+          code: data.code,
+          created_at: Timestamp.now().toMillis(),
+          result: submissionsData,
+          text: data.prompt,
+          type: data.helpType,
+        },
+      ]);
     }
   };
   //   const handleSubmit = (data: z.infer<typeof FormSchema>) => {

@@ -12,7 +12,7 @@ import useLocalStorage from "../../../hooks/useLocalStorage";
 import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TestCaseList from "./components/TestCaseList";
-import { SubmissionData } from "@/utils/types/testCase";
+import { SubmissionData } from "../../../../types/testCase";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   submissionsDataState,
@@ -29,7 +29,7 @@ import useGetUserProblems, {
 } from "@/hooks/useGetUserProblems";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import { ThemeType } from "@/utils/types/global";
+import { ThemeType } from "../../../../types/global";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
