@@ -44,6 +44,9 @@ import { Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { SubmissionsState } from "@/atoms/submissionsDataAtom";
 import { AssistantStream } from "openai/lib/AssistantStream";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase/firebase";
 
 const FormSchema = z.object({
   helpType: z.string({
@@ -76,8 +79,18 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   threadId,
   submissions,
 }) => {
-  const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
+  const [user] = useAuthState(auth);
   const problem = useRecoilValue(problemDataState);
+  const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
+    `latest-test-py-code-${user.uid}`,
+    ""
+  );
+  const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
+    `py-code-${problem.id}-${user.uid}`,
+    ""
+  );
+  // const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
+
   const { resolvedTheme } = useTheme();
   const params = useParams<{ pid: string }>();
   const [isLoading, setIsLoading] = useState(false);
@@ -126,7 +139,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
   const handleNextStep = (data: z.infer<typeof FormSchema>) => {
     if (data.helpType === NEXT_STEP) {
-      data["code"] = localStorage.getItem(`py-code-${params.pid}`);
+      data["code"] = localCurrentCode;
       data["prompt"] = NEXT_STEP_PROMPT;
       const promptTemplate = `
     題目如下:
@@ -161,7 +174,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
   const handleDebugError = (data: z.infer<typeof FormSchema>) => {
     if (data.helpType === DEBUG_ERROR) {
-      data["code"] = latestTestCode;
+      data["code"] = localLatestTestCode;
       if (submissions.length === 0 || !submissions) {
         toast.warn("沒有執行結果，請按下執行按鈕", {
           position: "top-center",

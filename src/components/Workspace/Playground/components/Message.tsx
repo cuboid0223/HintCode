@@ -105,7 +105,7 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
 const AssistantMessage: React.FC<MessageProps> = ({ msg, theme }) => {
   return (
     <Card
-      className={`h-fit max-w-2xl dark:text-white  p-2 dark:bg-[#083344] bg-blue-50`}
+      className={`h-fit max-w-xl min-w-xl dark:text-white  p-2 dark:bg-[#083344] bg-blue-50`}
     >
       <CustomMarkdown theme={theme}>{msg.text}</CustomMarkdown>
     </Card>

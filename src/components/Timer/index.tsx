@@ -20,8 +20,13 @@ const Timer: React.FC<TimerProps> = () => {
   const [submissionsData, setSubmissions] =
     useRecoilState<SubmissionsState>(submissionsState);
   const params = useParams<{ pid: string }>();
+  const [localElapsedTime, setLocalElapsedTime] = useLocalStorage(
+    `elapsed-time-${params.pid}-${user.uid}`,
+    0
+  );
+
   const [elapsedTime, setElapsedTime] = useState(
-    () => Number(localStorage.getItem(`elapsed-time-${params.pid}`)) || 0
+    () => Number(localElapsedTime) || 0
   ); // 單位是秒
 
   const [showTimer, setShowTimer] = useState<boolean>(true);
@@ -61,7 +66,8 @@ const Timer: React.FC<TimerProps> = () => {
   const resetTimer = () => {
     stopTimer();
     setElapsedTime(0);
-    localStorage.setItem(`elapsed-time-${params.pid}`, "0");
+    setLocalElapsedTime(0);
+    // localStorage.setItem(`elapsed-time-${params.pid}`, "0");
     if (!intervalIdRef) startTimer();
   };
 
@@ -103,9 +109,7 @@ const Timer: React.FC<TimerProps> = () => {
       if (isAllTestCasesAccepted(submissions)) {
         stopTimer();
         return updateDoc(userProblemRef, {
-          acceptedTime: Number(
-            localStorage.getItem(`elapsed-time-${params.pid}`)
-          ),
+          acceptedTime: Number(localElapsedTime),
         });
       }
     };
@@ -114,8 +118,16 @@ const Timer: React.FC<TimerProps> = () => {
     // else ->　handleAcceptedTime
 
     handleAcceptedTime(submissionsData);
-    localStorage.setItem(`elapsed-time-${params.pid}`, String(elapsedTime));
-  }, [elapsedTime, submissionsData, params.pid, user, userProblemRef]);
+    setLocalElapsedTime(String(elapsedTime));
+  }, [
+    elapsedTime,
+    submissionsData,
+    params.pid,
+    user,
+    userProblemRef,
+    localElapsedTime,
+    setLocalElapsedTime,
+  ]);
 
   return (
     <div>

@@ -44,13 +44,22 @@ export type Settings = {
 };
 
 const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
+  const [user] = useAuthState(auth);
   const problem = useRecoilValue(problemDataState);
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
   const userProblems = useSubscribedUserProblems();
+  const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
+    `latest-test-py-code-${user.uid}`,
+    ""
+  );
+  const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
+    `py-code-${problem.id}-${user.uid}`,
+    ""
+  );
 
-  const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
-  const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
+  // const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
+  // const currentCode = localStorage.getItem(`py-code-${problem.id}`) || ""; // 指的是在 playground 的程式碼
   const { resolvedTheme } = useTheme();
   const [submissions, setSubmissions] =
     useRecoilState<SubmissionsState>(submissionsState);
@@ -70,8 +79,6 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     selectedLang: "py",
   });
   const { selectedLang } = settings;
-
-  const [user] = useAuthState(auth);
 
   const checkStarterFunctionName = (userCode: string) => {
     if (!userCode.includes(problem.starterFunctionName[selectedLang])) {
@@ -96,7 +103,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
       });
       return;
     }
-    if (latestTestCode === currentCode) {
+    if (localLatestTestCode === localCurrentCode) {
       toast.warn("與之前的程式碼相同", {
         position: "top-center",
         autoClose: 3000,
@@ -139,10 +146,11 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
         console.log(e.message);
       }
     }
-    localStorage.setItem(
-      `latest-test-${selectedLang}-code`,
-      JSON.stringify(userCode)
-    );
+    setLocalLatestTestCode(userCode);
+    // localStorage.setItem(
+    //   `latest-test-${selectedLang}-code`,
+    //   JSON.stringify(userCode)
+    // );
     setSubmissions(temp);
     setTestTab("testResult");
     setIsLoading(false);
@@ -150,10 +158,11 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
 
   const onChange = (value: string) => {
     setUserCode(value);
-    localStorage.setItem(
-      `${selectedLang}-code-${problem.id}`,
-      JSON.stringify(value)
-    );
+    setLocalCurrentCode(value);
+    // localStorage.setItem(
+    //   `${selectedLang}-code-${problem.id}`,
+    //   JSON.stringify(value)
+    // );
   };
 
   const handleTestTabChange = (value: string) => {
@@ -192,13 +201,12 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   }, [userProblems, user, submissions]);
 
   useEffect(() => {
-    const code = localStorage.getItem(`${selectedLang}-code-${problem.id}`);
-    if (user) {
-      setUserCode(code ? JSON.parse(code) : problem.starterCode.py);
+    if (user && localCurrentCode) {
+      setUserCode(localCurrentCode);
     } else {
       setUserCode(problem.starterCode.py);
     }
-  }, [problem.id, user, problem.starterCode, selectedLang]);
+  }, [problem.id, user, problem.starterCode.py, localCurrentCode]);
 
   return (
     <div className="flex flex-col relative overflow-x-hidden ">
