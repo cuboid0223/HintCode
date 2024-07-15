@@ -39,17 +39,15 @@ const Workspace = () => {
         <Playground setSuccess={setSuccess} setSolved={setSolved} />
       </Split>
 
-      {/* 解題成功 提示有用問卷 */}
-      {solved && (
-        <HintUsefulDialog
-          isHintUsefulDialogOpen={isHintUsefulDialogOpen}
-          setIsHintUsefulDialogOpen={setIsHintUsefulDialogOpen}
-        />
-      )}
-
-      {/* 解題成功撒花 */}
+      {/* 解題成功撒花 + 提示有用問卷 */}
       {success && (
         <>
+          <HintUsefulDialog
+            isHintUsefulDialogOpen={isHintUsefulDialogOpen}
+            setIsHintUsefulDialogOpen={setIsHintUsefulDialogOpen}
+            setSuccess={setSuccess}
+          />
+
           <Confetti
             gravity={0.3}
             tweenDuration={4000}

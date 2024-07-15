@@ -87,9 +87,9 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
     setIsPersonalInfoDialogOpen(true);
     updateUserProblemScore(userProblemRef, problem.score, messages.length);
     setSuccess(true);
-    setTimeout(() => {
-      setSuccess(false);
-    }, 4000);
+    // setTimeout(() => {
+    //   setSuccess(false);
+    // }, 4000);
   };
 
   return (

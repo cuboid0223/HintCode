@@ -1,13 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -18,16 +10,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "../ui/button";
-import { DialogClose } from "@radix-ui/react-dialog";
-import { Label } from "@radix-ui/react-label";
-import { Input } from "../ui/input";
-import { Copy } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 const RADIO_VALUE = ["強烈反對", "不同意", "普通", "同意", "強烈同意"];
 
 const formSchema = z.object({
@@ -38,11 +26,13 @@ const formSchema = z.object({
 type HintUsefulDialogProps = {
   isHintUsefulDialogOpen: boolean;
   setIsHintUsefulDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
   isHintUsefulDialogOpen,
   setIsHintUsefulDialogOpen,
+  setSuccess,
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,8 +44,9 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
 
-    // setIsHintUsefulDialogOpen(!isHintUsefulDialogOpen);
     // 前往下一題 goToNextProblem
+    setSuccess(false);
+    setIsHintUsefulDialogOpen(!isHintUsefulDialogOpen);
   };
 
   useEffect(() => {
@@ -134,8 +125,6 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
           </Form>
         </DialogContent>
       </Dialog>
-      {/* 提示是否有用 ?  */}
-      {/* radio -> 沒用 普通 有用 */}
     </div>
   );
 };
