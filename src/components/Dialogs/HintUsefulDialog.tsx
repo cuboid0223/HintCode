@@ -49,7 +49,7 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
 
     setSuccess(false);
     setIsHintUsefulDialogOpen(!isHintUsefulDialogOpen);
-    // 前往下一題 goToNextProblem
+    // 前往下一題
     handleProblemChange();
   };
 

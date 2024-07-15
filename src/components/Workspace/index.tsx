@@ -8,6 +8,8 @@ import useWindowSize from "../../hooks/useWindowSize";
 import ProblemTab from "./ProblemTab";
 import { useTheme } from "next-themes";
 import HintUsefulDialog from "../Dialogs/HintUsefulDialog";
+import { useRecoilState } from "recoil";
+import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 
 const Workspace = () => {
   const { resolvedTheme } = useTheme();
@@ -16,7 +18,8 @@ const Workspace = () => {
   const [success, setSuccess] = useState(false);
   const [solved, setSolved] = useState(false);
   const [isHintUsefulDialogOpen, setIsHintUsefulDialogOpen] = useState(true);
-
+  const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
+    useRecoilState(isPersonalInfoDialogOpenState);
   return (
     <>
       <Split
@@ -39,22 +42,24 @@ const Workspace = () => {
         <Playground setSuccess={setSuccess} setSolved={setSolved} />
       </Split>
 
-      {/* 解題成功撒花 + 提示有用問卷 */}
-      {success && (
+      {/* 提示有用問卷 */}
+      {success && !isPersonalInfoDialogOpen && (
         <>
           <HintUsefulDialog
             isHintUsefulDialogOpen={isHintUsefulDialogOpen}
             setIsHintUsefulDialogOpen={setIsHintUsefulDialogOpen}
             setSuccess={setSuccess}
           />
-
-          <Confetti
-            gravity={0.3}
-            tweenDuration={4000}
-            width={width - 1}
-            height={height - 1}
-          />
         </>
+      )}
+      {/* 解題成功撒花  */}
+      {success && (
+        <Confetti
+          gravity={0.3}
+          tweenDuration={4000}
+          width={width - 1}
+          height={height - 1}
+        />
       )}
     </>
   );
