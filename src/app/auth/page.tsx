@@ -1,11 +1,11 @@
 "use client";
-import AuthModal from "@/components/Modals/Auth";
+import AuthDialog from "@/components/Dialogs/Auth";
 import TopBar from "@/components/Topbar";
-import { AuthModal as AuthModalType } from "../../types/global";
+import { AuthDialog as AuthDialogType } from "../../types/global";
 import { useState } from "react";
 
 const AuthPage = () => {
-  const [authModal, setAuthModal] = useState<AuthModalType>({
+  const [authDialog, setAuthDialog] = useState<AuthDialogType>({
     type: "login",
     isOpen: true,
   });
@@ -14,8 +14,8 @@ const AuthPage = () => {
     <main className="h-screen dark:bg-gradient-to-b from-gray-600 to-black relative">
       <TopBar />
       <section className="h-full container max-w-xl ">
-        {authModal.isOpen && (
-          <AuthModal setAuthModal={setAuthModal} authModal={authModal} />
+        {authDialog.isOpen && (
+          <AuthDialog setAuthDialog={setAuthDialog} authDialog={authDialog} />
         )}
       </section>
     </main>

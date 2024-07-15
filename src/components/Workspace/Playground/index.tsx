@@ -38,7 +38,7 @@ type PlaygroundProps = {
 
 export type Settings = {
   fontSize: string;
-  settingsModalIsOpen: boolean;
+  settingsDialogIsOpen: boolean;
   dropdownIsOpen: boolean;
   selectedLang: "py" | "js";
 };
@@ -74,7 +74,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const [testTab, setTestTab] = useState("testcase");
   const [settings, setSettings] = useState<Settings>({
     fontSize: fontSize,
-    settingsModalIsOpen: false,
+    settingsDialogIsOpen: false,
     dropdownIsOpen: false,
     selectedLang: "py",
   });

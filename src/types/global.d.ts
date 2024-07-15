@@ -14,7 +14,7 @@ export type User = {
   unit: string;
 };
 
-export type AuthModal = {
+export type AuthDialog = {
   type: "login" | "register" | "forgotPassword";
   isOpen: boolean;
 };

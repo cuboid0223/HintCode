@@ -190,9 +190,6 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
           </Tooltip>
         </TooltipProvider>
       </div>
-      {/* {settings.settingsModalIsOpen && (
-        <SettingsModal  />
-      )} */}
     </div>
   );
 };

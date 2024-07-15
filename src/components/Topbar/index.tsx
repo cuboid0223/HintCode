@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AuthModal } from "../../types/global";
+import { AuthDialog } from "../../types/global";
 import useGetProblems from "@/hooks/useGetProblems";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 
@@ -26,7 +26,7 @@ import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen"
 import LogoutButton from "../Topbar/components/LogoutBtn";
 import { submissionsState } from "@/atoms/submissionsDataAtom";
 
-import PersonalInfoModal from "../Modals/PersonalInfoModal";
+import PersonalInfoDialog from "../Dialogs/PersonalInfoDialog";
 type TopBarProps = {
   isProblemPage?: boolean;
 };
@@ -118,8 +118,6 @@ const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
           )}
 
           <DropdownMenu>
-            {/* box-shadow:  -23px 23px 46px #d0d0d0,
-             23px -23px 46px #ffffff; */}
             <DropdownMenuTrigger asChild className="">
               <Button variant="outline" size="icon">
                 <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -140,16 +138,7 @@ const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
             </DropdownMenuContent>
           </DropdownMenu>
           {!user && (
-            <Link
-              href="/auth"
-              // onClick={() =>
-              //   setAuthModal((prev) => ({
-              //     ...prev,
-              //     isOpen: true,
-              //     type: "login",
-              //   }))
-              // }
-            >
+            <Link href="/auth">
               <button className="bg-dark-fill-3 py-1 px-2 cursor-pointer rounded ">
                 登入
               </button>
@@ -157,7 +146,7 @@ const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
           )}
           {user && isProblemPage && <Timer />}
           {user && (
-            <PersonalInfoModal
+            <PersonalInfoDialog
               togglePersonalInfoDialog={togglePersonalInfoDialog}
               isPersonalInfoDialogOpen={isPersonalInfoDialogOpen}
             />

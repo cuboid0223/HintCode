@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { createAvatar } from "@dicebear/core";
 import { thumbs } from "@dicebear/collection";
-import { AuthModal } from "@/types/global";
+import { AuthDialog } from "@/types/global";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -52,14 +52,14 @@ const formSchema = z.object({
 });
 
 type SignupProps = {
-  setAuthModal?: React.Dispatch<React.SetStateAction<AuthModal>>;
+  setAuthDialog?: React.Dispatch<React.SetStateAction<AuthDialog>>;
 };
 
-const Signup: React.FC<SignupProps> = ({ setAuthModal }) => {
+const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
   const [name, setName] = useState("");
   const [thumbnail, setThumbnail] = useState("");
-  const handleChangeModal = () => {
-    setAuthModal((prev) => ({ ...prev, type: "login" }));
+  const handleChangeDialogs = () => {
+    setAuthDialog((prev) => ({ ...prev, type: "login" }));
   };
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -235,7 +235,7 @@ const Signup: React.FC<SignupProps> = ({ setAuthModal }) => {
         <a
           href="#"
           className="text-blue-700 hover:underline"
-          onClick={handleChangeModal}
+          onClick={handleChangeDialogs}
         >
           登入
         </a>

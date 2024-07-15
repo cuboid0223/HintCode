@@ -61,6 +61,8 @@ const useSubscribedUserProblems = () => {
   const [user] = useAuthState(auth);
   const [userProblems, setUserProblems] = useState<UserProblem[]>([]);
   useEffect(() => {
+    if (!user?.uid) return;
+
     let unsubscribe: (() => void) | undefined;
 
     const fetchAndSubscribe = async () => {

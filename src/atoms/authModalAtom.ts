@@ -1,16 +1,16 @@
 import { atom } from "recoil";
 
-type AuthModalState = {
+type AuthDialogState = {
   isOpen: boolean;
   type: "login" | "register" | "forgotPassword";
 };
 
-const initialAuthModalState: AuthModalState = {
+const initialAuthDialogState: AuthDialogState = {
   isOpen: true,
   type: "login",
 };
 
-export const authModalState = atom<AuthModalState>({
-  key: "authModalState",
-  default: initialAuthModalState,
+export const authDialogState = atom<AuthDialogState>({
+  key: "authDialogState",
+  default: initialAuthDialogState,
 });

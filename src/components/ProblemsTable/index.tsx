@@ -19,13 +19,13 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
   const userProblems = useGetUserProblems();
   console.log("problems", problems);
   console.log("userProblems", userProblems);
-  const closeModal = () => {
+  const closeDialog = () => {
     setYoutubePlayer({ isOpen: false, videoId: "" });
   };
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeModal();
+      if (e.key === "Escape") closeDialog();
     };
     window.addEventListener("keydown", handleEsc);
 

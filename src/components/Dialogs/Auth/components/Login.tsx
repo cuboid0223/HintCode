@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { toast } from "react-toastify";
-import { AuthModal } from "@/types/global";
+import { AuthDialog } from "@/types/global";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -24,12 +24,14 @@ const formSchema = z.object({
 });
 
 type LoginProps = {
-  setAuthModal?: React.Dispatch<React.SetStateAction<AuthModal>>;
+  setAuthDialog?: React.Dispatch<React.SetStateAction<AuthDialog>>;
 };
 
-const Login: React.FC<LoginProps> = ({ setAuthModal }) => {
-  const handleChangeModal = (type: "login" | "register" | "forgotPassword") => {
-    setAuthModal((prev) => ({ ...prev, type }));
+const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
+  const handleChangeDialog = (
+    type: "login" | "register" | "forgotPassword"
+  ) => {
+    setAuthDialog((prev) => ({ ...prev, type }));
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -118,7 +120,7 @@ const Login: React.FC<LoginProps> = ({ setAuthModal }) => {
           <a
             href="#"
             className="text-brand-orange hover:underline"
-            onClick={() => handleChangeModal("register")}
+            onClick={() => handleChangeDialog("register")}
           >
             創造帳戶
           </a>
@@ -126,7 +128,7 @@ const Login: React.FC<LoginProps> = ({ setAuthModal }) => {
 
         <a
           href="#"
-          onClick={() => handleChangeModal("forgotPassword")}
+          onClick={() => handleChangeDialog("forgotPassword")}
           className=" text-sm  text-brand-orange hover:underline text-right"
         >
           忘記密碼?

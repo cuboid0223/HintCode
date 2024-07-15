@@ -32,7 +32,10 @@ import {
 } from "@/components/ui/dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 
-function PersonalInfoModal({ isPersonalInfoDialogOpen ,togglePersonalInfoDialog }) {
+function PersonalInfoDialog({
+  isPersonalInfoDialogOpen,
+  togglePersonalInfoDialog,
+}) {
   const targetUser = useGetUserInfo();
   const currentUser = useGetSubscribedUser();
   const users = useGetUsers();
@@ -185,4 +188,4 @@ function PersonalInfoModal({ isPersonalInfoDialogOpen ,togglePersonalInfoDialog 
   );
 }
 
-export default PersonalInfoModal;
+export default PersonalInfoDialog;
