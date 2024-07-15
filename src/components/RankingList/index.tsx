@@ -23,7 +23,7 @@ import { Suspense } from "react";
 import { useTheme } from "next-themes";
 import { View } from "@/components/canvas/View";
 import { animated } from "react-spring";
-import Thumbnail from "@/components/Thumbnail";
+import Avatar from "@/components/Avatar";
 import { useUserTransitions } from "@/hooks/useUsers";
 
 const Trophy = dynamic(
@@ -117,7 +117,7 @@ function RankingList() {
               <TableCell className="">{user.totalScore}</TableCell>
               <TableCell className="">{user.displayName}</TableCell>
               <TableCell className="flex place-content-center">
-                <Thumbnail svg={user?.thumbnail} />
+                <Avatar svg={user?.thumbnail} />
               </TableCell>
               <TableCell className="font-bold text-xl ">{index + 1}</TableCell>
             </animated.tr>

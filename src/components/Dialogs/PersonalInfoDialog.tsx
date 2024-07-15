@@ -15,8 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import CountUp, { useCountUp } from "react-countup";
-import Thumbnail from "../Thumbnail";
+import CountUp from "react-countup";
+import Avatar from "../Avatar";
 import {
   HoverCard,
   HoverCardContent,
@@ -92,7 +92,7 @@ function PersonalInfoDialog({
       <HoverCard>
         <HoverCardTrigger className="cursor-pointer">
           <DialogTrigger>
-            <Thumbnail svg={userData?.thumbnail} />
+            <Avatar svg={userData?.thumbnail} />
           </DialogTrigger>
         </HoverCardTrigger>
         <HoverCardContent className="flex min-w-xs">
@@ -119,7 +119,7 @@ function PersonalInfoDialog({
 
         <div className="flex">
           <section className="p-2">
-            <Thumbnail svg={targetUser?.thumbnail_64px} />
+            <Avatar svg={targetUser?.thumbnail_64px} />
 
             {/* score */}
             <pre className="mt-2">總分: </pre>
@@ -173,7 +173,7 @@ function PersonalInfoDialog({
                   <TableCell className="">{user.totalScore}</TableCell>
                   <TableCell className="">{user.displayName}</TableCell>
                   <TableCell className="flex place-content-center">
-                    <Thumbnail svg={user?.thumbnail} />
+                    <Avatar svg={user?.thumbnail} />
                   </TableCell>
                   {/* <TableCell className="font-bold text-xl ">
                 {userIndex + 1}

@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import useGetProblems from "@/hooks/useGetProblems";
 
 const RADIO_VALUE = ["強烈反對", "不同意", "普通", "同意", "強烈同意"];
 
@@ -34,6 +35,8 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
   setIsHintUsefulDialogOpen,
   setSuccess,
 }) => {
+  const { handleProblemChange } = useGetProblems();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,9 +47,10 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
 
-    // 前往下一題 goToNextProblem
     setSuccess(false);
     setIsHintUsefulDialogOpen(!isHintUsefulDialogOpen);
+    // 前往下一題 goToNextProblem
+    handleProblemChange();
   };
 
   useEffect(() => {

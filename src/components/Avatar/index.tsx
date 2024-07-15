@@ -1,9 +1,9 @@
 import React from "react";
 
-type ThumbnailProps = {
+type AvatarProps = {
   svg: string;
 };
-const Thumbnail: React.FC<ThumbnailProps> = ({ svg }) => {
+const Avatar: React.FC<AvatarProps> = ({ svg }) => {
   return (
     <div
       className="rounded-full"
@@ -14,4 +14,4 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ svg }) => {
   );
 };
 
-export default Thumbnail;
+export default Avatar;

@@ -13,8 +13,8 @@ export type Problem = {
   id: string;
   category: string;
   difficulty: string;
-  likes: number;
-  dislikes: number;
+  // likes: number;
+  // dislikes: number;
   title: string;
   diffmode: string;
   problemStatement: string;
