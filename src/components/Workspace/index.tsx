@@ -43,6 +43,8 @@ const Workspace = () => {
       </Split>
 
       {/* 提示有用問卷 */}
+      {/* !isPersonalInfoDialogOpen -> 處理 Modal 同時顯示的問題 */}
+
       {success && !isPersonalInfoDialogOpen && (
         <>
           <HintUsefulDialog

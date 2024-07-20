@@ -15,7 +15,7 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
     isOpen: false,
     videoId: "",
   });
-  const problems = useGetProblems(setLoadingProblems);
+  const { problems } = useGetProblems(setLoadingProblems);
   const userProblems = useGetUserProblems();
   console.log("problems", problems);
   console.log("userProblems", userProblems);

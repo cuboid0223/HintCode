@@ -84,11 +84,7 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
     //     score: basicScore + (extraScore - messages.length),
     //   });
     // };
-    if (!isPersonalInfoDialogOpen) {
-      setTimeout(() => {
-        setSuccess(true);
-      }, 1000);
-    }
+    setSuccess(true);
     setIsPersonalInfoDialogOpen(true);
     updateUserProblemScore(userProblemRef, problem.score, messages.length);
   };

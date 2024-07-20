@@ -26,7 +26,7 @@ import {
 
 export default function Home() {
   const [loadingProblems, setLoadingProblems] = useState(true);
-  const problems = useGetProblems(setLoadingProblems);
+  const { problems } = useGetProblems(setLoadingProblems);
   const userProblems = useGetUserProblems();
 
   return (

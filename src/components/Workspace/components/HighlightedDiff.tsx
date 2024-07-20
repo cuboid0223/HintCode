@@ -63,7 +63,7 @@ const HighlightedDiff: React.FC<HighlightedDiffProps> = ({
     }
   });
 
-  console.log("result: ", result);
+  // console.log("result: ", result);
 
   return <div>{result}</div>;
 };

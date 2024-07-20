@@ -54,7 +54,7 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
   };
 
   useEffect(() => {
-    console.log(isHintUsefulDialogOpen);
+    console.log("isHintUsefulDialogOpen: ", isHintUsefulDialogOpen);
   }, [isHintUsefulDialogOpen]);
   return (
     <div>

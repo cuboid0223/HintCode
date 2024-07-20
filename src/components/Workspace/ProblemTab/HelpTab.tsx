@@ -67,8 +67,6 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
 
   useEffect(() => {
     const updateMessagesFromFirestore = async (msgs: MessageType[]) => {
-      console.log("8 ");
-      console.log(msgs);
       if (!user || !problem || !msgs) return;
 
       try {
@@ -147,7 +145,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
   };
 
   useEffect(() => {
-    console.log("msgs ", messages);
+    // console.log("msgs ", messages);
     scrollToBottom();
   }, [messages]);
 
