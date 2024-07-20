@@ -21,7 +21,7 @@ const Timer: React.FC<TimerProps> = () => {
     useRecoilState<SubmissionsState>(submissionsState);
   const params = useParams<{ pid: string }>();
   const [localElapsedTime, setLocalElapsedTime] = useLocalStorage(
-    `elapsed-time-${params.pid}-${user.uid}`,
+    `elapsed-time-${params.pid}`,
     0
   );
 

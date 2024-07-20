@@ -64,10 +64,17 @@ type SelectFormProps = {
 
 const NEXT_STEP = "nextStep";
 const DEBUG_ERROR = "debugError";
-const NEXT_STEP_PROMPT =
-  "請告訴我下一步怎麼做，但請不要透漏正確且完整解法讓我複製，給我的範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。不需要給我應用到我的問題或範例的程式碼";
-const DEBUG_ERROR_PROMPT =
-  "請告訴我程式哪裡出錯，但請不要透漏正確且完整解法讓我複製，如果是邏輯錯誤，只需透過文字提示，如果是語法錯誤，給我的範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。不需要給我應用到我的問題或範例的程式碼";
+const NEXT_STEP_PROMPT = `
+請告訴我下一步怎麼做，但請不要透漏正確且完整解法讓我複製，
+給我的範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。
+不需要給我應用到我的問題或範例的程式碼。
+請使用繁體中文回覆
+`;
+
+const DEBUG_ERROR_PROMPT = `只能告訴我程式碼哪裡出錯，請不要透漏正確且完整解法讓我複製，其餘與錯誤無關的資訊也請不要透漏。
+  請給我的針對該錯誤的範例程式碼但不能是題目的答案，這可以幫助我思考其中的概念。
+  不需要給我應用到我的問題或範例的程式碼。
+  請使用繁體中文回覆`;
 
 export const HELP_TYPE_MAP = {
   [NEXT_STEP]: "我不知道下一步要怎麼做",
@@ -82,11 +89,11 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   const [user] = useAuthState(auth);
   const problem = useRecoilValue(problemDataState);
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
-    `latest-test-py-code-${user?.uid}`,
+    `latest-test-py-code`,
     ""
   );
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
-    `py-code-${problem.id}-${user?.uid}`,
+    `py-code-${problem.id}`,
     ""
   );
   // const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
@@ -184,6 +191,8 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   const handleDebugError = (data: z.infer<typeof FormSchema>) => {
     if (data.helpType === DEBUG_ERROR) {
       data["code"] = localLatestTestCode;
+      console.log(problem);
+      console.log(localLatestTestCode);
       if (submissions.length === 0 || !submissions) {
         toast.warn("沒有執行結果，請按下執行按鈕", {
           position: "top-center",

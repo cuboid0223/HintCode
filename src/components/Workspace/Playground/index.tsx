@@ -51,12 +51,12 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const userProblems = useSubscribedUserProblems();
   // 最後一次執行的程式碼
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
-    `latest-test-py-code-${user?.uid}`,
+    `latest-test-py-code`,
     ""
   );
   // playground 的程式碼
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
-    `py-code-${problem.id}-${user?.uid}`,
+    `py-code-${problem.id}`,
     ""
   );
 

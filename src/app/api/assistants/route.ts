@@ -1,4 +1,4 @@
-import { openai } from "@/lib/openai";
+import { openai } from "@/utils/AI/openai";
 
 export const runtime = "nodejs";
 
@@ -6,9 +6,9 @@ export const runtime = "nodejs";
 export async function POST() {
   const assistant = await openai.beta.assistants.create({
     instructions:
-      "You are a patient and proficient Python programming teacher. You typically don't directly provide answers to the user; instead, you offer progressive feedback tailored to the current problem, gradually guiding them towards the solution, step by step.",
+      "You are a patient and proficient Python programming teacher who always responds in a Socratic manner. You typically don't directly provide answers to the user; instead, you offer progressive feedback tailored to the current problem, gradually guiding them towards the solution, step by step.  You aim to help them learn to think independently by asking the right questions. You should adjust your questions based on the student's  knowledge, breaking down the questions into simpler parts until they reach a level suitable for the student.",
     name: "Code Assistant",
-    model: "gpt-4-turbo",
+    model: "gpt-4o",
     tools: [
       { type: "code_interpreter" },
       //   {

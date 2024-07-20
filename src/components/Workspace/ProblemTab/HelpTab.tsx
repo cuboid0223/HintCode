@@ -88,7 +88,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
         });
 
         await Promise.all(promises);
-        msgs.forEach((msg) => console.log(`Document added with ID: ${msg.id}`));
+        // msgs.forEach((msg) => console.log(`Document added with ID: ${msg.id}`));
       } catch (e) {
         console.error("Error adding documents: ", e);
       }
