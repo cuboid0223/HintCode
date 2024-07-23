@@ -112,8 +112,7 @@ const AssistantMessage: React.FC<MessageProps> = ({ msg, theme }) => {
   const [user] = useAuthState(auth);
   const params = useParams<{ pid: string }>();
   const [isLiked, setIsLiked] = useState(0);
-  const handleLiked = async (isLiked: number) => {
-    console.log(isLiked);
+  const handleLiked = async (newLikeStatus: number) => {
     const msgRef = doc(
       firestore,
       "users",
@@ -123,8 +122,13 @@ const AssistantMessage: React.FC<MessageProps> = ({ msg, theme }) => {
       "messages",
       msg.id
     );
-    setIsLiked(isLiked);
-    await setDoc(msgRef, { isLiked: isLiked }, { merge: true });
+    if (newLikeStatus === isLiked) {
+      setIsLiked(0);
+      await setDoc(msgRef, { isLiked: 0 }, { merge: true });
+    } else {
+      setIsLiked(newLikeStatus);
+      await setDoc(msgRef, { isLiked: newLikeStatus }, { merge: true });
+    }
   };
 
   useEffect(() => {
