@@ -10,7 +10,15 @@ import HelpTab from "./HelpTab";
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  query,
+  collection,
+  getDocs,
+} from "firebase/firestore";
 import { Submission } from "@/types/testCase";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
@@ -23,6 +31,8 @@ import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { Message } from "../../../types/message";
 import updateUserProblemScore from "@/utils/User/updateUserProblemScore";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
+import { CONTROL, EXPERIMENTAL } from "../../../../public/global";
+import useGetUserInfo from "@/hooks/useGetUserInfo";
 
 type ProblemTabProps = {};
 
@@ -31,6 +41,7 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
 
   const userProblems = useGetUserProblems();
   const [user] = useAuthState(auth);
+  const userData = useGetUserInfo();
   const [loadingProblemMessages, setLoadingProblemMessages] = useState(false);
   const problemMessages = useGetProblemMessages(
     user?.uid,
@@ -42,6 +53,7 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [problemTab, setProblemTab] = useState("description");
   const [remainTimes, setRemainTimes] = useState(20);
+  const [isUserControlGroup, setIsUserControlGroup] = useState(false);
   const [submissions] = useRecoilState<SubmissionsState>(submissionsState);
 
   async function checkIsDocumentExists(userId: string, problemId: string) {
@@ -134,6 +146,28 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
   //   );
   // }, [problemMessages, problem.id, problem.score, user?.uid]);
 
+  useEffect(() => {
+    const getControlUnit = async () => {
+      const groupRef = doc(firestore, "groups", CONTROL);
+      const docSnap = await getDoc(groupRef);
+      if (!docSnap.exists()) {
+        console.log("沒有控制組");
+        return <div>CONTROL not found!</div>;
+      }
+      console.log(docSnap.data().id);
+      return docSnap.data().id;
+    };
+
+    const checkUserIsControlGroup = async () => {
+      const controlGroup: string = await getControlUnit();
+      if (userData?.unit.id === controlGroup) {
+        setIsUserControlGroup(true);
+      }
+    };
+
+    checkUserIsControlGroup();
+  }, [userData]);
+
   return (
     <div className="relative flex flex-col ">
       {/* TABs */}
@@ -151,12 +185,14 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
           >
             問題描述
           </TabsTrigger>
-          <TabsTrigger
-            value="getHelp"
-            className="rounded-t-lg text-gray-400  !shadow-none"
-          >
-            提示
-          </TabsTrigger>
+          {!isUserControlGroup && (
+            <TabsTrigger
+              value="getHelp"
+              className="rounded-t-lg text-gray-400  !shadow-none"
+            >
+              提示
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <div className="overflow-y-auto overflow-x-hidden">

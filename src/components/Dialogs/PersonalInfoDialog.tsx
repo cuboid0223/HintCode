@@ -39,7 +39,7 @@ function PersonalInfoDialog({
   const targetUser = useGetUserInfo();
   const currentUser = useGetSubscribedUser();
   const users = useGetUsers();
-  const userData = useGetUserInfo();
+  // const userData = useGetUserInfo();
   const currentUsers = useGetSubscribedUsers();
   const [nearbyUsers, setNearbyUsers] = useState<User[]>([]);
   const [userIndex, setUserIndex] = useState(0);
@@ -92,21 +92,21 @@ function PersonalInfoDialog({
       <HoverCard>
         <HoverCardTrigger className="cursor-pointer">
           <DialogTrigger>
-            <Avatar svg={userData?.thumbnail} />
+            <Avatar svg={targetUser?.thumbnail} />
           </DialogTrigger>
         </HoverCardTrigger>
         <HoverCardContent className="flex min-w-xs">
-          <p>email: {userData?.email}</p>
+          <p>email: {targetUser?.email}</p>
         </HoverCardContent>
       </HoverCard>
       <DialogContent className="max-w-2xl max-h-96">
         <DialogHeader>
           <DialogTitle className=" flex justify-between items-center">
-            <p> {userData?.displayName}</p>
-            <p className="mr-4">{userData?.unit}</p>
+            <p> {targetUser?.displayName}</p>
+            <p className="mr-4">{targetUser?.unit.id.toUpperCase()}</p>
           </DialogTitle>
           {/* <VisuallyHidden.Root asChild>
-                    <DialogTitle>{userData.displayName}</DialogTitle>
+                    <DialogTitle>{targetUser.displayName}</DialogTitle>
                   </VisuallyHidden.Root> */}
 
           <VisuallyHidden.Root asChild>

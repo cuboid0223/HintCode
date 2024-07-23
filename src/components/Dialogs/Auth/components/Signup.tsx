@@ -1,7 +1,14 @@
 import { auth, firestore } from "@/firebase/firebase";
 import { useEffect, useState } from "react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  DocumentReference,
+  getDocs,
+  query,
+  setDoc,
+} from "firebase/firestore";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { createAvatar } from "@dicebear/core";
@@ -43,7 +50,7 @@ const formSchema = z.object({
     .min(2, {
       message: "暱稱必須多於兩個字",
     })
-    .max(5, { message: "暱稱必須少於五個字" }),
+    .max(10, { message: "暱稱必須少於10個字" }),
   unit: z
     .string({
       required_error: "請選擇學校單位",
@@ -57,6 +64,7 @@ type SignupProps = {
 
 const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
   const [name, setName] = useState("");
+  const [units, setUnits] = useState([]);
   const [thumbnail, setThumbnail] = useState("");
   const handleChangeDialogs = () => {
     setAuthDialog((prev) => ({ ...prev, type: "login" }));
@@ -91,7 +99,7 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
     return avatar.toString();
   };
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // console.log(`handleOnSubmit -> ${JSON.stringify(values)}`);
+    console.log(`handleOnSubmit -> ${JSON.stringify(values)}`);
     try {
       toast.loading("正在創建帳號", {
         position: "top-center",
@@ -103,6 +111,7 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
       );
       if (!newUser) return;
       const userRef = doc(firestore, "users", newUser.user.uid);
+      const unitRef = doc(firestore, "units", values.unit);
 
       const userData = {
         uid: newUser.user.uid,
@@ -113,7 +122,7 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
         totalScore: 0,
         thumbnail: createThumbnail(name, 32),
         thumbnail_64px: createThumbnail(name, 64),
-        unit: values.unit,
+        unit: unitRef,
       };
       await setDoc(userRef, userData);
 
@@ -125,6 +134,20 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
       toast.dismiss("loadingToast");
     }
   };
+
+  useEffect(() => {
+    const getUnits = async () => {
+      const q = query(collection(firestore, "units"));
+      const querySnapshot = await getDocs(q);
+      const tmp = [];
+      querySnapshot.forEach((doc) => {
+        tmp.push({ id: doc.id, ...doc.data() });
+      });
+
+      setUnits(tmp);
+    };
+    getUnits();
+  }, []);
 
   useEffect(() => {
     if (error) alert(error.message);
@@ -163,9 +186,11 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
                       <SelectValue placeholder="學校" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="中興大學">中興大學</SelectItem>
-                      <SelectItem value="台中科技大學">台中科技大學</SelectItem>
-                      <SelectItem value="台中教育大學">台中教育大學</SelectItem>
+                      {units?.map((unit) => (
+                        <SelectItem key={unit.id} value={unit.id}>
+                          {unit.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormControl>

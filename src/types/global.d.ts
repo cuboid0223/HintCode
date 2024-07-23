@@ -1,3 +1,5 @@
+import { DocumentReference } from "firebase/firestore";
+
 declare module "*.md";
 
 export type ThemeType = "light" | "dark";
@@ -11,7 +13,7 @@ export type User = {
   updatedAt: number;
   thumbnail: string;
   thumbnail_64px: string;
-  unit: string;
+  unit: DocumentReference;
 };
 
 export type AuthDialog = {

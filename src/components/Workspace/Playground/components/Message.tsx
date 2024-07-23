@@ -123,6 +123,7 @@ const AssistantMessage: React.FC<MessageProps> = ({ msg, theme }) => {
       msg.id
     );
     if (newLikeStatus === isLiked) {
+      // reset isLiked
       setIsLiked(0);
       await setDoc(msgRef, { isLiked: 0 }, { merge: true });
     } else {
