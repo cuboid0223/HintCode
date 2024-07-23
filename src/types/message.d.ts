@@ -8,6 +8,7 @@ type Message = {
   text: string;
   submissions?: Submission[];
   type: string;
+  isLiked?: number;
 };
 
 export { Message, Result };

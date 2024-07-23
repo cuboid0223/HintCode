@@ -28,7 +28,7 @@ import {
 import * as Radix_Tooltip from "@radix-ui/react-tooltip";
 import CustomMarkdown from "@/components/Workspace/components/CustomMarkdown";
 import { useTheme } from "next-themes";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import { problemDataState } from "@/atoms/ProblemData";
 import { useRecoilValue } from "recoil";
 const EDITOR_FONT_SIZES = [

@@ -5,11 +5,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FileJson2 } from "lucide-react";
+import { FileJson2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Message as MessageType } from "@/types/message";
 import TestCaseList from "./TestCaseList";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { HELP_TYPE_MAP } from "../../ProblemTab/components/SelectForm";
+import { Button } from "@/components/ui/button";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, firestore } from "@/firebase/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 type MessageProps = {
   theme: string;
@@ -103,12 +109,56 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
 };
 
 const AssistantMessage: React.FC<MessageProps> = ({ msg, theme }) => {
+  const [user] = useAuthState(auth);
+  const params = useParams<{ pid: string }>();
+  const [isLiked, setIsLiked] = useState(0);
+  const handleLiked = async (isLiked: number) => {
+    console.log(isLiked);
+    const msgRef = doc(
+      firestore,
+      "users",
+      user.uid,
+      "problems",
+      params.pid,
+      "messages",
+      msg.id
+    );
+    setIsLiked(isLiked);
+    await setDoc(msgRef, { isLiked: isLiked }, { merge: true });
+  };
+
+  useEffect(() => {
+    setIsLiked(msg?.isLiked);
+  }, [msg?.isLiked]);
+
   return (
-    <Card
-      className={`h-fit max-w-xl min-w-xl dark:text-white  p-2 dark:bg-[#083344] bg-blue-50`}
-    >
-      <CustomMarkdown theme={theme}>{msg.text}</CustomMarkdown>
-    </Card>
+    <div className={`h-fit max-w-xl min-w-xl `}>
+      <Card
+        className={` p-2 dark:text-white dark:bg-[#083344] bg-blue-50 rounded-br-none rounded-bl-none`}
+      >
+        <CustomMarkdown theme={theme}>{msg.text}</CustomMarkdown>
+      </Card>
+
+      {/* 按讚區 */}
+      <div
+        className={`
+          flex justify-between items-center px-2 py-1 
+          rounded-br-sm rounded-bl-sm
+          transition-colors duration-500  
+          ${isLiked === 1 && "bg-lime-600"} ${isLiked === -1 && "bg-red-600"}   
+          `}
+      >
+        <pre className="">這則提示是否有幫助 ?</pre>
+        <div className="flex gap-3">
+          <Button variant="ghost" size="icon" onClick={() => handleLiked(1)}>
+            <ThumbsUp className={isLiked === 1 ? "h-6 w-6" : "h-4 w-4"} />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => handleLiked(-1)}>
+            <ThumbsDown className={isLiked === -1 ? "h-6 w-6" : "h-4 w-4"} />
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -44,9 +44,10 @@ import { Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { SubmissionsState } from "@/atoms/submissionsDataAtom";
 import { AssistantStream } from "openai/lib/AssistantStream";
-import useLocalStorage from "@/hooks/useLocalStorage";
+// import useLocalStorage from "@/hooks/useLocalStorage";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 const FormSchema = z.object({
   helpType: z.string({

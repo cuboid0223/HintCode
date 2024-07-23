@@ -8,7 +8,7 @@ import { auth, firestore } from "../../../firebase/firebase";
 import { toast } from "react-toastify";
 
 import { doc, updateDoc } from "firebase/firestore";
-import useLocalStorage from "../../../hooks/useLocalStorage";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TestCaseList from "./components/TestCaseList";

@@ -1,4 +1,4 @@
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import { useParams } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FiRefreshCcw } from "react-icons/fi";
@@ -117,7 +117,7 @@ const Timer: React.FC<TimerProps> = () => {
     // else ->　handleAcceptedTime
 
     handleAcceptedTime(submissionsData);
-    setLocalElapsedTime(String(elapsedTime));
+    setLocalElapsedTime(elapsedTime);
   }, [
     elapsedTime,
     submissionsData,
