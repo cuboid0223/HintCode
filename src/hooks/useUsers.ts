@@ -6,9 +6,12 @@ import {
   query,
   getDocs,
   onSnapshot,
+  where,
+  doc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useTransition } from "react-spring";
+import useGetUserInfo from "./useGetUserInfo";
 const DEFAULT_HEIGHT_FOR_ANIMATION = 64;
 
 const fetchSubscribedUsers = async (setUsers: React.Dispatch<User[]>) => {
@@ -90,11 +93,15 @@ const useUserTransitions = (
 
 function useGetUsers() {
   const [users, setUsers] = useState<User[]>([]);
-
+  const userData = useGetUserInfo();
   useEffect(() => {
     const getUsers = async () => {
+      if (!userData) return;
+      const unitRef = doc(firestore, "units", userData.unit.id);
+      console.log(unitRef);
       const q = query(
         collection(firestore, "users"),
+        where("unit", "==", unitRef),
         orderBy("totalScore", "desc")
       );
       const querySnapshot = await getDocs(q);
@@ -106,7 +113,8 @@ function useGetUsers() {
     };
 
     getUsers();
-  }, []);
+  }, [userData]);
+
   return users;
 }
 
