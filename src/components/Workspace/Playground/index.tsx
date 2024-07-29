@@ -2,11 +2,9 @@ import { useState, useEffect } from "react";
 import PreferenceNav from "./components/PreferenceNav";
 import Split from "react-split";
 import EditorFooter from "./components/EditorFooter";
-
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, firestore } from "../../../firebase/firebase";
 import { toast } from "react-toastify";
-
 import { doc, updateDoc } from "firebase/firestore";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
@@ -18,7 +16,6 @@ import {
   submissionsState,
   SubmissionsState,
 } from "@/atoms/submissionsDataAtom";
-// import { mockSubmissions } from "@/mockProblems/mockSubmissions";
 import { useTheme } from "next-themes";
 import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -80,18 +77,38 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   });
   const { selectedLang } = settings;
 
-  const checkStarterFunctionName = (userCode: string) => {
-    if (!userCode.includes(problem.starterFunctionName[selectedLang])) {
+  const extractCode = (userCode: string) => {
+    // 擷取第一個 function
+    const pattern = /(def \w+\(.*\):\n(?:\s*.*\n)+?)\n/;
+    const match = userCode.match(pattern);
+    if (match) return match[0];
+
+    toast.error(
+      `函式名稱必須是 ${problem.starterFunctionName[selectedLang]} `,
+      {
+        position: "top-center",
+        autoClose: false,
+        theme: "dark",
+      }
+    );
+    setIsLoading(false);
+    return "";
+  };
+
+  const isFuncNameCorrect = (extractedCode: string) => {
+    if (!extractedCode.includes(problem.starterFunctionName[selectedLang])) {
       toast.error(
         `函式名稱必須是 ${problem.starterFunctionName[selectedLang]} `,
         {
           position: "top-center",
-          autoClose: 3000,
+          autoClose: false,
           theme: "dark",
         }
       );
-      return;
+      setIsLoading(false);
+      return false;
     }
+    return true;
   };
 
   const handleExecution = async () => {
@@ -104,7 +121,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
       return;
     }
     if (localLatestTestCode === localCurrentCode) {
-      toast.warn("與之前的程式碼相同", {
+      toast.warn("與之前執行的程式碼相同", {
         position: "top-center",
         autoClose: 3000,
         theme: resolvedTheme as ThemeType,
@@ -114,42 +131,36 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     }
 
     setIsLoading(true);
-    setIsHelpBtnEnable(true);
+    setIsHelpBtnEnable(false);
+    const extractedCode = extractCode(userCode);
+    if (!isFuncNameCorrect(extractedCode)) return;
     let temp: Submission[] = [];
-
-    // 要測試 judge0 請打開
-    checkStarterFunctionName(userCode);
-    // handle python testCase
-    userCode = userCode.slice(userCode.indexOf(problem.starterFunctionName.py));
-
     try {
       for (const testCase of problem.testCaseCode) {
-        const token = (await testUserCode({
-          userCode: `${userCode.trim()}\n${testCase.inputCode.trim()}`,
+        console.log(testCase.inputCode.trim());
+        console.log(`${extractedCode}\n${testCase.inputCode.trim()}`);
+        const token: string = await testUserCode({
+          userCode: `${extractedCode}\n${testCase.inputCode.trim()}`,
           expectedOutput: testCase.output,
-        })) as string;
-        if (!token) {
-          // console.log("或許你用到流量上限了!!");
-          throw new Error("或許你用到流量上限了!!");
-        }
+        });
+        if (!token) throw new Error("或許你用到流量上限了!!");
 
         const data = (await getSubmissionData(token)) as Submission;
         if (data?.stderr) {
           temp.push(data);
-          console.log("當第一個測資發生錯誤後應停止後續的測資繼續進行");
           throw new Error("當第一個測資發生錯誤後應停止後續的測資繼續進行");
         }
         temp.push(data);
       }
     } catch (e) {
-      if (e instanceof Error) {
-        console.log(e.message);
-      }
+      if (e instanceof Error) console.log(e.message);
     }
+
     setLocalLatestTestCode(userCode);
     setSubmissions(temp);
     setTestTab("testResult");
     setIsLoading(false);
+    setIsHelpBtnEnable(true);
   };
 
   const onChange = (value: string) => {
@@ -225,14 +236,12 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
         <div className="w-full overflow-auto">
           <Editor
             value={userCode}
-            // height="90vh"
             theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
             defaultLanguage="python"
             defaultValue=""
             onChange={onChange}
             options={{ fontSize: parseInt(settings.fontSize) }}
           />
-          ;
         </div>
 
         <div className="h-full w-full overflow-auto ">

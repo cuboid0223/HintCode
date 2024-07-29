@@ -4,10 +4,10 @@ import { Submission } from "@/types/testCase";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { CircleSlash, CircleCheckBig } from "lucide-react";
-import HighlightedDiff from "../../components/HighlightedDiff";
 import { Button } from "@/components/ui/button";
 import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
+import HighlightedDiff from "@/components/Workspace/components/HighlightedDiff";
 type TestCaseListProps = {
   isTestResult?: boolean;
   submissions: Submission[];

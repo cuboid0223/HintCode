@@ -154,14 +154,17 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
         console.log("沒有控制組");
         return <div>CONTROL not found!</div>;
       }
-      console.log(docSnap.data().id);
-      return docSnap.data().id;
+      console.log("控制組為 : ", docSnap.data().unit.id);
+      return docSnap.data().unit.id;
     };
 
     const checkUserIsControlGroup = async () => {
+      if (!userData) return;
       const controlGroup: string = await getControlUnit();
       if (userData?.unit.id === controlGroup) {
         setIsUserControlGroup(true);
+      } else {
+        setIsUserControlGroup(false);
       }
     };
 
