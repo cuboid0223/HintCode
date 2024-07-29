@@ -137,8 +137,6 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     let temp: Submission[] = [];
     try {
       for (const testCase of problem.testCaseCode) {
-        console.log(testCase.inputCode.trim());
-        console.log(`${extractedCode}\n${testCase.inputCode.trim()}`);
         const token: string = await testUserCode({
           userCode: `${extractedCode}\n${testCase.inputCode.trim()}`,
           expectedOutput: testCase.output,

@@ -10,17 +10,49 @@ import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import updateUserProblemScore from "@/utils/User/updateUserProblemScore";
 import { doc, updateDoc } from "firebase/firestore";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { BsChevronUp } from "react-icons/bs";
 import { DotLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { useSpring, animated, useSpringRef, useChain } from "react-spring";
 
 type EditorFooterProps = {
   handleExecution: () => void;
   isLoading: boolean;
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const BouncyButton = ({
+  disabled,
+  className,
+  onClick,
+  children,
+  isBouncing,
+}) => {
+  const { transform } = useSpring({
+    from: { transform: "translateY(0px)" },
+    to: async (next) => {
+      if (isBouncing) {
+        while (isBouncing) {
+          await next({ transform: "translateY(-10px)" });
+          await next({ transform: "translateY(0px)" });
+        }
+      } else {
+        await next({ transform: "translateY(0px)" });
+      }
+    },
+    config: { duration: 350 },
+  });
+
+  return (
+    <animated.div style={{ transform }}>
+      <Button disabled={disabled} className={className} onClick={onClick}>
+        {children}
+      </Button>
+    </animated.div>
+  );
 };
 
 const EditorFooter: React.FC<EditorFooterProps> = ({
@@ -35,6 +67,8 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
   const [isMessageLoading, setIsMessageLoading] = useState(false);
+  const [isBouncing, setIsBouncing] = React.useState(false);
+
   const messages = useGetProblemMessages(
     user?.uid,
     problem?.id,
@@ -84,10 +118,17 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
     //     score: basicScore + (extraScore - messages.length),
     //   });
     // };
+    setIsBouncing(false);
     setSuccess(true);
     setIsPersonalInfoDialogOpen(true);
     updateUserProblemScore(userProblemRef, problem.score, messages.length);
   };
+
+  useEffect(() => {
+    if (isAllTestCasesAccepted(submissions)) {
+      setIsBouncing(true);
+    }
+  }, [submissions]);
 
   return (
     <div className="flex  w-full bg-card">
@@ -112,13 +153,22 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
               "執行"
             )}
           </Button>
-          <Button
+          {/* <Button
             disabled={!isAllTestCasesAccepted(submissions)}
             className="font-bold	 text-white bg-dark-green-s hover:bg-green-3"
             onClick={handleSubmitCode}
           >
             繳交
-          </Button>
+          </Button> */}
+
+          <BouncyButton
+            isBouncing={isBouncing}
+            disabled={!isAllTestCasesAccepted(submissions)}
+            className="font-bold	 text-white bg-dark-green-s hover:bg-green-3"
+            onClick={handleSubmitCode}
+          >
+            繳交
+          </BouncyButton>
         </div>
       </div>
     </div>
