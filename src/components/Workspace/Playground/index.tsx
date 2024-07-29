@@ -235,15 +235,15 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
           ;
         </div>
 
-        <div className="w-full overflow-auto">
+        <div className="h-full w-full overflow-auto ">
           {/* Tabs: testcase */}
           <Tabs
-            className="flex flex-col "
+            className="h-full"
             value={testTab}
             defaultValue="testcase"
             onValueChange={handleTestTabChange}
           >
-            <TabsList className=" grid w-full grid-cols-2 bg-card">
+            <TabsList className="sticky top-0 z-10 grid w-full grid-cols-2 bg-card ">
               <TabsTrigger
                 value="testcase"
                 className="relative hover:bg-muted transition-all"
@@ -275,29 +275,32 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
               </TabsTrigger>
             </TabsList>
             {/* <ScrollArea className="flex bg-red-300"> */}
-            <TabsContent value="testcase" className=" flex flex-col  px-3  ">
+            <TabsContent value="testcase" className=" flex flex-col  px-3">
               {/* 測試資料區 */}
               <TestCaseList submissions={submissions} />
             </TabsContent>
-            {/* </ScrollArea> */}
-            <TabsContent value="testResult" className=" flex flex-col  px-3  ">
-              {/* 測試結果區 */}
-              <div className="flex items-center mb-3">
-                <h2
-                  className={`font-bold  text-xl 
+            <TabsContent value="testResult" className=" px-3 h-full">
+              {submissions.length === 0 ? (
+                <div className="h-full flex flex-col place-content-center	">
+                  <h2 className=" text-white text-center  ">
+                    試著按下執行按鈕
+                  </h2>
+                </div>
+              ) : (
+                <>
+                  {/* 測試結果區 */}
+                  <div className="flex items-center mb-3">
+                    <h2
+                      className={`font-bold  text-xl 
                   ${
                     // id: 3 是 Accepted
                     isAccepted ? "text-green-600" : "text-red-600"
                   }  
                   ${submissions.length === 0 && "hidden"}`}
-                >
-                  {isAccepted ? "Accepted" : "Wrong Answer"}
-                </h2>
-              </div>
-              {submissions.length === 0 ? (
-                <h2 className="text-white">沒有測試結果</h2>
-              ) : (
-                <>
+                    >
+                      {isAccepted ? "Accepted" : "Wrong Answer"}
+                    </h2>
+                  </div>
                   {submissions[0]?.stderr && (
                     <div className="bg-red-100 rounded-lg">
                       <div
