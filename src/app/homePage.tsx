@@ -23,6 +23,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { CircleCheckBig, CircleDashed } from "lucide-react";
 
 export default function Home() {
   const [loadingProblems, setLoadingProblems] = useState(true);
@@ -64,12 +65,18 @@ export default function Home() {
                 <TableRow
                   key={problem.id}
                   className={`grid grid-cols-5 gap-4 text-foreground   ${
-                    idx % 2 == 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""
+                    idx % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""
                   }`}
                 >
-                  <TableCell className=" font-medium whitespace-nowrap text-dark-green-s">
-                    {userProblem?.is_solved && (
-                      <BsCheckCircle fontSize={"18"} width="18" />
+                  <TableCell className=" font-medium whitespace-nowrap ">
+                    {userProblem?.is_solved ? (
+                      <CircleCheckBig
+                        className="text-dark-green-s"
+                        fontSize="18"
+                        width="18"
+                      />
+                    ) : (
+                      <CircleDashed fontSize="18" width="18" />
                     )}
                   </TableCell>
                   <TableCell className="p-0  dark:text-white ">
