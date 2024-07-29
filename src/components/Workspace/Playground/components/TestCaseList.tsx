@@ -21,13 +21,13 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
   // automitcally scroll to bottom of testCase
   const testCaseEndRef = useRef(null);
-  const scrollToBottom = () => {
-    testCaseEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  // const scrollToBottom = () => {
+  //   testCaseEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [activeTestCaseId]);
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [activeTestCaseId]);
 
   useEffect(() => {
     if (!submissions) return;
