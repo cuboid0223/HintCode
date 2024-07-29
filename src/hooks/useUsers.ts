@@ -8,16 +8,21 @@ import {
   onSnapshot,
   where,
   doc,
+  DocumentReference,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useTransition } from "react-spring";
 import useGetUserInfo from "./useGetUserInfo";
 const DEFAULT_HEIGHT_FOR_ANIMATION = 64;
 
-const fetchSubscribedUsers = async (setUsers: React.Dispatch<User[]>) => {
+const fetchSubscribedUsers = async (
+  setUsers: React.Dispatch<User[]>,
+  unitRef: DocumentReference
+) => {
   try {
     const q = query(
       collection(firestore, "users"),
+      where("unit", "==", unitRef),
       orderBy("totalScore", "desc")
     );
 
@@ -40,11 +45,14 @@ const fetchSubscribedUsers = async (setUsers: React.Dispatch<User[]>) => {
 // 隨時監聽 users 變化
 const useGetSubscribedUsers = () => {
   const [subscribedUsers, setSubscribedUsers] = useState<User[]>([]);
+  const userData = useGetUserInfo();
   useEffect(() => {
+    if (!userData?.unit.id) return;
+    const unitRef = doc(firestore, "units", userData.unit.id);
     let unsubscribe: (() => void) | undefined;
 
     const fetchAndSubscribe = async () => {
-      unsubscribe = await fetchSubscribedUsers(setSubscribedUsers);
+      unsubscribe = await fetchSubscribedUsers(setSubscribedUsers, unitRef);
     };
 
     fetchAndSubscribe();
@@ -54,7 +62,7 @@ const useGetSubscribedUsers = () => {
         unsubscribe();
       }
     };
-  }, []);
+  }, [userData?.unit.id]);
 
   return subscribedUsers;
 };
@@ -96,9 +104,8 @@ function useGetUsers() {
   const userData = useGetUserInfo();
   useEffect(() => {
     const getUsers = async () => {
-      if (!userData) return;
+      if (!userData?.unit.id) return;
       const unitRef = doc(firestore, "units", userData.unit.id);
-      console.log(unitRef);
       const q = query(
         collection(firestore, "users"),
         where("unit", "==", unitRef),
@@ -113,7 +120,7 @@ function useGetUsers() {
     };
 
     getUsers();
-  }, [userData]);
+  }, [userData?.unit.id]);
 
   return users;
 }

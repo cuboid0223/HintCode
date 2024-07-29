@@ -81,6 +81,7 @@ function PersonalInfoDialog({
   }, [currentUser?.totalScore, targetUser]);
 
   useEffect(() => {
+    console.log(currentUsers);
     setUserIndex(findUserIndex(currentUsers, targetUser));
   }, [targetUser, currentUsers]);
 

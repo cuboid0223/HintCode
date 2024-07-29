@@ -25,6 +25,12 @@ import {
 } from "@/components/ui/pagination";
 import { CircleCheckBig, CircleDashed } from "lucide-react";
 
+const DIFFICULTY_CLASSES = {
+  Easy: "text-dark-green-s",
+  Medium: "text-dark-yellow",
+  Hard: "text-dark-pink",
+};
+
 export default function Home() {
   const [loadingProblems, setLoadingProblems] = useState(true);
   const { problems } = useGetProblems(setLoadingProblems);
@@ -38,68 +44,28 @@ export default function Home() {
         {/* 問題列表 */}
         <Table className="my-6 ">
           {!loadingProblems && (
-            <>
-              <TableHeader>
-                <TableRow className="grid grid-cols-5 gap-4">
-                  <TableHead className="w-[100px]">狀態</TableHead>
-                  <TableHead>標題</TableHead>
-                  <TableHead>難易度</TableHead>
-                  <TableHead>類別</TableHead>
-                  <TableHead>得分</TableHead>
+            <TableHeader>
+              <TableRow className="grid grid-cols-5 gap-4">
+                <TableHead className="w-[100px]">狀態</TableHead>
+                <TableHead>標題</TableHead>
+                <TableHead>難易度</TableHead>
+                <TableHead>類別</TableHead>
+                <TableHead>得分</TableHead>
 
-                  {/* <TableHead className="text-right">Solution</TableHead> */}
-                </TableRow>
-              </TableHeader>
-            </>
+                {/* <TableHead className="text-right">Solution</TableHead> */}
+              </TableRow>
+            </TableHeader>
           )}
           <TableBody className="text-white">
             {problems.map((problem, idx) => {
               const userProblem = userProblems.find((e) => e.id === problem.id);
-              const difficultyColor =
-                problem.difficulty === "Easy"
-                  ? "text-dark-green-s"
-                  : problem.difficulty === "Medium"
-                    ? "text-dark-yellow"
-                    : "text-dark-pink";
               return (
-                <TableRow
+                <ProblemRow
                   key={problem.id}
-                  className={`grid grid-cols-5 gap-4 text-foreground   ${
-                    idx % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""
-                  }`}
-                >
-                  <TableCell className=" font-medium whitespace-nowrap ">
-                    {userProblem?.is_solved ? (
-                      <CircleCheckBig
-                        className="text-dark-green-s"
-                        fontSize="18"
-                        width="18"
-                      />
-                    ) : (
-                      <CircleDashed fontSize="18" width="18" />
-                    )}
-                  </TableCell>
-                  <TableCell className="p-0  dark:text-white ">
-                    <Link
-                      className="h-full flex cursor-pointer"
-                      // target="_blank"
-                      href={`/problems/${problem.id}`}
-                    >
-                      <p className="place-content-center hover:text-blue-600">
-                        {problem.title}
-                      </p>
-                    </Link>
-                  </TableCell>
-                  <TableCell className={` ${difficultyColor} `}>
-                    {problem.difficulty}
-                  </TableCell>
-                  <TableCell className={"dark:text-white"}>
-                    {problem.category}
-                  </TableCell>
-                  <TableCell className={"dark:text-white"}>
-                    {`${userProblem?.score || 0} / ${problem.score}`}
-                  </TableCell>
-                </TableRow>
+                  problem={problem}
+                  userProblem={userProblem}
+                  idx={idx}
+                />
               );
             })}
           </TableBody>
@@ -128,3 +94,40 @@ export default function Home() {
     </>
   );
 }
+
+const ProblemRow = ({ problem, userProblem, idx }) => {
+  const difficultyColor = DIFFICULTY_CLASSES[problem.difficulty] || "";
+  return (
+    <TableRow
+      key={problem.id}
+      className={`grid grid-cols-5 gap-4 text-foreground ${idx % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""}`}
+    >
+      <TableCell className="font-medium whitespace-nowrap">
+        {userProblem?.is_solved ? (
+          <CircleCheckBig
+            className="text-dark-green-s"
+            fontSize="18"
+            width="18"
+          />
+        ) : (
+          <CircleDashed fontSize="18" width="18" />
+        )}
+      </TableCell>
+      <TableCell className="p-0 dark:text-white">
+        <Link
+          className="h-full flex cursor-pointer"
+          href={`/problems/${problem.id}`}
+        >
+          <p className="place-content-center hover:text-blue-600">
+            {problem.title}
+          </p>
+        </Link>
+      </TableCell>
+      <TableCell className={difficultyColor}>{problem.difficulty}</TableCell>
+      <TableCell className="dark:text-white">{problem.category}</TableCell>
+      <TableCell className="dark:text-white">
+        {`${userProblem?.score || 0} / ${problem.score}`}
+      </TableCell>
+    </TableRow>
+  );
+};
