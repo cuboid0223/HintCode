@@ -24,37 +24,6 @@ type EditorFooterProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const BouncyButton = ({
-  disabled,
-  className,
-  onClick,
-  children,
-  isBouncing,
-}) => {
-  const { transform } = useSpring({
-    from: { transform: "translateY(0px)" },
-    to: async (next) => {
-      if (isBouncing) {
-        while (isBouncing) {
-          await next({ transform: "translateY(-10px)" });
-          await next({ transform: "translateY(0px)" });
-        }
-      } else {
-        await next({ transform: "translateY(0px)" });
-      }
-    },
-    config: { duration: 350 },
-  });
-
-  return (
-    <animated.div style={{ transform }}>
-      <Button disabled={disabled} className={className} onClick={onClick}>
-        {children}
-      </Button>
-    </animated.div>
-  );
-};
-
 const EditorFooter: React.FC<EditorFooterProps> = ({
   handleExecution,
   isLoading,
@@ -174,4 +143,36 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
     </div>
   );
 };
+
+const BouncyButton = ({
+  disabled,
+  className,
+  onClick,
+  isBouncing,
+  children,
+}) => {
+  const { transform } = useSpring({
+    from: { transform: "translateY(0px)" },
+    to: async (next) => {
+      if (isBouncing) {
+        while (isBouncing) {
+          await next({ transform: "translateY(-10px)" });
+          await next({ transform: "translateY(0px)" });
+        }
+      } else {
+        await next({ transform: "translateY(0px)" });
+      }
+    },
+    config: { duration: 350 },
+  });
+
+  return (
+    <animated.div style={{ transform }}>
+      <Button disabled={disabled} className={className} onClick={onClick}>
+        {children}
+      </Button>
+    </animated.div>
+  );
+};
+
 export default EditorFooter;

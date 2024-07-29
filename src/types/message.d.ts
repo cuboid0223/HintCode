@@ -6,7 +6,7 @@ type Message = {
   id: string;
   role: "user" | "assistant";
   text: string;
-  submissions?: Submission[];
+  result?: Submission[];
   type: string;
   isLiked?: number;
 };
