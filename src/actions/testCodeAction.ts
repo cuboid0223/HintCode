@@ -31,8 +31,6 @@ export const testUserCode = async (codeInfo: CodeInfo) => {
   try {
     const response = await fetch(URL, options);
     const { token } = await response.json();
-
-    // console.log("token:", token);
     return token;
   } catch (error) {
     console.error(error);

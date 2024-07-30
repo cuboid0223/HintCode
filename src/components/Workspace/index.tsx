@@ -10,6 +10,7 @@ import { useTheme } from "next-themes";
 import HintUsefulDialog from "../Dialogs/HintUsefulDialog";
 import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
+import DaGaKoToWaRuDialog from "../Dialogs/DaGaKoToWaRuDialog";
 
 const Workspace = () => {
   const { resolvedTheme } = useTheme();
@@ -41,10 +42,8 @@ const Workspace = () => {
         {/* 右半 程式碼輸入區與測試資料區 */}
         <Playground setSuccess={setSuccess} setSolved={setSolved} />
       </Split>
-
       {/* 提示有用問卷 */}
       {/* !isPersonalInfoDialogOpen -> 處理 Modal 同時顯示的問題 */}
-
       {success && !isPersonalInfoDialogOpen && (
         <>
           <HintUsefulDialog
@@ -63,6 +62,9 @@ const Workspace = () => {
           height={height - 1}
         />
       )}
+
+      {/* 反暴力破解法 */}
+      <DaGaKoToWaRuDialog />
     </>
   );
 };

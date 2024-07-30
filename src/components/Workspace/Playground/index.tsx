@@ -80,6 +80,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const extractCode = (userCode: string) => {
     // 擷取第一個 function
     const pattern = /(def \w+\(.*\):\n(?:\s*.*\n)+?)\n/;
+    userCode = userCode + "\n\n";
     const match = userCode.match(pattern);
     if (match) return match[0];
 
@@ -98,7 +99,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const isFuncNameCorrect = (extractedCode: string) => {
     if (!extractedCode.includes(problem.starterFunctionName[selectedLang])) {
       toast.error(
-        `函式名稱必須是 ${problem.starterFunctionName[selectedLang]} `,
+        `函式名稱應是 ${problem.starterFunctionName[selectedLang]} `,
         {
           position: "top-center",
           autoClose: false,
@@ -135,6 +136,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     const extractedCode = extractCode(userCode);
     if (!isFuncNameCorrect(extractedCode)) return;
     let temp: Submission[] = [];
+    // *** const testCaseCode = problem.testCaseCode.pop()
     try {
       for (const testCase of problem.testCaseCode) {
         const token: string = await testUserCode({

@@ -122,14 +122,6 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
               "執行"
             )}
           </Button>
-          {/* <Button
-            disabled={!isAllTestCasesAccepted(submissions)}
-            className="font-bold	 text-white bg-dark-green-s hover:bg-green-3"
-            onClick={handleSubmitCode}
-          >
-            繳交
-          </Button> */}
-
           <BouncyButton
             isBouncing={isBouncing}
             disabled={!isAllTestCasesAccepted(submissions)}
