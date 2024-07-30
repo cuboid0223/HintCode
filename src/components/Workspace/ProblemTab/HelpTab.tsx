@@ -113,23 +113,23 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
   }, [messages, user, problem]);
 
   // update remaining times and gradually prompt
-  useEffect(() => {
-    const updateRemainingTimes = async () => {
-      if (!user?.uid || !problem) return;
-      const userProblemRef = doc(
-        firestore,
-        "users",
-        user?.uid,
-        "problems",
-        problem.id
-      );
-      await updateDoc(userProblemRef, {
-        remainTimes: problem.totalTimes - messages.length / 2,
-      });
-      setRemainTimes(problem.totalTimes - messages.length / 2);
-    };
-    updateRemainingTimes();
-  }, [messages, problem, remainTimes, setRemainTimes, user?.uid]);
+  // useEffect(() => {
+  //   const updateRemainingTimes = async () => {
+  //     if (!user?.uid || !problem) return;
+  //     const userProblemRef = doc(
+  //       firestore,
+  //       "users",
+  //       user?.uid,
+  //       "problems",
+  //       problem.id
+  //     );
+  //     await updateDoc(userProblemRef, {
+  //       remainTimes: problem.totalTimes - messages.length / 2,
+  //     });
+  //     setRemainTimes(problem.totalTimes - messages.length / 2);
+  //   };
+  //   updateRemainingTimes();
+  // }, [messages, problem, remainTimes, setRemainTimes, user?.uid]);
 
   // 當通過所有測資，將請求幫助按鈕 disable
   useEffect(() => {

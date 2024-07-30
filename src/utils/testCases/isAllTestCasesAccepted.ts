@@ -1,6 +1,6 @@
-import { SubmissionData } from "../../types/testCase";
+import { Submission } from "../../types/testCase";
 
-const isAllTestCasesAccepted = (submissions: SubmissionData[]) => {
+const isAllTestCasesAccepted = (submissions: Submission[]) => {
   if (!submissions || submissions?.length === 0) {
     // console.log("no submissions data for accepted");
     return false;

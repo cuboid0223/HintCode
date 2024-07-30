@@ -24,6 +24,11 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { CircleCheckBig, CircleDashed } from "lucide-react";
+import {
+  submissionsState,
+  SubmissionsState,
+} from "@/atoms/submissionsDataAtom";
+import { useRecoilState } from "recoil";
 
 const DIFFICULTY_CLASSES = {
   Easy: "text-dark-green-s",
@@ -35,6 +40,12 @@ export default function Home() {
   const [loadingProblems, setLoadingProblems] = useState(true);
   const { problems } = useGetProblems(setLoadingProblems);
   const userProblems = useGetUserProblems();
+
+  const [submissions, setSubmissions] =
+    useRecoilState<SubmissionsState>(submissionsState);
+  useEffect(() => {
+    setSubmissions([]);
+  }, [setSubmissions]);
 
   return (
     <>

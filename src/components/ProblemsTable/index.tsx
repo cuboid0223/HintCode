@@ -4,6 +4,7 @@ import { BsCheckCircle } from "react-icons/bs";
 import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 import useGetUserProblems from "@/hooks/useGetUserProblems";
 import useGetProblems from "@/hooks/useGetProblems";
+
 type ProblemsTableProps = {
   setLoadingProblems: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -11,26 +12,8 @@ type ProblemsTableProps = {
 const ProblemsTable: React.FC<ProblemsTableProps> = ({
   setLoadingProblems,
 }) => {
-  const [youtubePlayer, setYoutubePlayer] = useState({
-    isOpen: false,
-    videoId: "",
-  });
   const { problems } = useGetProblems(setLoadingProblems);
   const userProblems = useGetUserProblems();
-  console.log("problems", problems);
-  console.log("userProblems", userProblems);
-  const closeDialog = () => {
-    setYoutubePlayer({ isOpen: false, videoId: "" });
-  };
-
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeDialog();
-    };
-    window.addEventListener("keydown", handleEsc);
-
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, []);
 
   return (
     <>

@@ -182,7 +182,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
           code: data.code,
           created_at: Timestamp.now().toMillis(),
           result: null,
-          text: data.prompt,
+          // text: data.prompt,
           type: data.helpType,
         },
       ]);
@@ -231,7 +231,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
           code: data.code,
           created_at: Timestamp.now().toMillis(),
           result: submissions,
-          text: data.prompt,
+          // text: data.prompt,
           type: data.helpType,
         },
       ]);

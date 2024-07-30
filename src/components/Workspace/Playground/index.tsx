@@ -79,9 +79,13 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
 
   const extractCode = (userCode: string) => {
     // 擷取第一個 function
-    const pattern = /(def \w+\(.*\):\n(?:\s*.*\n)+?)\n/;
-    userCode = userCode + "\n\n";
+    const pattern = /(?<!# )def \w+\(.*\):\n(?:\s+.*\n)+\n/;
+    userCode = userCode.trim() + "\n\n";
+
+    console.log(userCode);
+
     const match = userCode.match(pattern);
+    console.log(match);
     if (match) return match[0];
 
     toast.error(
@@ -112,6 +116,18 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     return true;
   };
 
+  // const isFuncNameAtTop = (extractedCode: string) => {
+  //   if (extractedCode.startsWith(problem.starterFunctionName[selectedLang])) {
+  //     return true;
+  //   }
+  //   toast.error(`${problem.starterFunctionName[selectedLang]} 應放置在最上層`, {
+  //     position: "top-center",
+  //     autoClose: false,
+  //     theme: "dark",
+  //   });
+  //   return false;
+  // };
+
   const handleExecution = async () => {
     if (!user) {
       toast.error("登入後才能執行程式", {
@@ -135,10 +151,12 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     setIsHelpBtnEnable(false);
     const extractedCode = extractCode(userCode);
     if (!isFuncNameCorrect(extractedCode)) return;
+    // if (!isFuncNameAtTop(extractedCode)) return;
     let temp: Submission[] = [];
     // *** const testCaseCode = problem.testCaseCode.pop()
     try {
       for (const testCase of problem.testCaseCode) {
+        console.log(`${extractedCode}\n${testCase.inputCode.trim()}`);
         const token: string = await testUserCode({
           userCode: `${extractedCode}\n${testCase.inputCode.trim()}`,
           expectedOutput: testCase.output,
