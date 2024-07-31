@@ -9,13 +9,14 @@ import { FileJson2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Message as MessageType } from "@/types/message";
 import TestCaseList from "./TestCaseList";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import { HELP_TYPE_MAP } from "../../ProblemTab/components/SelectForm";
+
 import { Button } from "@/components/ui/button";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getTextByType } from "@/utils/HelpTypes/getTextByType";
 
 type MessageProps = {
   theme: string;
@@ -56,7 +57,7 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
         theme={theme}
       >{`~~~py\n ${code.replace(/^"(.*)"$/, "$1").replace(/\\n/g, "\n")}\n~~~`}</CustomMarkdown>
       <section className="flex justify-between items-center">
-        <p>{HELP_TYPE_MAP[type]}</p>
+        <p>{getTextByType(type)}</p>
         <div className="flex justify-end space-x-3 mt-3">
           {result && (
             <Popover>

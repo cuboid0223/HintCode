@@ -81,11 +81,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     // 擷取第一個 function
     const pattern = /(?<!# )def \w+\(.*\):\n(?:\s+.*\n)+\n/;
     userCode = userCode.trim() + "\n\n";
-
-    console.log(userCode);
-
     const match = userCode.match(pattern);
-    console.log(match);
     if (match) return match[0];
 
     toast.error(
@@ -156,7 +152,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     // *** const testCaseCode = problem.testCaseCode.pop()
     try {
       for (const testCase of problem.testCaseCode) {
-        console.log(`${extractedCode}\n${testCase.inputCode.trim()}`);
+        // console.log(`${extractedCode}\n${testCase.inputCode.trim()}`);
         const token: string = await testUserCode({
           userCode: `${extractedCode}\n${testCase.inputCode.trim()}`,
           expectedOutput: testCase.output,

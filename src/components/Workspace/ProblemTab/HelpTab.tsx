@@ -173,6 +173,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
       {messages.length !== 0 && <div className="mb-24" ref={messagesEndRef} />}
 
       <SelectForm
+        messages={messages}
         setMessages={setMessages}
         threadId={threadId}
         submissions={submissions}

@@ -39,15 +39,28 @@ import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import getWrongTestCases from "@/utils/testCases/getWrongTestCases";
 import { problemDataState } from "@/atoms/ProblemData";
-import { Message as MessageType } from "../../../../types/message";
+import { Message, Message as MessageType } from "../../../../types/message";
 import { Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
-import { SubmissionsState } from "@/atoms/submissionsDataAtom";
+import {
+  submissionsState,
+  SubmissionsState,
+} from "@/atoms/submissionsDataAtom";
 import { AssistantStream } from "openai/lib/AssistantStream";
 // import useLocalStorage from "@/hooks/useLocalStorage";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
 import { useLocalStorage } from "@uidotdev/usehooks";
+import {
+  DEBUG_ERROR,
+  DEBUG_ERROR_PROMPT,
+  HELP_TYPE_OPTIONS,
+  NEXT_STEP,
+  NEXT_STEP_PROMPT,
+  PREV_HINT_NOT_HELP,
+} from "../../../../../public/global";
+import { getPromptByType } from "@/utils/HelpTypes/getTextByType";
+import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
 
 const FormSchema = z.object({
   helpType: z.string({
@@ -55,34 +68,18 @@ const FormSchema = z.object({
   }),
   code: z.string().optional(),
   prompt: z.string().optional(),
+  submissions: z.custom<SubmissionsState>(),
 });
 
 type SelectFormProps = {
+  messages: Message[];
   setMessages: Dispatch<SetStateAction<MessageType[]>>;
   threadId: string;
   submissions: SubmissionsState;
 };
 
-const NEXT_STEP = "nextStep";
-const DEBUG_ERROR = "debugError";
-const NEXT_STEP_PROMPT = `
-請告訴我下一步怎麼做，但請不要透漏正確且完整解法讓我複製，
-給我的範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。
-不需要給我應用到我的問題或範例的程式碼。
-請使用繁體中文回覆
-`;
-
-const DEBUG_ERROR_PROMPT = `只能告訴我程式碼哪裡出錯，請不要透漏正確且完整解法讓我複製，其餘與錯誤無關的資訊也請不要透漏。
-  請給我的針對該錯誤的範例程式碼但不能是題目的答案，這可以幫助我思考其中的概念。
-  不需要給我應用到我的問題或範例的程式碼。
-  請使用繁體中文回覆`;
-
-export const HELP_TYPE_MAP = {
-  [NEXT_STEP]: "我不知道下一步要怎麼做",
-  [DEBUG_ERROR]: "輸出報錯了，哪裡有問題?",
-};
-
 export const SelectForm: React.FC<SelectFormProps> = ({
+  messages,
   setMessages,
   threadId,
   submissions,
@@ -103,6 +100,8 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   const params = useParams<{ pid: string }>();
   const [isLoading, setIsLoading] = useState(false);
   const [finalText, setFinalText] = useState("");
+  const [prevSubmitData, setPrevSubmitData] = useState(null);
+
   const [isHelpBtnEnable, setIsHelpBtnEnable] =
     useRecoilState(isHelpBtnEnableState);
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -135,107 +134,142 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     return formattedData;
   };
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    if (!user) {
-      toast.error("請先登入", {
-        position: "top-center",
-        autoClose: 3000,
-        theme: "dark",
-      });
-      return;
-    }
+  const startLoading = () => {
     setIsLoading(true);
-
     setIsHelpBtnEnable(false);
+  };
 
-    console.log(data);
-    handleNextStep(data);
-    handleDebugError(data);
+  const stopLoading = () => {
     setIsLoading(false);
   };
 
-  const handleNextStep = (data: z.infer<typeof FormSchema>) => {
-    if (data.helpType === NEXT_STEP) {
-      data["code"] = localCurrentCode;
-      data["prompt"] = NEXT_STEP_PROMPT;
-      const promptTemplate = `
-    題目如下:
-=========problem statement start========
-    ${problem.problemStatement}
-=========problem statement end==========
-    
-    以下是我目前的程式碼:
-==========code start==========
+  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    if (!user) {
+      showErrorToast("請先登入");
+      return;
+    }
 
-    ${formatCode(data.code)}
+    startLoading();
 
-===========code end===========
+    console.log(data);
+    // handleNextStep(data);
+    // handleDebugError(data);
+    // handlePrevHintNotHelp(data);
+    processHelpRequest(data);
+    stopLoading();
+  };
 
-    ${data.prompt}
-    `;
-      sendMessageToGPT(promptTemplate);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          id: uuidv4(),
-          role: "user",
-          code: data.code,
-          created_at: Timestamp.now().toMillis(),
-          result: null,
-          // text: data.prompt,
-          type: data.helpType,
-        },
-      ]);
+  const processHelpRequest = (data: z.infer<typeof FormSchema>) => {
+    switch (data.helpType) {
+      case NEXT_STEP:
+        handleNextStep(data);
+        break;
+      case DEBUG_ERROR:
+        handleDebugError(data, submissions);
+        break;
+      case PREV_HINT_NOT_HELP:
+        handlePrevHintNotHelp();
+        break;
+      default:
+        console.error("Unknown help type:", data.helpType);
     }
   };
 
-  const handleDebugError = (data: z.infer<typeof FormSchema>) => {
-    if (data.helpType === DEBUG_ERROR) {
-      data["code"] = localLatestTestCode;
-      console.log(problem);
-      console.log(localLatestTestCode);
-      if (submissions.length === 0 || !submissions) {
-        toast.warn("沒有執行結果，請按下執行按鈕", {
-          position: "top-center",
-          autoClose: 3000,
-          theme: resolvedTheme as ThemeType,
-        });
-        return;
-      }
-      data["submissions"] = submissions;
-      data["prompt"] = DEBUG_ERROR_PROMPT;
-      const promptTemplate = `
+  const handleNextStep = (data: z.infer<typeof FormSchema>) => {
+    data.code = localCurrentCode;
+    data.prompt = NEXT_STEP_PROMPT;
+    const promptTemplate = createPromptTemplate(data, problem.problemStatement);
+    sendMessageToGPT(promptTemplate);
+    addUserMessage(data, null);
+  };
+
+  const handleDebugError = (
+    data: z.infer<typeof FormSchema>,
+    submissions: SubmissionsState
+  ) => {
+    const currentSubmissions = data.submissions || submissions;
+    if (!currentSubmissions || currentSubmissions.length === 0) {
+      showWarningToast("沒有執行結果，請按下執行按鈕");
+      return;
+    }
+    data.code = localLatestTestCode;
+    // data.submissions = submissions;
+    data.prompt = DEBUG_ERROR_PROMPT;
+    const promptTemplate = createPromptTemplate(
+      data,
+      problem.problemStatement,
+      submissions
+    );
+    sendMessageToGPT(promptTemplate);
+    addUserMessage(data, submissions);
+  };
+
+  const handlePrevHintNotHelp = () => {
+    const prevMessage = getPreviousUserMessage();
+    if (!prevMessage) {
+      showErrorToast("沒有上一個提示");
+      return;
+    }
+    const tmp = {
+      helpType: prevMessage.type,
+      code: prevMessage.code,
+      prompt: getPromptByType(prevMessage.type),
+      submissions: prevMessage.result,
+    };
+    processHelpRequest(tmp);
+  };
+
+  const getPreviousUserMessage = () => {
+    const lastUserMessage = messages[messages.length - 2];
+    return lastUserMessage ? lastUserMessage : null;
+  };
+
+  const createPromptTemplate = (
+    data: z.infer<typeof FormSchema>,
+    problemStatement: string,
+    submissions = null
+  ) => {
+    return `
     題目如下:
 =========problem statement start========
-    ${problem.problemStatement}
+    ${problemStatement}
 =========problem statement end==========
-    
+
     以下是我目前的程式碼:
 ==========code start==========
 
     ${formatCode(data.code)}
 
 ===========code end===========
-    以下是我的程式經過測試後的輸出
-==========test start==========  
+
+    ${
+      submissions
+        ? `以下是我的程式經過測試後的輸出
+==========test start==========
     ${formatSubmissions(submissions)}
 ==========test end==========
-    ${data.prompt}
-    `;
-      sendMessageToGPT(promptTemplate);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          id: uuidv4(),
-          role: "user",
-          code: data.code,
-          created_at: Timestamp.now().toMillis(),
-          result: submissions,
-          // text: data.prompt,
-          type: data.helpType,
-        },
-      ]);
+    `
+        : ""
     }
+    ${data.prompt}
+  `;
+  };
+
+  const addUserMessage = (
+    data: z.infer<typeof FormSchema>,
+    result: Submission[]
+  ) => {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        id: uuidv4(),
+        role: "user",
+        code: data.code,
+        created_at: Timestamp.now().toMillis(),
+        result: result,
+        type: data.helpType,
+      },
+    ]);
   };
 
   const sendMessageToGPT = async (text: string) => {
@@ -326,9 +360,9 @@ export const SelectForm: React.FC<SelectFormProps> = ({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Object.entries(HELP_TYPE_MAP).map(([key, value]) => (
-                    <SelectItem key={key} value={key}>
-                      {value}
+                  {HELP_TYPE_OPTIONS.map((option) => (
+                    <SelectItem key={option.type} value={option.type}>
+                      {option.text}
                     </SelectItem>
                   ))}
                 </SelectContent>
