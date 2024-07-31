@@ -44,6 +44,15 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
 
   return (
     <div className="grow overflow-y-auto">
+      <button
+        type="button"
+        onClick={() => {
+          throw new Error("Sentry Frontend Error");
+        }}
+      >
+        Throw error
+      </button>
+
       <div className="flex">
         {problem.examples.map((example, index) => (
           <Button
