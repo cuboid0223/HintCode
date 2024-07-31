@@ -16,8 +16,12 @@ import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import useGetProblems from "@/hooks/useGetProblems";
+import { doc, updateDoc } from "firebase/firestore";
+import { auth, firestore } from "@/firebase/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useParams } from "next/navigation";
 
-const RADIO_VALUE = ["強烈反對", "不同意", "普通", "同意", "強烈同意"];
+const RADIO_VALUE = ["非常不同意", "不同意", "普通", "同意", "非常同意"];
 
 const formSchema = z.object({
   useful: z.string(),
@@ -36,7 +40,8 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
   setSuccess,
 }) => {
   const { handleProblemChange } = useGetProblems();
-
+  const [user] = useAuthState(auth);
+  const params = useParams<{ pid: string }>();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,7 +51,19 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
+    const userProblemRef = doc(
+      firestore,
+      "users",
+      user?.uid,
+      "problems",
+      params.pid
+    );
 
+    updateDoc(userProblemRef, {
+      // 因為 里克特量表跑統計 普通 -> 3 故加一
+      useful: RADIO_VALUE.findIndex((v) => v === values.useful) + 1,
+      advice: values.advice,
+    });
     setSuccess(false);
     setIsHintUsefulDialogOpen(!isHintUsefulDialogOpen);
     // 前往下一題

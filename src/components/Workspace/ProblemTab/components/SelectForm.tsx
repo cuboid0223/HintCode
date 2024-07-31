@@ -10,14 +10,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -31,23 +29,15 @@ import { RingLoader } from "react-spinners";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { Submission } from "@/types/testCase";
 import { useParams } from "next/navigation";
-import { toast } from "react-toastify";
-import { ThemeType } from "../../../../types/global";
-import { useTheme } from "next-themes";
-import { Dispatch, useState, SetStateAction, useEffect } from "react";
+import { Dispatch, useState, SetStateAction } from "react";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import getWrongTestCases from "@/utils/testCases/getWrongTestCases";
 import { problemDataState } from "@/atoms/ProblemData";
 import { Message, Message as MessageType } from "../../../../types/message";
 import { Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
-import {
-  submissionsState,
-  SubmissionsState,
-} from "@/atoms/submissionsDataAtom";
+import { SubmissionsState } from "@/atoms/submissionsDataAtom";
 import { AssistantStream } from "openai/lib/AssistantStream";
-// import useLocalStorage from "@/hooks/useLocalStorage";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
 import { useLocalStorage } from "@uidotdev/usehooks";
@@ -94,14 +84,10 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     `py-code-${problem.id}`,
     ""
   );
-  // const latestTestCode = localStorage.getItem(`latest-test-py-code`) || ""; // 最後一次提交的程式碼
 
-  const { resolvedTheme } = useTheme();
   const params = useParams<{ pid: string }>();
   const [isLoading, setIsLoading] = useState(false);
   const [finalText, setFinalText] = useState("");
-  const [prevSubmitData, setPrevSubmitData] = useState(null);
-
   const [isHelpBtnEnable, setIsHelpBtnEnable] =
     useRecoilState(isHelpBtnEnableState);
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -148,13 +134,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       showErrorToast("請先登入");
       return;
     }
-
     startLoading();
-
-    console.log(data);
-    // handleNextStep(data);
-    // handleDebugError(data);
-    // handlePrevHintNotHelp(data);
     processHelpRequest(data);
     stopLoading();
   };
@@ -193,7 +173,6 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       return;
     }
     data.code = localLatestTestCode;
-    // data.submissions = submissions;
     data.prompt = DEBUG_ERROR_PROMPT;
     const promptTemplate = createPromptTemplate(
       data,
@@ -210,13 +189,13 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       showErrorToast("沒有上一個提示");
       return;
     }
-    const tmp = {
+    const prevData = {
       helpType: prevMessage.type,
       code: prevMessage.code,
       prompt: getPromptByType(prevMessage.type),
       submissions: prevMessage.result,
     };
-    processHelpRequest(tmp);
+    processHelpRequest(prevData);
   };
 
   const getPreviousUserMessage = () => {

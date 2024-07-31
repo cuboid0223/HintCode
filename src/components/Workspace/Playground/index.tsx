@@ -17,13 +17,11 @@ import {
   SubmissionsState,
 } from "@/atoms/submissionsDataAtom";
 import { useTheme } from "next-themes";
-import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
-import { motion, AnimatePresence } from "framer-motion";
+import Editor from "@monaco-editor/react";
+import { motion } from "framer-motion";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { problemDataState } from "@/atoms/ProblemData";
-import useGetUserProblems, {
-  useSubscribedUserProblems,
-} from "@/hooks/useGetUserProblems";
+import { useSubscribedUserProblems } from "@/hooks/useGetUserProblems";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { ThemeType } from "../../../types/global";
@@ -40,11 +38,12 @@ export type Settings = {
   selectedLang: "py" | "js";
 };
 
-const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
+const TEST_CASE = "testcase";
+const TEST_RESULT = "testResult";
+
+const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   const [user] = useAuthState(auth);
   const problem = useRecoilValue(problemDataState);
-  const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
-    useRecoilState(isPersonalInfoDialogOpenState);
   const userProblems = useSubscribedUserProblems();
   // 最後一次執行的程式碼
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
@@ -68,7 +67,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const [isAccepted, setIsAccepted] = useState(false);
   const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
 
-  const [testTab, setTestTab] = useState("testcase");
+  const [testTab, setTestTab] = useState(TEST_CASE);
   const [settings, setSettings] = useState<Settings>({
     fontSize: fontSize,
     settingsDialogIsOpen: false,
@@ -78,7 +77,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
   const { selectedLang } = settings;
 
   const extractCode = (userCode: string) => {
-    // 擷取第一個 function
+    // 擷取第一個 function block
     const pattern = /(?<!# )def \w+\(.*\):\n(?:\s+.*\n)+\n/;
     userCode = userCode.trim() + "\n\n";
     const match = userCode.match(pattern);
@@ -112,18 +111,6 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     return true;
   };
 
-  // const isFuncNameAtTop = (extractedCode: string) => {
-  //   if (extractedCode.startsWith(problem.starterFunctionName[selectedLang])) {
-  //     return true;
-  //   }
-  //   toast.error(`${problem.starterFunctionName[selectedLang]} 應放置在最上層`, {
-  //     position: "top-center",
-  //     autoClose: false,
-  //     theme: "dark",
-  //   });
-  //   return false;
-  // };
-
   const handleExecution = async () => {
     if (!user) {
       toast.error("登入後才能執行程式", {
@@ -149,10 +136,8 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     if (!isFuncNameCorrect(extractedCode)) return;
     // if (!isFuncNameAtTop(extractedCode)) return;
     let temp: Submission[] = [];
-    // *** const testCaseCode = problem.testCaseCode.pop()
     try {
       for (const testCase of problem.testCaseCode) {
-        // console.log(`${extractedCode}\n${testCase.inputCode.trim()}`);
         const token: string = await testUserCode({
           userCode: `${extractedCode}\n${testCase.inputCode.trim()}`,
           expectedOutput: testCase.output,
@@ -172,7 +157,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
 
     setLocalLatestTestCode(userCode);
     setSubmissions(temp);
-    setTestTab("testResult");
+    setTestTab(TEST_RESULT);
     setIsLoading(false);
     setIsHelpBtnEnable(true);
   };
@@ -198,14 +183,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
     const updateUserTotalScore = async () => {
       if (!user) return;
       const solvedProblems = userProblems.filter((p) => p.is_solved === true);
-      console.log("solvedProblems: ", solvedProblems);
-      console.log(
-        "我在外面",
-        isAllTestCasesAccepted(submissions),
-        solvedProblems
-      );
       if (isAllTestCasesAccepted(submissions) && solvedProblems.length !== 0) {
-        console.log("我進來了");
         const userRef = doc(firestore, "users", user.uid);
         await updateDoc(userRef, {
           // reduce 加總陣列裡的分數
@@ -263,18 +241,18 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
           <Tabs
             className="h-full"
             value={testTab}
-            defaultValue="testcase"
+            defaultValue={TEST_CASE}
             onValueChange={handleTestTabChange}
           >
             <TabsList className="sticky top-0 z-10 grid w-full grid-cols-2 bg-card ">
               <TabsTrigger
-                value="testcase"
+                value={TEST_CASE}
                 className="relative hover:bg-muted transition-all"
               >
                 <div className="text-sm font-medium text-foreground">
                   測試資料
                 </div>
-                {testTab === "testcase" && (
+                {testTab === TEST_CASE && (
                   <motion.div
                     className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-gray-400"
                     layoutId="underline"
@@ -283,13 +261,13 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
                 )}
               </TabsTrigger>
               <TabsTrigger
-                value="testResult"
+                value={TEST_RESULT}
                 className="relative hover:bg-muted transition-all"
               >
                 <div className="text-sm font-medium leading-5 text-foreground">
                   測試結果
                 </div>
-                {testTab === "testResult" && (
+                {testTab === TEST_RESULT && (
                   <motion.div
                     className="absolute bottom-0 h-0.5 w-full rounded-full border-none bg-gray-400"
                     layoutId="underline"
@@ -302,7 +280,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess, setSolved }) => {
               {/* 測試資料區 */}
               <TestCaseList submissions={submissions} />
             </TabsContent>
-            <TabsContent value="testResult" className=" px-3 h-full">
+            <TabsContent value={TEST_RESULT} className=" px-3 h-full">
               {submissions.length === 0 ? (
                 <div className="h-full flex flex-col place-content-center	">
                   <h2 className=" text-white text-center  ">
