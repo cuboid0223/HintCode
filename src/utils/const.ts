@@ -43,5 +43,7 @@ export const HELP_TYPE_OPTIONS = [
 //----------------------------------------------------------------
 
 export const ACCEPTED_STATUS_ID = 3;
-
+export const EASY = "Easy";
+export const MEDIUM = "Medium";
+export const HARD = "Hard";
 // ----------------------------------------------------------------

@@ -23,12 +23,16 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Progress } from "@/components/ui/progress";
+
 import { CircleCheckBig, CircleDashed } from "lucide-react";
 import {
   submissionsState,
   SubmissionsState,
 } from "@/atoms/submissionsDataAtom";
 import { useRecoilState } from "recoil";
+import { Problem, UserProblem } from "@/types/problem";
+import { percentage } from "@/utils/percentage";
 
 const DIFFICULTY_CLASSES = {
   Easy: "text-dark-green-s",
@@ -38,6 +42,7 @@ const DIFFICULTY_CLASSES = {
 
 export default function Home() {
   const [loadingProblems, setLoadingProblems] = useState(true);
+  const [progressValue, setProgressValue] = useState(0);
   const { problems } = useGetProblems(setLoadingProblems);
   const userProblems = useGetUserProblems();
 
@@ -45,25 +50,34 @@ export default function Home() {
     useRecoilState<SubmissionsState>(submissionsState);
   useEffect(() => {
     setSubmissions([]);
-  }, [setSubmissions]);
+    const solvedProblems = (problems: UserProblem[]) => {
+      return problems.filter((p) => {
+        return p.is_solved;
+      });
+    };
+
+    setProgressValue(
+      percentage(solvedProblems(userProblems).length, problems.length)
+    );
+  }, [setSubmissions, userProblems, problems.length]);
 
   return (
     <>
       <Topbar />
-      <main className="container relative overflow-x-auto mx-auto">
+      <main className="container relative overflow-x-auto mx-auto grid gap-6 grid-cols-1">
         {loadingProblems && <LoadingTableSkeleton />}
+        {/* 完成進度條 */}
+        <Progress className="mt-3" value={progressValue} max={100} />
         {/* 問題列表 */}
-        <Table className="my-6 ">
+        <Table className="">
           {!loadingProblems && (
             <TableHeader>
-              <TableRow className="grid grid-cols-5 gap-4">
+              <TableRow className="grid grid-cols-4 gap-4">
                 <TableHead className="w-[100px]">狀態</TableHead>
                 <TableHead>標題</TableHead>
                 <TableHead>難易度</TableHead>
                 <TableHead>類別</TableHead>
-                <TableHead>得分</TableHead>
-
-                {/* <TableHead className="text-right">Solution</TableHead> */}
+                {/* <TableHead>得分</TableHead> */}
               </TableRow>
             </TableHeader>
           )}
@@ -111,7 +125,7 @@ const ProblemRow = ({ problem, userProblem, idx }) => {
   return (
     <TableRow
       key={problem.id}
-      className={`grid grid-cols-5 gap-4 text-foreground ${idx % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""}`}
+      className={`grid grid-cols-4 gap-4 text-foreground ${Math.floor(idx / 2) % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""}`}
     >
       <TableCell className="font-medium whitespace-nowrap">
         {userProblem?.is_solved ? (
@@ -136,9 +150,9 @@ const ProblemRow = ({ problem, userProblem, idx }) => {
       </TableCell>
       <TableCell className={difficultyColor}>{problem.difficulty}</TableCell>
       <TableCell className="dark:text-white">{problem.category}</TableCell>
-      <TableCell className="dark:text-white">
+      {/* <TableCell className="dark:text-white">
         {`${userProblem?.score || 0} / ${problem.score}`}
-      </TableCell>
+      </TableCell> */}
     </TableRow>
   );
 };
