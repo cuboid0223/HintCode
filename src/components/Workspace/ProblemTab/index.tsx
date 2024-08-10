@@ -31,7 +31,7 @@ import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { Message } from "../../../types/message";
 import updateUserProblemScore from "@/utils/User/updateUserProblemScore";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
-import { CONTROL, EXPERIMENTAL } from "../../../../public/global";
+import { CONTROL, EXPERIMENTAL } from "@/utils/const";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 
 type ProblemTabProps = {};

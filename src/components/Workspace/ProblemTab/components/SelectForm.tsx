@@ -1,6 +1,4 @@
 "use client";
-
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -48,7 +46,7 @@ import {
   NEXT_STEP,
   NEXT_STEP_PROMPT,
   PREV_HINT_NOT_HELP,
-} from "../../../../../public/global";
+} from "@/utils/const";
 import { getPromptByType } from "@/utils/HelpTypes/getTextByType";
 import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
 
@@ -159,6 +157,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     data.code = localCurrentCode;
     data.prompt = NEXT_STEP_PROMPT;
     const promptTemplate = createPromptTemplate(data, problem.problemStatement);
+    console.log(promptTemplate);
     sendMessageToGPT(promptTemplate);
     addUserMessage(data, null);
   };

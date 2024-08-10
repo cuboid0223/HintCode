@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Image from "next/image";
+import { ACCEPTED_STATUS_ID } from "@/utils/const";
 const DaGaKoToWaRuDialog = ({}) => {
   const [isDaGaKoToWaRuDialogOpen, setIsDaGaKoToWaRuDialogOpen] =
     useState(false);
@@ -31,11 +32,14 @@ const DaGaKoToWaRuDialog = ({}) => {
     */
       if (submissions?.length === 0) return;
       const hiddenCase = submissions[submissions.length - 1];
-      const isHiddenCaseAccepted = hiddenCase.status.id === 3;
+      // const isHiddenCaseAccepted = hiddenCase.status.id === ACCEPTED_STATUS_ID;
       const isAllDisplayTestCasesAccepted = isAllTestCasesAccepted(
         getAllButLastSubmission(submissions)
       );
-      if (isAllDisplayTestCasesAccepted && !isHiddenCaseAccepted)
+      if (
+        isAllDisplayTestCasesAccepted &&
+        hiddenCase.status.id !== ACCEPTED_STATUS_ID
+      )
         setIsDaGaKoToWaRuDialogOpen(true);
     };
 

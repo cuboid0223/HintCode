@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import HighlightedDiff from "@/components/Workspace/components/HighlightedDiff";
+import { ACCEPTED_STATUS_ID } from "@/utils/const";
 type TestCaseListProps = {
   isTestResult?: boolean;
   submissions: Submission[];
@@ -44,15 +45,6 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
 
   return (
     <div className="grow overflow-y-auto">
-      <button
-        type="button"
-        onClick={() => {
-          throw new Error("Sentry Frontend Error");
-        }}
-      >
-        Throw error
-      </button>
-
       <div className="flex">
         {problem.examples.map((example, index) => (
           <Button
@@ -166,7 +158,7 @@ const SubmissionStatusIcon = ({
 }) => {
   if (submissions?.length !== 0) {
     const statusId = submissions?.[index]?.status.id;
-    if (statusId === 3) {
+    if (statusId === ACCEPTED_STATUS_ID) {
       return <CircleCheckBig color="green" className="mr-2 " />;
     } else {
       return (

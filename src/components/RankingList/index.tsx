@@ -91,7 +91,7 @@ function RankingList() {
   }, []);
 
   return (
-    <div className="grid grid-cols-3 grid-rows-1 min-h-[400px] mt-5">
+    <div className="grid grid-cols-3 grid-rows-1 min-h-[400px] mt-5 container">
       {/* 1 - 5 名的 table */}
       <Table className="h-full text-center ">
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}

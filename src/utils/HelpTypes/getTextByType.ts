@@ -1,4 +1,4 @@
-import { HELP_TYPE_OPTIONS } from "../../../public/global";
+import { HELP_TYPE_OPTIONS } from "@/utils/const";
 
 export const getTextByType = (type: string) => {
   const option = HELP_TYPE_OPTIONS.find((option) => option.type === type);
