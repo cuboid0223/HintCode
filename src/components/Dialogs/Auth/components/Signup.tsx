@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { showErrorToast } from "@/utils/Toast/message";
 
 const formSchema = z.object({
   password: z.string(),
@@ -127,9 +128,12 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
       await setDoc(userRef, userData);
 
       router.push("/");
-    } catch (error: any) {
-      console.log(error);
-      toast.error(error.message, { position: "top-center" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showErrorToast(error.message);
+      } else {
+        showErrorToast("An unexpected error occurred");
+      }
     } finally {
       toast.dismiss("loadingToast");
     }

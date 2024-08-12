@@ -17,6 +17,7 @@ import { DotLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useSpring, animated, useSpringRef, useChain } from "react-spring";
+import { showWarningToast } from "@/utils/Toast/message";
 
 type EditorFooterProps = {
   handleExecution: () => void;
@@ -52,11 +53,7 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
       problem.id
     );
     if (!isAllTestCasesAccepted(submissions)) {
-      toast.warning("通過所有測試資料才能繳交", {
-        position: "top-center",
-        autoClose: 3000,
-        theme: "dark",
-      });
+      showWarningToast("通過所有測試資料才能繳交");
       return;
     }
 

@@ -28,6 +28,7 @@ import { useSubscribedUserProblems } from "@/hooks/useGetUserProblems";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { ThemeType } from "../../../types/global";
+import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
@@ -85,25 +86,19 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
     userCode = userCode.trim() + "\n\n";
     const match = userCode.match(pattern);
     if (match) return match[0];
-
-    toast.error(`無法擷取 ${problem.starterFunctionName[selectedLang]} `, {
-      position: "top-center",
-      autoClose: false,
-      theme: "dark",
-    });
+    showErrorToast(
+      `無法擷取 ${problem.starterFunctionName[selectedLang]} `,
+      false
+    );
     setIsLoading(false);
     return "";
   };
 
   const isFuncNameCorrect = (extractedCode: string) => {
     if (!extractedCode.includes(problem.starterFunctionName[selectedLang])) {
-      toast.error(
+      showErrorToast(
         `函式名稱應是 ${problem.starterFunctionName[selectedLang]} `,
-        {
-          position: "top-center",
-          autoClose: false,
-          theme: "dark",
-        }
+        false
       );
       setIsLoading(false);
       return false;
@@ -113,11 +108,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
 
   const isCodeIncludesImport = (extractedCode: string) => {
     if (extractedCode.includes("import")) {
-      toast.error(`不能導入未經允許的函式庫 `, {
-        position: "top-center",
-        autoClose: false,
-        theme: "dark",
-      });
+      showErrorToast("不能導入未經允許的函式庫", false);
       setIsLoading(false);
       return false;
     }
@@ -126,19 +117,11 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
 
   const handleExecution = async () => {
     if (!user) {
-      toast.error("登入後才能執行程式", {
-        position: "top-center",
-        autoClose: 3000,
-        theme: resolvedTheme as ThemeType,
-      });
+      showErrorToast("登入後才能執行程式");
       return;
     }
     if (localLatestTestCode === localCurrentCode) {
-      toast.warn("與之前執行的程式碼相同", {
-        position: "top-center",
-        autoClose: 3000,
-        theme: resolvedTheme as ThemeType,
-      });
+      showWarningToast("與之前執行的程式碼相同");
       setIsLoading(false);
       return;
     }

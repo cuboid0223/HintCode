@@ -17,6 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { showErrorToast } from "@/utils/Toast/message";
 
 const formSchema = z.object({
   password: z.string(),
@@ -58,21 +59,12 @@ const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
 
       router.push("/");
     } catch (error: any) {
-      toast.error(error.message, {
-        position: "top-center",
-        autoClose: 3000,
-        theme: "dark",
-      });
+      showErrorToast(error.message);
     }
   };
 
   useEffect(() => {
-    if (error)
-      toast.error(error.message, {
-        position: "top-center",
-        autoClose: 3000,
-        theme: "dark",
-      });
+    if (error) showErrorToast(error.message);
   }, [error]);
   return (
     <section className="p-2 flex flex-col space-y-5 border-4 mt-28 dark:border-none">
