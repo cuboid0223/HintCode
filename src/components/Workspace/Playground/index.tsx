@@ -107,6 +107,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   };
 
   const isCodeIncludesImport = (extractedCode: string) => {
+    // 避免使用者在 function 內直接 import library
     if (extractedCode.includes("import")) {
       showErrorToast("不能導入未經允許的函式庫", false);
       setIsLoading(false);
@@ -130,8 +131,8 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
     setIsHelpBtnEnable(false);
     const extractedCode = extractCode(userCode);
     if (!isFuncNameCorrect(extractedCode)) return;
-    if (isCodeIncludesImport(extractedCode)) return;
-    // if (!isFuncNameAtTop(extractedCode)) return;
+    if (!isCodeIncludesImport(extractedCode)) return;
+
     let temp: Submission[] = [];
     try {
       for (const testCase of problem.testCaseCode) {

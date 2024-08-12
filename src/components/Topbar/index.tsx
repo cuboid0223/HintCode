@@ -20,11 +20,16 @@ import {
 import { AuthDialog } from "../../types/global";
 import useGetProblems from "@/hooks/useGetProblems";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
-
+import { Orbitron } from "next/font/google";
 import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import LogoutButton from "../Topbar/components/LogoutBtn";
 import { submissionsState } from "@/atoms/submissionsDataAtom";
+
+const orbitron = Orbitron({
+  weight: "600",
+  subsets: ["latin"],
+});
 
 import PersonalInfoDialog from "../Dialogs/PersonalInfoDialog";
 type TopBarProps = {
@@ -34,10 +39,10 @@ type TopBarProps = {
 const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
   const [user] = useAuthState(auth);
 
-  const router = useRouter();
+  // const router = useRouter();
   const { setTheme } = useTheme();
-  const params = useParams<{ pid: string }>();
-  const [submissionsData, setSubmissions] = useRecoilState(submissionsState);
+  // const params = useParams<{ pid: string }>();
+  // const [submissionsData, setSubmissions] = useRecoilState(submissionsState);
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
   const [isProblemsLoading, setIsProblemsLoading] = useState(false);
@@ -64,7 +69,7 @@ const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
       >
         <Link href="/" className="h-[45px] flex-1 flex items-center">
           <Image src="/HINTCode.png" alt="Logo" height={45} width={45} />
-          <h1>HintCode</h1>
+          <h1 className={orbitron.className}>HintCode</h1>
         </Link>
 
         {isProblemPage && (
