@@ -111,6 +111,19 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
     return true;
   };
 
+  const isCodeIncludesImport = (extractedCode: string) => {
+    if (extractedCode.includes("import")) {
+      toast.error(`不能導入未經允許的函式庫 `, {
+        position: "top-center",
+        autoClose: false,
+        theme: "dark",
+      });
+      setIsLoading(false);
+      return false;
+    }
+    return true;
+  };
+
   const handleExecution = async () => {
     if (!user) {
       toast.error("登入後才能執行程式", {
@@ -134,6 +147,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
     setIsHelpBtnEnable(false);
     const extractedCode = extractCode(userCode);
     if (!isFuncNameCorrect(extractedCode)) return;
+    if (isCodeIncludesImport(extractedCode)) return;
     // if (!isFuncNameAtTop(extractedCode)) return;
     let temp: Submission[] = [];
     try {
