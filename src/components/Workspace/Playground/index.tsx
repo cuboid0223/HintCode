@@ -78,19 +78,16 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
 
   const extractCode = (userCode: string) => {
     // 擷取第一個 function block
-    const pattern = /(?<!# )def \w+\(.*\):\n(?:\s+.*\n)+\n/;
+    const pattern = /(?<!#)\bdef\s+\w+\s*\(.*?\)\s*:\s*\n(?:\s+.*(?:\n|$))+/;
     userCode = userCode.trim() + "\n\n";
     const match = userCode.match(pattern);
     if (match) return match[0];
 
-    toast.error(
-      `函式名稱必須是 ${problem.starterFunctionName[selectedLang]} `,
-      {
-        position: "top-center",
-        autoClose: false,
-        theme: "dark",
-      }
-    );
+    toast.error(`無法擷取 ${problem.starterFunctionName[selectedLang]} `, {
+      position: "top-center",
+      autoClose: false,
+      theme: "dark",
+    });
     setIsLoading(false);
     return "";
   };
