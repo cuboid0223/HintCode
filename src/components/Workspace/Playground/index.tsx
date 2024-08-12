@@ -7,7 +7,10 @@ import { auth, firestore } from "../../../firebase/firebase";
 import { toast } from "react-toastify";
 import { doc, updateDoc } from "firebase/firestore";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { testUserCode, getSubmissionData } from "@/actions/testCodeAction";
+import {
+  submitUserCodeForTesting,
+  getSubmissionData,
+} from "@/actions/testCodeAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TestCaseList from "./components/TestCaseList";
 import { Submission } from "@/types/testCase";
@@ -135,7 +138,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
     let temp: Submission[] = [];
     try {
       for (const testCase of problem.testCaseCode) {
-        const token: string = await testUserCode({
+        const token: string = await submitUserCodeForTesting({
           userCode: `${extractedCode}\n${testCase.inputCode.trim()}`,
           expectedOutput: testCase.output,
         });
