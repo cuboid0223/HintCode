@@ -41,8 +41,12 @@ export const HELP_TYPE_OPTIONS = [
 ];
 
 //----------------------------------------------------------------
-
+export const IN_QUEUE_STATUS_ID = 1;
+export const PROCESSING_STATUS_ID = 2;
 export const ACCEPTED_STATUS_ID = 3;
+export const WRONG_ANSWER_STATUS_ID = 4;
+export const RUNTIME_ERROR_STATUS_ID = 11;
+
 export const EASY = "Easy";
 export const MEDIUM = "Medium";
 export const HARD = "Hard";
