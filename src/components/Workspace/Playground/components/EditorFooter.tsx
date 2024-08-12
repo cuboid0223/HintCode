@@ -17,7 +17,7 @@ import { DotLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useSpring, animated, useSpringRef, useChain } from "react-spring";
-import { showWarningToast } from "@/utils/Toast/message";
+import { showSuccessToast, showWarningToast } from "@/utils/Toast/message";
 
 type EditorFooterProps = {
   handleExecution: () => void;
@@ -60,11 +60,7 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
     await updateDoc(userProblemRef, {
       is_solved: true,
     });
-    toast.success("恭喜! 通過所有測試資料!", {
-      position: "top-center",
-      autoClose: 3000,
-      theme: "dark",
-    });
+    showSuccessToast("恭喜! 通過所有測試資料!");
 
     // 更新分數
     /*

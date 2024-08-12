@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useTheme } from "next-themes";
 import { AuthDialog, ThemeType } from "@/types/global";
 import { ChevronLeft } from "lucide-react";
+import { showSuccessToast } from "@/utils/Toast/message";
 
 const formSchema = z.object({
   email: z.string().email({ message: "email 格式錯誤" }),
@@ -39,13 +40,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ setAuthDialog }) => {
 
   const handleReset = async (values: z.infer<typeof formSchema>) => {
     const success = await sendPasswordResetEmail(values.email);
-    if (success) {
-      toast.success("密碼重製信件已傳送", {
-        position: "top-center",
-        autoClose: 3000,
-        theme: resolvedTheme as ThemeType,
-      });
-    }
+    if (success) showSuccessToast("密碼重製信件已傳送");
   };
 
   useEffect(() => {

@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { showErrorToast } from "@/utils/Toast/message";
+import { showErrorToast, showLoadingToast } from "@/utils/Toast/message";
 
 const formSchema = z.object({
   password: z.string(),
@@ -102,10 +102,7 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(`handleOnSubmit -> ${JSON.stringify(values)}`);
     try {
-      toast.loading("正在創建帳號", {
-        position: "top-center",
-        toastId: "loadingToast",
-      });
+      showLoadingToast("正在創建帳號");
       const newUser = await createUserWithEmailAndPassword(
         values.email,
         values.password
