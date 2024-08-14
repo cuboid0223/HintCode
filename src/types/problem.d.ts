@@ -16,7 +16,7 @@ export type Problem = {
   // likes: number;
   // dislikes: number;
   title: string;
-  diffmode: string;
+  // diffmode: string;
   problemStatement: string;
   examples: Example[];
   order: number;
@@ -34,6 +34,7 @@ export type Problem = {
   testCaseCode: TestCase[];
   score: number;
   isPublished: boolean;
+  isHelpEnabled: boolean;
 };
 
 // user -> problem

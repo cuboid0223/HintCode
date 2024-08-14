@@ -122,9 +122,9 @@ const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
               <DropdownMenuItem onClick={() => setTheme("dark")}>
                 Dark
               </DropdownMenuItem>
-              {/* <DropdownMenuItem onClick={() => setTheme("system")}>
-                System
-              </DropdownMenuItem> */}
+              <DropdownMenuItem onClick={() => setTheme("cyber")}>
+                Cyber
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           {!user && (

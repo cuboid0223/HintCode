@@ -25,6 +25,12 @@ import { View } from "@/components/canvas/View";
 import { animated } from "react-spring";
 import Avatar from "@/components/Avatar";
 import { useUserTransitions } from "@/hooks/useUsers";
+import { Orbitron } from "next/font/google";
+
+const orbitron = Orbitron({
+  weight: "600",
+  subsets: ["latin"],
+});
 
 const Trophy = dynamic(
   () => import("@/components/canvas/Models").then((mod) => mod.Trophy),
@@ -95,14 +101,14 @@ function RankingList() {
       {/* 1 - 5 名的 table */}
       <Table className="h-full text-center ">
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-        <TableHeader className="">
+        {/* <TableHeader className="">
           <TableRow className="grid grid-cols-4">
             <TableHead className="p-0 text-center">總分</TableHead>
             <TableHead className="p-0 text-center">名字</TableHead>
             <TableHead className="p-0 text-center">Avatar</TableHead>
             <TableHead className="p-0 text-center w-[100px]">排名</TableHead>
           </TableRow>
-        </TableHeader>
+        </TableHeader> */}
         <TableBody className="relative">
           {transitionsTop5((styles, user, state, index) => (
             <animated.tr
@@ -114,12 +120,14 @@ function RankingList() {
                 ...styles,
               }}
             >
-              <TableCell className="">{user.totalScore}</TableCell>
+              <TableCell className={orbitron.className}>
+                {user.totalScore}%
+              </TableCell>
               <TableCell className="">{user.displayName}</TableCell>
               <TableCell className="flex place-content-center">
                 <Avatar svg={user?.thumbnail} />
               </TableCell>
-              <TableCell className="font-bold text-xl ">{index + 1}</TableCell>
+              <TableCell className={orbitron.className}>{index + 1}</TableCell>
             </animated.tr>
           ))}
         </TableBody>
@@ -141,16 +149,20 @@ function RankingList() {
       {/* 6 - 10 名的 table */}
       <Table className="h-full text-center ">
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-        <TableHeader className="">
+        {/* <TableHeader className="">
           <TableRow className="grid grid-cols-4">
-            <TableHead className="p-0 text-center order-4">總分</TableHead>
+            <TableHead
+              className={`p-0 text-center order-4`}
+            >
+              總分
+            </TableHead>
             <TableHead className="p-0 text-center order-3">名字</TableHead>
             <TableHead className="p-0 text-center order-2">Avatar</TableHead>
             <TableHead className="p-0 text-center w-[100px] order-1">
               排名
             </TableHead>
           </TableRow>
-        </TableHeader>
+        </TableHeader> */}
         <TableBody className="relative">
           {transitionsTop6_10((styles, user, state, index) => (
             <animated.tr
@@ -162,7 +174,9 @@ function RankingList() {
                 ...styles,
               }}
             >
-              <TableCell className="order-4">{user.totalScore}</TableCell>
+              <TableCell className={`order-4 ${orbitron.className}`}>
+                {user.totalScore}%
+              </TableCell>
               <TableCell className="order-3">{user.displayName}</TableCell>
               <TableCell className="flex place-content-center order-2">
                 <div
@@ -172,9 +186,7 @@ function RankingList() {
                   }}
                 ></div>
               </TableCell>
-              <TableCell className="font-bold text-xl order-1">
-                {index + 6}
-              </TableCell>
+              <TableCell className={orbitron.className}>{index + 6}</TableCell>
             </animated.tr>
           ))}
         </TableBody>

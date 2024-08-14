@@ -188,7 +188,7 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
           >
             問題描述
           </TabsTrigger>
-          {!isUserControlGroup && (
+          {!isUserControlGroup && problem.isHelpEnabled && (
             <TabsTrigger
               value="getHelp"
               className="rounded-t-lg text-gray-400  !shadow-none"

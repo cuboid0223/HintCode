@@ -33,12 +33,18 @@ import {
 import { useRecoilState } from "recoil";
 import { Problem, UserProblem } from "@/types/problem";
 import { percentage } from "@/utils/percentage";
+import { Orbitron } from "next/font/google";
 
 const DIFFICULTY_CLASSES = {
   Easy: "text-dark-green-s",
   Medium: "text-dark-yellow",
   Hard: "text-dark-pink",
 };
+
+const orbitron = Orbitron({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 export default function Home() {
   const [loadingProblems, setLoadingProblems] = useState(true);
@@ -72,12 +78,12 @@ export default function Home() {
         <Table className="">
           {!loadingProblems && (
             <TableHeader>
-              <TableRow className="grid grid-cols-4 gap-4">
+              <TableRow className="grid grid-cols-5 gap-4">
                 <TableHead className="w-[100px]">狀態</TableHead>
                 <TableHead>標題</TableHead>
                 <TableHead>難易度</TableHead>
                 <TableHead>類別</TableHead>
-                {/* <TableHead>得分</TableHead> */}
+                <TableHead>提示</TableHead>
               </TableRow>
             </TableHeader>
           )}
@@ -125,7 +131,7 @@ const ProblemRow = ({ problem, userProblem, idx }) => {
   return (
     <TableRow
       key={problem.id}
-      className={`grid grid-cols-4 gap-4 text-foreground ${Math.floor(idx / 2) % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""}`}
+      className={`grid grid-cols-5 gap-4 text-foreground ${Math.floor(idx / 2) % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""}`}
     >
       <TableCell className="font-medium whitespace-nowrap">
         {userProblem?.is_solved ? (
@@ -148,11 +154,19 @@ const ProblemRow = ({ problem, userProblem, idx }) => {
           </p>
         </Link>
       </TableCell>
-      <TableCell className={difficultyColor}>{problem.difficulty}</TableCell>
-      <TableCell className="dark:text-white">{problem.category}</TableCell>
-      {/* <TableCell className="dark:text-white">
-        {`${userProblem?.score || 0} / ${problem.score}`}
-      </TableCell> */}
+      <TableCell
+        className={`${difficultyColor} ${orbitron.className}  tracking-widest`}
+      >
+        {problem.difficulty}
+      </TableCell>
+      <TableCell
+        className={` ${orbitron.className} dark:text-white tracking-widest`}
+      >
+        {problem.category}
+      </TableCell>
+      <TableCell className="dark:text-white">
+        {problem.isHelpBtnEnable ? "yes" : "no"}
+      </TableCell>
     </TableRow>
   );
 };
