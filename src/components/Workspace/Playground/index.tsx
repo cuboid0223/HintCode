@@ -242,7 +242,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
             defaultValue={TEST_CASE}
             onValueChange={handleTestTabChange}
           >
-            <TabsList className="sticky top-0 z-10 grid w-full grid-cols-2 bg-card ">
+            <TabsList className="sticky top-0 z-2 grid w-full grid-cols-2 bg-card ">
               <TabsTrigger
                 value={TEST_CASE}
                 className="relative hover:bg-muted transition-all"

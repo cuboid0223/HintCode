@@ -171,7 +171,7 @@ function PersonalInfoDialog({
                     ...styles,
                   }}
                 >
-                  <TableCell className="">{user.totalScore}</TableCell>
+                  <TableCell className="">{"user.totalScore"}</TableCell>
                   <TableCell className="">{user.displayName}</TableCell>
                   <TableCell className="flex place-content-center">
                     <Avatar svg={user?.thumbnail} />

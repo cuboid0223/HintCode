@@ -25,7 +25,12 @@ import {
 } from "@/components/ui/pagination";
 import { Progress } from "@/components/ui/progress";
 
-import { CircleCheckBig, CircleDashed } from "lucide-react";
+import {
+  BotMessageSquare,
+  BotOff,
+  CircleCheckBig,
+  CircleDashed,
+} from "lucide-react";
 import {
   submissionsState,
   SubmissionsState,
@@ -45,6 +50,11 @@ const orbitron = Orbitron({
   weight: "400",
   subsets: ["latin"],
 });
+
+const mockMatrix = [
+  ["hello-world", "greet-n-times"],
+  ["two-sum", "findgcd"],
+];
 
 export default function Home() {
   const [loadingProblems, setLoadingProblems] = useState(true);
@@ -126,12 +136,62 @@ export default function Home() {
   );
 }
 
-const ProblemRow = ({ problem, userProblem, idx }) => {
+type ProblemRowProps = {
+  problem: Problem;
+  userProblem: UserProblem;
+  idx: number;
+};
+
+const ProblemRow: React.FC<ProblemRowProps> = ({
+  problem,
+  userProblem,
+  idx,
+}) => {
+  const [isLocked, setIsLocked] = useState(false);
   const difficultyColor = DIFFICULTY_CLASSES[problem.difficulty] || "";
+  const userProblems = useGetUserProblems();
+  useEffect(() => {
+    console.log(userProblems);
+
+    const prevProblemIsSolved = (userProblems: UserProblem[]) => {
+      if (userProblems.length === 0 && idx % 2 !== 0) {
+        setIsLocked(true);
+        return;
+      }
+      const result = mockMatrix.find((subArray) =>
+        subArray.includes(userProblem?.id)
+      );
+      console.log("目標 array", result);
+      if (result) {
+        const index = result.indexOf(userProblem.id);
+        if (index > 0) {
+          const previousElementId = result[index - 1];
+
+          const previousProblems = userProblems.filter(
+            (p) => p.id === previousElementId
+          );
+          console.log(previousProblems);
+          if (previousProblems[0]?.is_solved) {
+            setIsLocked(false);
+            return;
+          }
+          setIsLocked(true);
+        } else {
+          console.log("找不到前一個元素");
+        }
+      } else {
+        console.log("找不到 'greet-n-times'");
+      }
+    };
+
+    prevProblemIsSolved(userProblems);
+  }, [idx, userProblems, userProblem?.id]);
+
   return (
     <TableRow
       key={problem.id}
-      className={`grid grid-cols-5 gap-4 text-foreground ${Math.floor(idx / 2) % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1" : ""}`}
+      //${Math.floor(idx / 2) % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1 " : ""}
+      className={`grid grid-cols-5 gap-4 text-foreground   ${isLocked && "bg-red-400 "}`}
     >
       <TableCell className="font-medium whitespace-nowrap">
         {userProblem?.is_solved ? (
@@ -165,7 +225,7 @@ const ProblemRow = ({ problem, userProblem, idx }) => {
         {problem.category}
       </TableCell>
       <TableCell className="dark:text-white">
-        {problem.isHelpBtnEnable ? "yes" : "no"}
+        {problem.isHelpEnabled ? <BotMessageSquare /> : <BotOff />}
       </TableCell>
     </TableRow>
   );

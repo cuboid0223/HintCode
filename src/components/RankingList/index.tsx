@@ -148,21 +148,6 @@ function RankingList() {
       </div>
       {/* 6 - 10 名的 table */}
       <Table className="h-full text-center ">
-        {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-        {/* <TableHeader className="">
-          <TableRow className="grid grid-cols-4">
-            <TableHead
-              className={`p-0 text-center order-4`}
-            >
-              總分
-            </TableHead>
-            <TableHead className="p-0 text-center order-3">名字</TableHead>
-            <TableHead className="p-0 text-center order-2">Avatar</TableHead>
-            <TableHead className="p-0 text-center w-[100px] order-1">
-              排名
-            </TableHead>
-          </TableRow>
-        </TableHeader> */}
         <TableBody className="relative">
           {transitionsTop6_10((styles, user, state, index) => (
             <animated.tr
