@@ -45,4 +45,5 @@ export type UserProblem = {
   remainTimes: number;
   score: number;
   is_solved: boolean;
+  isLocked: boolean;
 };

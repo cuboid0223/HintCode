@@ -8,6 +8,7 @@ import React, { useEffect } from "react";
 import { firestore } from "@/firebase/firebase";
 import { useRecoilState } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
+import getUserProblemById from "@/utils/problems/getUserProblemById";
 
 type ProblemPageProps = {
   problem: Problem;

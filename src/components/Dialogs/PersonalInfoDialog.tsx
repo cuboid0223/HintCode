@@ -1,6 +1,6 @@
 "use client";
 import useGetUserInfo, { useGetSubscribedUser } from "@/hooks/useGetUserInfo";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect,  useState } from "react";
 import { animated } from "react-spring";
 import useGetUsers, {
   useGetSubscribedUsers,

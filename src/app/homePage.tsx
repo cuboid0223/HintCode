@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import { BsCheckCircle } from "react-icons/bs";
 import useGetUserProblems from "@/hooks/useGetUserProblems";
 import useGetProblems from "@/hooks/useGetProblems";
 import { LoadingTableSkeleton } from "./loading";
@@ -30,6 +29,7 @@ import {
   BotOff,
   CircleCheckBig,
   CircleDashed,
+  Lock,
 } from "lucide-react";
 import {
   submissionsState,
@@ -39,6 +39,9 @@ import { useRecoilState } from "recoil";
 import { Problem, UserProblem } from "@/types/problem";
 import { percentage } from "@/utils/percentage";
 import { Orbitron } from "next/font/google";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase/firebase";
+import updateProblemLockStatus from "@/utils/problems/updateProblemLockStatus";
 
 const DIFFICULTY_CLASSES = {
   Easy: "text-dark-green-s",
@@ -57,6 +60,7 @@ const mockMatrix = [
 ];
 
 export default function Home() {
+  const [user] = useAuthState(auth);
   const [loadingProblems, setLoadingProblems] = useState(true);
   const [progressValue, setProgressValue] = useState(0);
   const { problems } = useGetProblems(setLoadingProblems);
@@ -106,6 +110,7 @@ export default function Home() {
                   problem={problem}
                   userProblem={userProblem}
                   idx={idx}
+                  userId={user.uid}
                 />
               );
             })}
@@ -140,21 +145,25 @@ type ProblemRowProps = {
   problem: Problem;
   userProblem: UserProblem;
   idx: number;
+  userId: string;
 };
 
 const ProblemRow: React.FC<ProblemRowProps> = ({
   problem,
   userProblem,
   idx,
+  userId,
 }) => {
   const [isLocked, setIsLocked] = useState(false);
   const difficultyColor = DIFFICULTY_CLASSES[problem.difficulty] || "";
   const userProblems = useGetUserProblems();
-  useEffect(() => {
-    console.log(userProblems);
 
+  useEffect(() => {
     const prevProblemIsSolved = (userProblems: UserProblem[]) => {
-      if (userProblems.length === 0 && idx % 2 !== 0) {
+      if (
+        userProblems.filter((p) => p.id === problem?.id).length === 0 &&
+        idx % 2 !== 0
+      ) {
         setIsLocked(true);
         return;
       }
@@ -173,9 +182,11 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
           console.log(previousProblems);
           if (previousProblems[0]?.is_solved) {
             setIsLocked(false);
+            updateProblemLockStatus(userId, problem?.id, false);
             return;
           }
           setIsLocked(true);
+          updateProblemLockStatus(userId, problem?.id, true);
         } else {
           console.log("找不到前一個元素");
         }
@@ -185,13 +196,13 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
     };
 
     prevProblemIsSolved(userProblems);
-  }, [idx, userProblems, userProblem?.id]);
+  }, [idx, userProblems, userProblem?.id, problem?.id, userId]);
 
   return (
     <TableRow
       key={problem.id}
       //${Math.floor(idx / 2) % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1 " : ""}
-      className={`grid grid-cols-5 gap-4 text-foreground   ${isLocked && "bg-red-400 "}`}
+      className={`grid grid-cols-5 gap-4 text-foreground ${Math.floor(idx / 2) % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1 " : ""} `}
     >
       <TableCell className="font-medium whitespace-nowrap">
         {userProblem?.is_solved ? (
@@ -200,14 +211,21 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
             fontSize="18"
             width="18"
           />
+        ) : isLocked ? (
+          <Lock color="red" />
         ) : (
           <CircleDashed fontSize="18" width="18" />
         )}
       </TableCell>
       <TableCell className="p-0 dark:text-white">
         <Link
-          className="h-full flex cursor-pointer"
-          href={`/problems/${problem.id}`}
+          className={`h-full flex ${isLocked ? "cursor-not-allowed" : "cursor-pointer"}`}
+          href={isLocked ? "#" : `/problems/${problem.id}?userId=${userId}`}
+          onClick={(e) => {
+            if (isLocked) {
+              e.preventDefault();
+            }
+          }}
         >
           <p className="place-content-center hover:text-blue-600">
             {problem.title}
