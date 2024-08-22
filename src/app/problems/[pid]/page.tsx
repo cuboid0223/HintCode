@@ -18,45 +18,22 @@ export default async function Page({ params, searchParams }) {
   try {
     userProblem = await getUserProblemById(userId, pid);
   } catch (error) {
-    return <div>{`${pid} 未找到`}</div>;
+    return <div>{`在使用者資料庫未找到 ${pid}`}</div>;
   }
 
-  // 檢查該問題是否被鎖定
+  // 檢查該問題是否被鎖起來
   if (userProblem.isLocked) {
-    // 如果問題被鎖定，則伺服器端重定向用戶到鎖定通知頁面
-    redirect("/locked");
+    // 如果問題被鎖起來，則伺服器端重定向用戶到鎖定通知頁面
+    // 避免使用者透過修改網址進入鎖定的題目
+    redirect(`/locked?pid=${pid}`);
   }
 
   const problemRef = doc(firestore, "problems", pid);
   const problemSnap = await getDoc(problemRef);
   if (!problemSnap.exists()) {
-    return <div>Problem not found!</div>;
+    return <div>{`在題目資料庫未找到 ${pid}`}</div>;
   }
   const problemData = problemSnap.data() as Problem;
 
   return <ProblemPage problem={problemData} />;
 }
-
-// export async function getServerSideProps(context) {
-//   const { userId } = context.query;
-//   const { id } = context.params;
-
-//   // 模擬從 API 或資料庫取得問題的資料
-//   const userProblem = await getUserProblemById(userId, id);
-//   console.log(userProblem);
-//   // 如果問題被鎖定，將使用者重定向到其他頁面
-//   if (userProblem.isLocked) {
-//     return {
-//       redirect: {
-//         destination: "/locked", // 你可以重定向到一個鎖定的通知頁面
-//         permanent: false,
-//       },
-//     };
-//   }
-
-//   return {
-//     props: {
-//       userProblem,
-//     },
-//   };
-// }

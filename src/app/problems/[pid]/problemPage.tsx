@@ -1,14 +1,11 @@
 "use client";
 import Topbar from "@/components/Topbar";
 import Workspace from "@/components/Workspace";
-import useHasMounted from "../../../hooks/useHasMounted";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { Problem } from "../../../types/problem";
+import useHasMounted from "@/hooks/useHasMounted";
+import { Problem } from "@/types/problem";
 import React, { useEffect } from "react";
-import { firestore } from "@/firebase/firebase";
 import { useRecoilState } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
-import getUserProblemById from "@/utils/problems/getUserProblemById";
 
 type ProblemPageProps = {
   problem: Problem;

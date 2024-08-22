@@ -14,7 +14,10 @@ function useGetProblems(
   const [problems, setProblems] = useState<Problem[]>([]);
   const [submissionsData, setSubmissions] = useRecoilState(submissionsState);
 
-  const handleProblemChange = async (isForward: boolean = true) => {
+  const handleProblemChange = async (
+    isForward: boolean = true,
+    userId: string
+  ) => {
     // 當下題目的 pid
     const pid = params?.pid; // 當下題目的 pid
     if (!pid || !problems) return;
@@ -28,13 +31,13 @@ function useGetProblems(
     if (isForward && !nextProblem) {
       //  處理 edge case 當沒有下一個問題且是點 "往前" 給使用者第一個 problem
       const firstProblem = problems.find((p) => p.order === 1);
-      router.push(`/problems/${firstProblem.id}`);
+      router.push(`/problems/${firstProblem.id}?userId=${userId}`);
     } else if (!isForward && !nextProblem) {
       //  處理 edge case 當沒有下一個問題且是點 "往後" 給使用者最後一個 problem
       const lastProblem = problems.find((p) => p.order === problems.length);
-      router.push(`/problems/${lastProblem.id}`);
+      router.push(`/problems/${lastProblem.id}?userId=${userId}`);
     } else {
-      router.push(`/problems/${nextProblem.id}`);
+      router.push(`/problems/${nextProblem.id}?userId=${userId}`);
     }
   };
 

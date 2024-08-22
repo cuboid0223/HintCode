@@ -53,11 +53,11 @@ const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
     setIsPersonalInfoDialogOpen(!isPersonalInfoDialogOpen);
   };
   const goToNextProblem = () => {
-    handleProblemChange(true);
+    handleProblemChange(true, user.uid);
   };
 
   const goToPreviousProblem = () => {
-    handleProblemChange(false);
+    handleProblemChange(false, user.uid);
   };
 
   return (
