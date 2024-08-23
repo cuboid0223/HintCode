@@ -42,6 +42,8 @@ import { Orbitron } from "next/font/google";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
 import updateProblemLockStatus from "@/utils/problems/updateProblemLockStatus";
+import useGetProblemGroup from "@/hooks/useGetProblemGroup";
+import chunkArray from "@/utils/chunkArray";
 
 const DIFFICULTY_CLASSES = {
   Easy: "text-dark-green-s",
@@ -68,6 +70,7 @@ export default function Home() {
 
   const [submissions, setSubmissions] =
     useRecoilState<SubmissionsState>(submissionsState);
+
   useEffect(() => {
     setSubmissions([]);
     const solvedProblems = (problems: UserProblem[]) => {
@@ -157,6 +160,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
   const [isLocked, setIsLocked] = useState(false);
   const difficultyColor = DIFFICULTY_CLASSES[problem.difficulty] || "";
   const userProblems = useGetUserProblems();
+  const { problemGroup } = useGetProblemGroup();
 
   useEffect(() => {
     const prevProblemIsSolved = (userProblems: UserProblem[]) => {
@@ -167,7 +171,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
         setIsLocked(true);
         return;
       }
-      const result = mockMatrix.find((subArray) =>
+      const result = problemGroup.find((subArray) =>
         subArray.includes(userProblem?.id)
       );
       console.log("目標 array", result);
