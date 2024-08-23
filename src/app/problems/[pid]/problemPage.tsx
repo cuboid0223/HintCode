@@ -12,10 +12,9 @@ import createUserProblem from "@/utils/problems/createUserProblem";
 
 type ProblemPageProps = {
   problem: Problem;
-  threadId: string;
 };
 
-const ProblemPage: React.FC<ProblemPageProps> = ({ problem, threadId }) => {
+const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
   const router = useRouter();
   const hasMounted = useHasMounted();
   const [problemData, setProblemData] = useRecoilState(problemDataState);
@@ -59,7 +58,7 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ problem, threadId }) => {
   return (
     <main className="flex flex-col h-screen overflow-hidden">
       <Topbar isProblemPage />
-      <Workspace threadId={threadId} />
+      <Workspace />
     </main>
   );
 };

@@ -1,8 +1,7 @@
-"use client"; // 告訴 Next.js 這是一個 Client Component
+"use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import React from "react";
-import { redirect } from "next/navigation";
 
 export default function RedirectButtons() {
   const router = useRouter();
@@ -17,7 +16,7 @@ export default function RedirectButtons() {
 
   return (
     <div className="flex gap-x-3">
-      <Button onClick={handleGoBack}>上一頁</Button>
+      {/* <Button onClick={handleGoBack}>上一頁</Button> */}
       <Button onClick={handleGoHomePage}>回到問題列表</Button>
     </div>
   );

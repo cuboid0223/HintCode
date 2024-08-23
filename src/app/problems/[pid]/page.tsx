@@ -13,19 +13,6 @@ export default async function Page({ params, searchParams }) {
     return <div>請先登入</div>;
   }
 
-  // let userProblem: UserProblem;
-  // try {
-  //   // 檢查使用者的問題是否存在
-  //   userProblem = await getUserProblemById(userId, pid);
-  // } catch (error) {
-  //   return <div>{`在使用者資料庫未找到 ${pid}`}</div>;
-  // }
-
-  // if (userProblem?.isLocked) {
-  //   // 如果問題被鎖起來，則伺服器端重定向用戶到鎖定通知頁面
-  //   redirect(`/locked?pid=${pid}`);
-  // }
-
   // 取得該問題的詳細資料
   const problemRef = doc(firestore, "problems", pid);
   const problemSnap = await getDoc(problemRef);

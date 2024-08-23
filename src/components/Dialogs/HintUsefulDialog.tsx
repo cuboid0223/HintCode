@@ -19,7 +19,7 @@ import useGetProblems from "@/hooks/useGetProblems";
 import { doc, updateDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 const RADIO_VALUE = ["非常不同意", "不同意", "普通", "同意", "非常同意"];
 
@@ -39,6 +39,7 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
   setIsHintUsefulDialogOpen,
   setSuccess,
 }) => {
+  const router = useRouter();
   const { handleProblemChange } = useGetProblems();
   const [user] = useAuthState(auth);
   const params = useParams<{ pid: string }>();
@@ -66,8 +67,9 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
     });
     setSuccess(false);
     setIsHintUsefulDialogOpen(!isHintUsefulDialogOpen);
-    // 前往下一題
-    handleProblemChange(true, user?.uid);
+    // 前往主頁面，觸發解鎖
+    // handleProblemChange(true, user?.uid);
+    router.push("/");
   };
 
   useEffect(() => {

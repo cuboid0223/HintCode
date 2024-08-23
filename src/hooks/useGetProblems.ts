@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { submissionsState } from "@/atoms/submissionsDataAtom";
 import { useRouter, useParams } from "next/navigation";
+import updateProblemLockStatus from "@/utils/problems/updateProblemLockStatus";
 
 function useGetProblems(
   setLoadingProblems?: React.Dispatch<React.SetStateAction<boolean>>

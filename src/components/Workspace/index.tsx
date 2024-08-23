@@ -12,7 +12,7 @@ import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import DaGaKoToWaRuDialog from "../Dialogs/DaGaKoToWaRuDialog";
 
-const Workspace = ({ threadId }) => {
+const Workspace = ({}) => {
   const { resolvedTheme } = useTheme();
   const { width, height } = useWindowSize();
   const splitRef = useRef();
@@ -37,7 +37,7 @@ const Workspace = ({ threadId }) => {
         }}
       >
         {/* 左半 程式題目敘述區與 GPT 提示區 */}
-        <ProblemTab threadId={threadId} />
+        <ProblemTab />
 
         {/* 右半 程式碼輸入區與測試資料區 */}
         <Playground setSuccess={setSuccess} setSolved={setSolved} />

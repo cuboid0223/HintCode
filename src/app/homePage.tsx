@@ -191,7 +191,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
           console.log("找不到前一個元素");
         }
       } else {
-        console.log("找不到 'greet-n-times'");
+        console.log(`找不到 ${problem?.id}`);
       }
     };
 
