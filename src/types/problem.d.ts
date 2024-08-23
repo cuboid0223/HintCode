@@ -1,3 +1,4 @@
+
 import { TestCase } from "./testCase";
 
 export type Example = {
@@ -32,9 +33,9 @@ export type Problem = {
     [key: string]: string;
   };
   testCaseCode: TestCase[];
-  score: number;
   isPublished: boolean;
   isHelpEnabled: boolean;
+  isLocked: boolean;
 };
 
 // user -> problem
@@ -43,7 +44,6 @@ export type UserProblem = {
   threadId: string;
   acceptedTime: number;
   remainTimes: number;
-  score: number;
   is_solved: boolean;
   isLocked: boolean;
 };

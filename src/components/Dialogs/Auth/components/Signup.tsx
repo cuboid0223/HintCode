@@ -117,7 +117,7 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
         displayName: values.displayName,
         createdAt: Date.now(),
         updatedAt: Date.now(),
-        totalScore: 0,
+        completionRate: 0,
         thumbnail: createThumbnail(name, 32),
         thumbnail_64px: createThumbnail(name, 64),
         unit: unitRef,

@@ -23,7 +23,7 @@ const fetchSubscribedUsers = async (
     const q = query(
       collection(firestore, "users"),
       where("unit", "==", unitRef),
-      orderBy("totalScore", "desc")
+      orderBy("completionRate", "desc")
     );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -109,7 +109,7 @@ function useGetUsers() {
       const q = query(
         collection(firestore, "users"),
         where("unit", "==", unitRef),
-        orderBy("totalScore", "desc")
+        orderBy("completionRate", "desc")
       );
       const querySnapshot = await getDocs(q);
       const tmp: User[] = [];

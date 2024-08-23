@@ -8,15 +8,13 @@ import { Button } from "@/components/ui/button";
 import { auth, firestore } from "@/firebase/firebase";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import updateUserProblemScore from "@/utils/User/updateUserProblemScore";
 import { doc, updateDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { BsChevronUp } from "react-icons/bs";
 import { DotLoader } from "react-spinners";
-import { toast } from "react-toastify";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { useSpring, animated, useSpringRef, useChain } from "react-spring";
+import { useSpring, animated } from "react-spring";
 import { showSuccessToast, showWarningToast } from "@/utils/Toast/message";
 
 type EditorFooterProps = {
@@ -62,28 +60,9 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
     });
     showSuccessToast("恭喜! 通過所有測試資料!");
 
-    // 更新分數
-    /*
-    通過就給基本分若該題總分為 100 
-    基本分則為 100 * 0.8 = 80
-    剩下 20 分，會根據提示次數遞減
-    若沒有提示則 20 分
-    一次提示 19 分
-    依此類推直到 20 次機會用完 GPT 會直接給答案
-    (所以使用者該題有完成最低得分會是 80 分) 
-    */
-
-    // const updateUserProblemScore = async () => {
-    //   const basicScore = problem.score * ACCEPTED_BASIC_SCORE_RATE;
-    //   const extraScore = problem.score * (1 - ACCEPTED_BASIC_SCORE_RATE);
-    //   await updateDoc(userProblemRef, {
-    //     score: basicScore + (extraScore - messages.length),
-    //   });
-    // };
     setIsBouncing(false);
     setSuccess(true);
     setIsPersonalInfoDialogOpen(true);
-    updateUserProblemScore(userProblemRef, problem.score, messages.length);
   };
 
   useEffect(() => {

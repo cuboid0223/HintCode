@@ -1,6 +1,6 @@
 "use client";
 import useGetUserInfo, { useGetSubscribedUser } from "@/hooks/useGetUserInfo";
-import React, { useEffect,  useState } from "react";
+import React, { useEffect, useState } from "react";
 import { animated } from "react-spring";
 import useGetUsers, {
   useGetSubscribedUsers,
@@ -72,13 +72,13 @@ function PersonalInfoDialog({
     setNearbyUsers((prevNearbyUsers) => {
       const updatedUsers = prevNearbyUsers.map((user) =>
         user.uid === targetUser.uid
-          ? { ...user, totalScore: currentUser.totalScore }
+          ? { ...user, completionRate: currentUser.completionRate }
           : user
       );
 
-      return updatedUsers.sort((a, b) => b.totalScore - a.totalScore);
+      return updatedUsers.sort((a, b) => b.completionRate - a.completionRate);
     });
-  }, [currentUser?.totalScore, targetUser]);
+  }, [currentUser?.completionRate, targetUser]);
 
   useEffect(() => {
     console.log(currentUsers);
@@ -122,18 +122,18 @@ function PersonalInfoDialog({
           <section className="p-2">
             <Avatar svg={targetUser?.thumbnail_64px} />
 
-            {/* score */}
-            <pre className="mt-2">總分: </pre>
+            {/* 完成率 */}
+            <pre className="mt-2">完成率: </pre>
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
               <CountUp
-                start={targetUser?.totalScore}
-                end={currentUser?.totalScore}
+                start={targetUser?.completionRate}
+                end={currentUser?.completionRate}
                 duration={2}
                 separator=" "
                 // decimals={4}
                 // decimal=","
                 // prefix="EUR "
-                // suffix=" left"
+                suffix="%"
                 // onEnd={() => console.log("Ended! 👏")}
                 // onStart={() => console.log("Started! 💨")}
               >
@@ -155,7 +155,7 @@ function PersonalInfoDialog({
             {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
             <TableHeader className="">
               <TableRow className="grid grid-cols-3">
-                <TableHead className="p-0 text-center">總分</TableHead>
+                <TableHead className="p-0 text-center">完成率</TableHead>
                 <TableHead className="p-0 text-center">名字</TableHead>
                 <TableHead className="p-0 text-center">頭像</TableHead>
                 {/* <TableHead className="p-0 text-center">排名</TableHead> */}
@@ -171,7 +171,7 @@ function PersonalInfoDialog({
                     ...styles,
                   }}
                 >
-                  <TableCell className="">{"user.totalScore"}</TableCell>
+                  <TableCell className="">{user.completionRate} %</TableCell>
                   <TableCell className="">{user.displayName}</TableCell>
                   <TableCell className="flex place-content-center">
                     <Avatar svg={user?.thumbnail} />

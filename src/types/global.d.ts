@@ -8,7 +8,7 @@ export type User = {
   createdAt: number;
   displayName: string;
   email: string;
-  totalScore: number;
+  completionRate: number;
   uid: number;
   updatedAt: number;
   thumbnail: string;

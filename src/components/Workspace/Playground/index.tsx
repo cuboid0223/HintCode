@@ -29,6 +29,8 @@ import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen"
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { ThemeType } from "../../../types/global";
 import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
+import useGetProblems from "@/hooks/useGetProblems";
+import { percentage } from "@/utils/percentage";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
@@ -47,6 +49,7 @@ const TEST_RESULT = "testResult";
 
 const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   const [user] = useAuthState(auth);
+  const { problems } = useGetProblems();
   const problem = useRecoilValue(problemDataState);
   const userProblems = useSubscribedUserProblems();
   // 最後一次執行的程式碼
@@ -176,22 +179,21 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   }, [submissions]);
 
   useEffect(() => {
-    // 如果全部測資都通過且按了繳交按鈕 則重新計算使用者總分
+    // 如果全部測資都通過且按了繳交按鈕 則重新計算使用者完成率
 
-    const updateUserTotalScore = async () => {
+    const updateUserCompletionRate = async () => {
       if (!user) return;
       const solvedProblems = userProblems.filter((p) => p.is_solved === true);
       if (isAllTestCasesAccepted(submissions) && solvedProblems.length !== 0) {
         const userRef = doc(firestore, "users", user.uid);
         await updateDoc(userRef, {
-          // reduce 加總陣列裡的分數
-          totalScore: solvedProblems.reduce((acc, p) => acc + p.score, 0),
+          completionRate: percentage(solvedProblems.length, problems.length),
         });
       }
     };
 
-    updateUserTotalScore();
-  }, [userProblems, user, submissions]);
+    updateUserCompletionRate();
+  }, [userProblems, user, submissions, problems.length]);
 
   useEffect(() => {
     if (user && localCurrentCode) {

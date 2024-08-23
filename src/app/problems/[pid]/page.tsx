@@ -7,27 +7,26 @@ import { Problem, UserProblem } from "@/types/problem";
 
 export default async function Page({ params, searchParams }) {
   const { pid } = params;
-  const userId = searchParams.userId;
+  const userId: string = searchParams.userId;
 
   if (!userId) {
     return <div>請先登入</div>;
   }
 
-  let userProblem: UserProblem;
+  // let userProblem: UserProblem;
+  // try {
+  //   // 檢查使用者的問題是否存在
+  //   userProblem = await getUserProblemById(userId, pid);
+  // } catch (error) {
+  //   return <div>{`在使用者資料庫未找到 ${pid}`}</div>;
+  // }
 
-  try {
-    userProblem = await getUserProblemById(userId, pid);
-  } catch (error) {
-    return <div>{`在使用者資料庫未找到 ${pid}`}</div>;
-  }
+  // if (userProblem?.isLocked) {
+  //   // 如果問題被鎖起來，則伺服器端重定向用戶到鎖定通知頁面
+  //   redirect(`/locked?pid=${pid}`);
+  // }
 
-  // 檢查該問題是否被鎖起來
-  if (userProblem.isLocked) {
-    // 如果問題被鎖起來，則伺服器端重定向用戶到鎖定通知頁面
-    // 避免使用者透過修改網址進入鎖定的題目
-    redirect(`/locked?pid=${pid}`);
-  }
-
+  // 取得該問題的詳細資料
   const problemRef = doc(firestore, "problems", pid);
   const problemSnap = await getDoc(problemRef);
   if (!problemSnap.exists()) {

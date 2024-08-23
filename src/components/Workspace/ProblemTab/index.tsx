@@ -29,14 +29,16 @@ import {
 } from "@/atoms/submissionsDataAtom";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { Message } from "../../../types/message";
-import updateUserProblemScore from "@/utils/User/updateUserProblemScore";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 import { CONTROL, EXPERIMENTAL } from "@/utils/const";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
+import getDefaultIsLocked from "@/utils/problems/getDefaultIsLocked";
 
-type ProblemTabProps = {};
+type ProblemTabProps = {
+  threadId: string;
+};
 
-const ProblemTab: React.FC<ProblemTabProps> = () => {
+const ProblemTab: React.FC<ProblemTabProps> = ({ threadId }) => {
   const problem = useRecoilValue(problemDataState);
 
   const userProblems = useGetUserProblems();
@@ -49,102 +51,99 @@ const ProblemTab: React.FC<ProblemTabProps> = () => {
     setLoadingProblemMessages
   );
   const { resolvedTheme } = useTheme();
-  const [threadId, setThreadId] = useState("");
+  // const [threadId, setThreadId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [problemTab, setProblemTab] = useState("description");
   const [remainTimes, setRemainTimes] = useState(20);
   const [isUserControlGroup, setIsUserControlGroup] = useState(false);
   const [submissions] = useRecoilState<SubmissionsState>(submissionsState);
 
-  async function checkIsDocumentExists(userId: string, problemId: string) {
-    if (!userId || !problemId) {
-      throw new Error("Invalid userId or problemId");
-    }
+  // async function checkIsDocumentExists(userId: string, problemId: string) {
+  //   if (!userId || !problemId) {
+  //     throw new Error("Invalid userId or problemId");
+  //   }
 
-    // 獲取文件參考
-    const docRef = doc(firestore, "users", userId, "problems", problemId);
+  //   // 獲取文件參考
+  //   const userProblemDocRef = doc(
+  //     firestore,
+  //     "users",
+  //     userId,
+  //     "problems",
+  //     problemId
+  //   );
 
-    // 獲取文件快照
-    const docSnap = await getDoc(docRef);
+  //   // 獲取文件快照
+  //   const docSnap = await getDoc(userProblemDocRef);
 
-    // 確認文件是否存在
-    if (docSnap.exists()) {
-      console.log("Document exists:", docSnap.data());
-      setThreadId(docSnap.data().threadId);
-      return true;
-    } else {
-      console.log("Document does not exist");
-      return false;
-    }
-  }
+  //   // 確認文件是否存在
+  //   if (docSnap.exists()) {
+  //     console.log("Document exists:", docSnap.data());
+  //     setThreadId(docSnap.data().threadId);
+  //     return true;
+  //   } else {
+  //     console.log("Document does not exist");
+  //     return false;
+  //   }
+  // }
 
   const handleProblemTabChange = (value: string) => {
     setProblemTab(value);
   };
 
-  useEffect(() => {
-    if (!user) return;
-    const createProblemDocument = async (id: string) => {
-      if (!id || !user) return;
-      try {
-        const userRef = doc(firestore, "users", user?.uid);
-        const problemRef = doc(userRef, "problems", problem.id);
-
-        const problemData = {
-          id: problem.id,
-          threadId: id,
-        };
-
-        await setDoc(problemRef, problemData);
-        console.log("Problem document created successfully!");
-      } catch (error) {
-        console.error("Error creating problem document:", error);
-      }
-    };
-
-    const createThread = async () => {
-      const res = await fetch(`/api/assistants/threads`, {
-        method: "POST",
-      });
-      const data = await res.json();
-      console.log(data.threadId);
-      setThreadId(data.threadId);
-      return data.threadId;
-    };
-
-    const handleProblemDocument = async () => {
-      try {
-        const isExist = await checkIsDocumentExists(user.uid, problem.id);
-        if (!isExist) {
-          // 沒有存在， create threadId 加入至 users/userId/problems/[pid]
-          console.log(
-            ` ${user.uid} / ${problem.id} 文件不存在，正在創造該文件並產生 thread ID`
-          );
-          const newThreadId = await createThread();
-          await createProblemDocument(newThreadId);
-          setThreadId(newThreadId);
-        }
-      } catch (error) {
-        console.error("Error checking or creating document:", error);
-      }
-    };
-    handleProblemDocument();
-  }, [threadId, user, problem.id]);
-
   // useEffect(() => {
-  //   const userProblemRef = doc(
-  //     firestore,
-  //     "users",
-  //     user.uid,
-  //     "problems",
-  //     problem.id
-  //   );
-  //   updateUserProblemScore(
-  //     userProblemRef,
-  //     problem.score,
-  //     problemMessages.length
-  //   );
-  // }, [problemMessages, problem.id, problem.score, user?.uid]);
+  //   if (!user) return;
+
+  //   const createUserProblemDocument = async (threadId: string) => {
+  //     const userProblemRef = doc(
+  //       firestore,
+  //       "users",
+  //       user?.uid,
+  //       "problems",
+  //       problem.id
+  //     );
+  //     if (!threadId || !user) return;
+  //     try {
+  //       const userProblem = {
+  //         id: problem.id,
+  //         threadId: threadId,
+  //         isLocked: await getDefaultIsLocked(problem.id),
+  //       };
+
+  //       await setDoc(userProblemRef, userProblem);
+  //       console.log("userProblem document created successfully!");
+  //     } catch (error) {
+  //       console.error("Error creating userProblem document:", error);
+  //     }
+  //   };
+
+  //   const createThread = async () => {
+  //     const res = await fetch(`/api/assistants/threads`, {
+  //       method: "POST",
+  //     });
+  //     const data = await res.json();
+  //     console.log(data.threadId);
+  //     setThreadId(data.threadId);
+  //     return data.threadId;
+  //   };
+
+  //   const handleProblemDocument = async () => {
+  //     try {
+  //       const isExist = await checkIsDocumentExists(user.uid, problem.id);
+  //       if (!isExist) {
+  //         // 沒有存在， create threadId 加入至 users/userId/problems/[pid]
+  //         console.log(
+  //           ` ${user.uid} / ${problem.id} 文件不存在，正在創造該文件並產生 thread ID`
+  //         );
+  //         const newThreadId = await createThread();
+  //         await createUserProblemDocument(newThreadId);
+  //         setThreadId(newThreadId);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error checking or creating document:", error);
+  //     }
+  //   };
+  //   handleProblemDocument();
+  // }, [threadId, user, problem.id]);
 
   useEffect(() => {
     const getControlUnit = async () => {

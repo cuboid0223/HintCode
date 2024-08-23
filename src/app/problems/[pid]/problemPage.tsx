@@ -3,28 +3,65 @@ import Topbar from "@/components/Topbar";
 import Workspace from "@/components/Workspace";
 import useHasMounted from "@/hooks/useHasMounted";
 import { Problem } from "@/types/problem";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
+import getUserProblemById from "@/utils/problems/getUserProblemById";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import createUserProblem from "@/utils/problems/createUserProblem";
 
 type ProblemPageProps = {
   problem: Problem;
+  threadId: string;
 };
 
-const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
+const ProblemPage: React.FC<ProblemPageProps> = ({ problem, threadId }) => {
+  const router = useRouter();
   const hasMounted = useHasMounted();
   const [problemData, setProblemData] = useRecoilState(problemDataState);
+  const pathname = usePathname();
+  const pid = pathname.split("/")[2]; // 分割路徑並取得第三個部分
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("userId");
+  const [isLocked, setIsLocked] = useState(false);
 
   useEffect(() => {
     setProblemData(problem);
   }, [problem, setProblemData]);
 
-  if (!hasMounted) return null;
+  useEffect(() => {
+    const fetchUserProblem = async () => {
+      try {
+        let userProblem = await getUserProblemById(userId, pid);
+        if (!userProblem) {
+          userProblem = await createUserProblem(userId, pid);
+        }
+        if (userProblem?.isLocked) {
+          setIsLocked(true);
+        }
+      } catch (error) {
+        console.error("Error fetching user problem:", error);
+      }
+    };
+
+    if (userId && pid) {
+      fetchUserProblem();
+    }
+  }, [pid, userId]);
+
+  // 如果 isLocked 為 true，則進行跳轉，避免進行不必要的渲染
+  useEffect(() => {
+    if (isLocked) router.push(`/locked?pid=${pid}`);
+  }, [isLocked, pid, router]);
+
+  if (!hasMounted || isLocked) return null;
+
   return (
-    <div className="flex flex-col h-screen  overflow-hidden">
+    <main className="flex flex-col h-screen overflow-hidden">
       <Topbar isProblemPage />
-      <Workspace />
-    </div>
+      <Workspace threadId={threadId} />
+    </main>
   );
 };
+
 export default ProblemPage;

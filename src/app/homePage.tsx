@@ -110,7 +110,7 @@ export default function Home() {
                   problem={problem}
                   userProblem={userProblem}
                   idx={idx}
-                  userId={user.uid}
+                  userId={user?.uid}
                 />
               );
             })}

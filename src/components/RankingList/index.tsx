@@ -72,11 +72,11 @@ function RankingList() {
     };
 
     const fetchTop10UsersData = async () => {
-      // 按 score 降序排序並限制結果數量為 RANKING_LIST_LIMIT
+      // 按 完成率 降序排序並限制結果數量為 RANKING_LIST_LIMIT
       const usersRef = collection(firestore, "users");
       const q = query(
         usersRef,
-        orderBy("totalScore", "desc"),
+        orderBy("completionRate", "desc"),
         limit(RANKING_LIST_MAX_NUMBER)
       );
 
@@ -100,15 +100,6 @@ function RankingList() {
     <div className="grid grid-cols-3 grid-rows-1 min-h-[400px] mt-5 container">
       {/* 1 - 5 名的 table */}
       <Table className="h-full text-center ">
-        {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
-        {/* <TableHeader className="">
-          <TableRow className="grid grid-cols-4">
-            <TableHead className="p-0 text-center">總分</TableHead>
-            <TableHead className="p-0 text-center">名字</TableHead>
-            <TableHead className="p-0 text-center">Avatar</TableHead>
-            <TableHead className="p-0 text-center w-[100px]">排名</TableHead>
-          </TableRow>
-        </TableHeader> */}
         <TableBody className="relative">
           {transitionsTop5((styles, user, state, index) => (
             <animated.tr
@@ -121,7 +112,7 @@ function RankingList() {
               }}
             >
               <TableCell className={orbitron.className}>
-                {user.totalScore}%
+                {user.completionRate}%
               </TableCell>
               <TableCell className="">{user.displayName}</TableCell>
               <TableCell className="flex place-content-center">
@@ -160,7 +151,7 @@ function RankingList() {
               }}
             >
               <TableCell className={`order-4 ${orbitron.className}`}>
-                {user.totalScore}%
+                {user.completionRate}%
               </TableCell>
               <TableCell className="order-3">{user.displayName}</TableCell>
               <TableCell className="flex place-content-center order-2">
