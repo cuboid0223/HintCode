@@ -42,7 +42,7 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
 
   return (
     <Card
-      className={`h-fit max-w-2xl p-2 justify-self-end dark:text-white overflow-x-auto `}
+      className={` h-fit max-w-2xl p-2 justify-self-end dark:text-white overflow-x-auto `}
     >
       {/* 
       --> str.replace(/^"(.*)"$/, '$1');  
@@ -53,9 +53,12 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
       --> .replace(/\\n/g, "\n") 
         換行符號並非真的換行符號，需要替換成真的
       */}
-      <CustomMarkdown
-        theme={theme}
-      >{`~~~py\n ${code.replace(/^"(.*)"$/, "$1").replace(/\\n/g, "\n")}\n~~~`}</CustomMarkdown>
+      {code && (
+        <CustomMarkdown
+          theme={theme}
+        >{`~~~py\n ${code.replace(/^"(.*)"$/, "$1").replace(/\\n/g, "\n")}\n~~~`}</CustomMarkdown>
+      )}
+
       <section className="flex justify-between items-center">
         <p>{getTextByType(type)}</p>
         <div className="flex justify-end space-x-3 mt-3">

@@ -138,6 +138,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   };
 
   const processHelpRequest = (data: z.infer<typeof FormSchema>) => {
+    console.log("$$$", threadId);
     switch (data.helpType) {
       case NEXT_STEP:
         handleNextStep(data);
@@ -158,7 +159,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     data.prompt = NEXT_STEP_PROMPT;
     const promptTemplate = createPromptTemplate(data, problem.problemStatement);
 
-    sendMessageToGPT(promptTemplate);
+    sendMessageToGPT(promptTemplate, threadId);
     addUserMessage(data, null);
   };
 
@@ -178,7 +179,8 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       problem.problemStatement,
       submissions
     );
-    sendMessageToGPT(promptTemplate);
+
+    sendMessageToGPT(promptTemplate, threadId);
     addUserMessage(data, submissions);
   };
 
@@ -250,10 +252,9 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     ]);
   };
 
-  const sendMessageToGPT = async (text: string) => {
-    if (!threadId) {
-      // console.log("no thread id");
-    }
+  const sendMessageToGPT = async (text: string, threadId: string) => {
+    if (!threadId || !text) return;
+    console.log("sendMessageToGPT ", threadId);
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
       {
@@ -263,6 +264,10 @@ export const SelectForm: React.FC<SelectFormProps> = ({
         }),
       }
     );
+    // if (!response.ok) {
+    //   console.error(`Error: ${response.status} ${response.statusText}`);
+    //   return;
+    // }
     const stream = AssistantStream.fromReadableStream(response.body);
     handleReadableStream(stream);
   };

@@ -1,4 +1,3 @@
-
 import { TestCase } from "./testCase";
 
 export type Example = {
@@ -13,7 +12,7 @@ export type Example = {
 export type Problem = {
   id: string;
   category: string;
-  difficulty: string;
+  difficulty: Difficulty;
   // likes: number;
   // dislikes: number;
   title: string;
@@ -47,3 +46,5 @@ export type UserProblem = {
   is_solved: boolean;
   isLocked: boolean;
 };
+
+export type Difficulty = "Easy" | "Medium" | "Hard";

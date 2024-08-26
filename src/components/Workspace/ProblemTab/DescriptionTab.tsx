@@ -9,14 +9,15 @@ import { problemDataState } from "@/atoms/ProblemData";
 import { Badge } from "@/components/ui/badge";
 import { EASY, HARD, MEDIUM } from "@/utils/const";
 import { useRef } from "react";
+import { Difficulty } from "@/types/problem";
 
 const DescriptionTab = () => {
   const problem = useRecoilValue(problemDataState);
-  const ref = useRef<SyntaxHighlighter>(null);
+  const ref = useRef(null); // Update this if ref is really needed
   const { resolvedTheme } = useTheme();
 
-  const handleBadgeColor = (difficulty: string) => {
-    switch (difficulty.toLowerCase().trim()) {
+  const handleBadgeColor = (difficulty: Difficulty) => {
+    switch (difficulty.trim()) {
       case EASY:
         return "bg-green-500";
       case MEDIUM:
@@ -27,12 +28,13 @@ const DescriptionTab = () => {
         return "bg-gray-500";
     }
   };
+
   return (
-    <div className="flex px-5 py-4  overflow-y-auto">
+    <div className="flex px-5 py-4 overflow-y-auto">
       <div className="flex-1">
         {/* Problem heading */}
         <div className="w-full">
-          <h1 className="mr-2 text-lg  font-medium">{problem?.title}</h1>
+          <h1 className="mr-2 text-lg font-medium">{problem?.title}</h1>
           <Badge className={`my-2 ${handleBadgeColor(problem?.difficulty)}`}>
             {problem?.difficulty}
           </Badge>
@@ -83,7 +85,7 @@ const DescriptionTab = () => {
               blockquote({ className, ...rest }) {
                 return (
                   <blockquote
-                    className="mb-3 border-l-4 p-3 pl-6  bg-gray-300 dark:bg-gray-400 rounded-md border-gray-400 dark:border-gray-300  text-gray-600"
+                    className="mb-3 border-l-4 p-3 pl-6 bg-gray-300 dark:bg-gray-400 rounded-md border-gray-400 dark:border-gray-300 text-gray-600"
                     {...rest}
                   ></blockquote>
                 );
@@ -91,29 +93,17 @@ const DescriptionTab = () => {
               hr({ className, ...rest }) {
                 return (
                   <hr
-                    className="my-3 border-gray-400 dark:border-gray-300 border-1 "
+                    className="my-3 border-gray-400 dark:border-gray-300 border-1"
                     {...rest}
                   ></hr>
                 );
               },
               code({ children, className, node, ...rest }) {
-                const match = /language-(\w+)/.exec(className || "");
-                return match ? (
-                  //  SyntaxHighlighter 沒有提供 Type
-                  <SyntaxHighlighter
-                    {...rest}
-                    language="python"
-                    style={resolvedTheme === "dark" ? a11yDark : docco}
-                    showLineNumbers
-                    wrapLongLines
-                    ref={ref}
-                  >
-                    {String(children).trim()}
-                  </SyntaxHighlighter>
-                ) : (
+                // const match = /language-(\w+)/.exec(className || "");
+                return (
                   <code
                     {...rest}
-                    className="text-white dark:text-black bg-gray-400 px-1  "
+                    className="text-white dark:text-black bg-gray-400 px-1"
                   >
                     {children}
                   </code>
@@ -128,4 +118,5 @@ const DescriptionTab = () => {
     </div>
   );
 };
+
 export default DescriptionTab;

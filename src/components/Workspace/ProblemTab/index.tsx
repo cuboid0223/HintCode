@@ -10,7 +10,7 @@ import { problemDataState } from "@/atoms/ProblemData";
 import { Message } from "../../../types/message";
 import { CONTROL, EXPERIMENTAL } from "@/utils/const";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
-import checkIsUserProblemExists from "@/utils/problems/checkIsUserProblemExists";
+import getUserProblemById from "@/utils/problems/getUserProblemById";
 
 type ProblemTabProps = {};
 
@@ -43,8 +43,8 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
 
     const updateThreadId = async () => {
       try {
-        const isExist = await checkIsUserProblemExists(user.uid, problem.id);
-        if (!isExist) {
+        const userProblem = await getUserProblemById(user.uid, problem.id);
+        if (!userProblem) {
           const userProblemRef = doc(
             firestore,
             "users",
@@ -55,6 +55,10 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
           const newThreadId = await createThread();
           updateDoc(userProblemRef, { threadId: newThreadId });
           setThreadId(newThreadId);
+          console.log("沒有，造一個", threadId);
+        } else {
+          console.log("有", threadId);
+          setThreadId(userProblem?.threadId);
         }
       } catch (error) {
         console.error("Error checking or creating document:", error);

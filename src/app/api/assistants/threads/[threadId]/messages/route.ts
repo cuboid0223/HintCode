@@ -6,18 +6,25 @@ export const runtime = "nodejs";
 
 // Send a new message to a thread
 export async function POST(request: Request, { params: { threadId } }) {
-  const { content } = await request.json();
+  try {
+    const { content } = await request.json();
+    console.log(content);
+    await openai.beta.threads.messages.create(threadId, {
+      role: "user",
+      content: content,
+    });
 
-  await openai.beta.threads.messages.create(threadId, {
-    role: "user",
-    content: content,
-  });
+    const stream = openai.beta.threads.runs.stream(threadId, {
+      assistant_id: assistantId,
+    });
 
-  const stream = openai.beta.threads.runs.stream(threadId, {
-    assistant_id: assistantId,
-  });
-
-  return new Response(stream.toReadableStream());
+    return new Response(stream.toReadableStream());
+  } catch (error) {
+    console.error("Error processing POST request:", error);
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+    });
+  }
 }
 
 export async function GET(request: Request, { params: { threadId } }) {
