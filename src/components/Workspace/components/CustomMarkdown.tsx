@@ -24,7 +24,6 @@ const CustomMarkdown: React.FC<CustomMarkdownType> = ({ theme, children }) => {
               style={theme === "dark" ? a11yDark : docco}
               language="python"
               showLineNumbers
-              // {...rest}
             >
               {String(children).trim()}
             </SyntaxHighlighter>

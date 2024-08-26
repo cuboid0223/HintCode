@@ -31,12 +31,10 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
   useEffect(() => {
     const fetchUserProblem = async () => {
       try {
-        let userProblem = await getUserProblemById(userId, pid);
+        const userProblem = await getUserProblemById(userId, pid);
         if (!userProblem) {
-          userProblem = await createUserProblem(userId, pid);
-        }
-        if (userProblem?.isLocked) {
-          setIsLocked(true);
+          const newUserProblem = await createUserProblem(userId, pid);
+          newUserProblem.isLocked && setIsLocked(true);
         }
       } catch (error) {
         console.error("Error fetching user problem:", error);

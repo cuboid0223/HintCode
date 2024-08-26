@@ -45,6 +45,7 @@ import useGetProblemGroup from "@/hooks/useGetProblemGroup";
 import CountUp from "react-countup";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { DIFFICULTY_CLASSES, orbitron } from "@/utils/const";
+import createUserProblem from "@/utils/problems/createUserProblem";
 
 export default function Home() {
   const [user] = useAuthState(auth);
@@ -167,42 +168,53 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
   const { problemGroup } = useGetProblemGroup();
 
   useEffect(() => {
-    const prevProblemIsSolved = (userProblems: UserProblem[]) => {
-      if (
-        userProblems.filter((p) => p.id === problem?.id).length === 0 &&
-        idx % 2 !== 0
-      ) {
-        setIsLocked(true);
-        return;
-      }
-      const result = problemGroup.find((subArray) =>
-        subArray.includes(userProblem?.id)
-      );
-      if (result) {
-        const index = result.indexOf(userProblem.id);
-        if (index > 0) {
-          const previousElementId = result[index - 1];
+    const handleNextProblemUnlocked = async (
+      pid: string,
+      userProblems: UserProblem[],
+      problemGroup: string[]
+    ) => {
+      // 獲取當前問題所在的組
+      const targetGroup = problemGroup.find((group) => group.includes(pid));
 
-          const previousProblems = userProblems.filter(
-            (p) => p.id === previousElementId
+      if (targetGroup && targetGroup.length !== 0) {
+        // 找出當前問題的索引
+        const currentProblemIndex = targetGroup.indexOf(pid);
+        console.log(currentProblemIndex);
+        // 如果下一個題目存在，檢查它是否解鎖
+        if (currentProblemIndex === 0) {
+          const nextProblemId = targetGroup[currentProblemIndex + 1];
+          const nextProblems = userProblems.filter(
+            (p) => p.id === nextProblemId
           );
-          if (previousProblems[0]?.is_solved) {
-            setIsLocked(false);
-            updateProblemLockStatus(userId, problem?.id, false);
+          const currentProblems = userProblems.filter((p) => p.id === pid);
+
+          if (nextProblems.length === 0 && currentProblems[0]?.is_solved) {
+            // nextProblems.length === 0 表示下一題的 doc 未被建立
+            await createUserProblem(userId, nextProblemId);
+            await updateProblemLockStatus(userId, nextProblemId, false); // 更新 Firebase 狀態
+            console.log(`建立${nextProblemId}中，並設置 isLocked 為 true`);
             return;
           }
-          setIsLocked(true);
-          updateProblemLockStatus(userId, problem?.id, true);
+
+          if (nextProblems.length > 0 && !currentProblems[0]?.is_solved) {
+            // 有下一題的 doc 但上一題沒被解決
+            updateProblemLockStatus(userId, nextProblemId, true); // 更新 Firebase 狀態
+            console.log(
+              `有${nextProblemId}文件，但上一題${currentProblems[0]}沒被解決，設置 isLocked 為 false`
+            );
+            return;
+          }
         } else {
-          // console.log("找不到前一個元素");
+          // currentProblemIndex === 1; 表示該題沒有下一題
         }
       } else {
-        // console.log(`找不到 ${problem?.id}`);
+        console.log(`找不到題目組: ${pid}`);
       }
     };
 
-    prevProblemIsSolved(userProblems);
-  }, [idx, userProblems, userProblem?.id, problem?.id, userId, problemGroup]);
+    // 獲取用戶解題資料後執行
+    handleNextProblemUnlocked(problem?.id, userProblems, problemGroup);
+  }, [idx, userProblems, problem?.id, userId, problemGroup]);
 
   return (
     <TableRow
@@ -217,7 +229,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
             fontSize="18"
             width="18"
           />
-        ) : isLocked ? (
+        ) : userProblem?.isLocked ? (
           <Lock color="red" />
         ) : (
           <CircleDashed fontSize="18" width="18" />
@@ -225,10 +237,10 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
       </TableCell>
       <TableCell className="p-0 dark:text-white">
         <Link
-          className={`h-full flex ${isLocked ? "cursor-not-allowed" : "cursor-pointer"}`}
-          href={isLocked ? "#" : `/problems/${problem.id}?userId=${userId}`}
+          className={`h-full flex ${userProblem?.isLocked ? "cursor-not-allowed" : "cursor-pointer"}`}
+          href={ userProblem?.isLocked ? "#" : `/problems/${problem.id}?userId=${userId}`}
           onClick={(e) => {
-            if (isLocked) {
+            if (userProblem?.isLocked) {
               e.preventDefault();
             }
           }}
