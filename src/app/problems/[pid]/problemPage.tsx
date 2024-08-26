@@ -43,7 +43,7 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
       }
     };
 
-    if (userId && pid) {
+    if (userId !== "undefined" && pid) {
       fetchUserProblem();
     }
   }, [pid, userId]);

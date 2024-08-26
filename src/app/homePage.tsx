@@ -83,12 +83,7 @@ export default function Home() {
               end={userInfo?.completionRate}
               duration={2}
               separator=" "
-              // decimals={4}
-              // decimal=","
-              // prefix="EUR "
               suffix="%"
-              // onEnd={() => console.log("Ended! 👏")}
-              // onStart={() => console.log("Started! 💨")}
             >
               {({ countUpRef, start }) => (
                 <div>
@@ -199,10 +194,10 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
           setIsLocked(true);
           updateProblemLockStatus(userId, problem?.id, true);
         } else {
-          console.log("找不到前一個元素");
+          // console.log("找不到前一個元素");
         }
       } else {
-        console.log(`找不到 ${problem?.id}`);
+        // console.log(`找不到 ${problem?.id}`);
       }
     };
 

@@ -32,7 +32,6 @@ const fetchSubscribedUsers = async (
         usersList.push(doc.data() as User);
       });
 
-      console.log("users: ", usersList);
       setUsers(usersList);
     });
 
