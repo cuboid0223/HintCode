@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { a11yDark, docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
@@ -10,6 +10,7 @@ type CustomMarkdownType = {
 };
 
 const CustomMarkdown: React.FC<CustomMarkdownType> = ({ theme, children }) => {
+  const ref = useRef<SyntaxHighlighter>(null);
   return (
     <Markdown
       remarkPlugins={[remarkGfm]}
@@ -23,6 +24,7 @@ const CustomMarkdown: React.FC<CustomMarkdownType> = ({ theme, children }) => {
               language="python"
               style={theme === "dark" ? a11yDark : docco}
               showLineNumbers
+              ref={ref}
             >
               {/* .trim() -> 削去使用者提交的程式碼後面多餘的空白行數 */}
 

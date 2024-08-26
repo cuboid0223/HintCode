@@ -8,9 +8,11 @@ import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import { Badge } from "@/components/ui/badge";
 import { EASY, HARD, MEDIUM } from "@/utils/const";
+import { useRef } from "react";
 
 const DescriptionTab = () => {
   const problem = useRecoilValue(problemDataState);
+  const ref = useRef<SyntaxHighlighter>(null);
   const { resolvedTheme } = useTheme();
 
   const handleBadgeColor = (difficulty: string) => {
@@ -104,8 +106,9 @@ const DescriptionTab = () => {
                     style={resolvedTheme === "dark" ? a11yDark : docco}
                     showLineNumbers
                     wrapLongLines
+                    ref={ref}
                   >
-                    {children}
+                    {String(children).trim()}
                   </SyntaxHighlighter>
                 ) : (
                   <code
