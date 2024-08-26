@@ -54,12 +54,12 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   const userProblems = useSubscribedUserProblems();
   // 最後一次執行的程式碼
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
-    `latest-test-py-code`,
+    `latest-test-py-code-${user?.uid}`,
     ""
   );
   // playground 的程式碼
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
-    `py-code-${problem.id}`,
+    `py-code-${problem.id}-${user?.uid}`,
     ""
   );
 
@@ -72,7 +72,10 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   let [userCode, setUserCode] = useState<string>(problem.starterCode.py);
   const [isAccepted, setIsAccepted] = useState(false);
-  const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
+  const [fontSize, setFontSize] = useLocalStorage(
+    "playground-fontSize",
+    "16px"
+  );
 
   const [testTab, setTestTab] = useState(TEST_CASE);
   const [settings, setSettings] = useState<Settings>({

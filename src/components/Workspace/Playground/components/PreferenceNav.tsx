@@ -56,7 +56,10 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
   const [isFullScreen, setIsFullScreen] = useState(false);
   const { resolvedTheme } = useTheme();
   const [selectedLang, setSelectedLang] = useLocalStorage("selectedLang", "py");
-  const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
+  const [fontSize, setFontSize] = useLocalStorage(
+    "playground-fontSize",
+    "16px"
+  );
   // const handleFullScreen = () => {
   //   if (isFullScreen) {
   //     document.exitFullscreen();

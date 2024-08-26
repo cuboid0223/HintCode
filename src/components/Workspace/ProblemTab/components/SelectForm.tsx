@@ -75,11 +75,11 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   const [user] = useAuthState(auth);
   const problem = useRecoilValue(problemDataState);
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
-    `latest-test-py-code`,
+    `latest-test-py-code-${user?.uid}`,
     ""
   );
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
-    `py-code-${problem.id}`,
+    `py-code-${problem.id}-${user?.uid}`,
     ""
   );
 

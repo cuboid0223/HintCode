@@ -10,7 +10,6 @@ const useLocalStorage = (key: string, initialValue: any) => {
         const item = window.localStorage.getItem(key);
         return item ? JSON.parse(item) : initialValue;
       } else {
-        console.log("初始");
         return initialValue;
       }
     } catch (error) {

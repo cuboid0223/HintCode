@@ -220,7 +220,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
     };
 
     prevProblemIsSolved(userProblems);
-  }, [idx, userProblems, userProblem?.id, problem?.id, userId]);
+  }, [idx, userProblems, userProblem?.id, problem?.id, userId, problemGroup]);
 
   return (
     <TableRow
