@@ -4,7 +4,7 @@ import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 
-import { cn } from "@/utils/shadcnHelper/utils.ts";
+import { cn } from "@/utils/shadcnHelper/utils";
 
 const DIALOG_OVERLAY_Z_INDEX = 50;
 
