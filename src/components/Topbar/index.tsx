@@ -68,7 +68,13 @@ const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
         }`}
       >
         <Link href="/" className="h-[45px] flex-1 flex items-center">
-          <Image src="/HINTCode.png" alt="Logo" height={45} width={45} priority   />
+          <Image
+            src="/HINTCode.png"
+            alt="Logo"
+            height={45}
+            width={45}
+            priority
+          />
           <h1 className={orbitron.className}>HintCode</h1>
         </Link>
 
@@ -122,9 +128,9 @@ const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
               <DropdownMenuItem onClick={() => setTheme("dark")}>
                 Dark
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("cyber")}>
+              {/* <DropdownMenuItem onClick={() => setTheme("cyber")}>
                 Cyber
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
           {!user && (

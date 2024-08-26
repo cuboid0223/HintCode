@@ -1,25 +1,11 @@
 import { auth, firestore } from "../../../firebase/firebase";
-
 import { useAuthState } from "react-firebase-hooks/auth";
-
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "next-themes";
-
 import DescriptionTab from "./DescriptionTab";
 import HelpTab from "./HelpTab";
-
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
-  query,
-  collection,
-  getDocs,
-} from "firebase/firestore";
-import { Submission } from "@/types/testCase";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import useGetUserProblems from "@/hooks/useGetUserProblems";
@@ -27,13 +13,10 @@ import {
   submissionsState,
   SubmissionsState,
 } from "@/atoms/submissionsDataAtom";
-import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { Message } from "../../../types/message";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 import { CONTROL, EXPERIMENTAL } from "@/utils/const";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
-import getDefaultIsLocked from "@/utils/problems/getDefaultIsLocked";
-import checkIsDocumentExists from "@/utils/problems/checkIsUserProblemExists";
 import checkIsUserProblemExists from "@/utils/problems/checkIsUserProblemExists";
 
 type ProblemTabProps = {};
@@ -129,7 +112,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
     const updateThreadId = async () => {
       try {
         const isExist = await checkIsUserProblemExists(user.uid, problem.id);
-        if (isExist) {
+        if (!isExist) {
           const userProblemRef = doc(
             firestore,
             "users",

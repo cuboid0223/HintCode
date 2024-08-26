@@ -1,9 +1,7 @@
 import { firestore } from "@/firebase/firebase";
 import ProblemPage from "./problemPage";
 import { doc, getDoc } from "firebase/firestore";
-import getUserProblemById from "@/utils/problems/getUserProblemById";
-import { redirect } from "next/navigation";
-import { Problem, UserProblem } from "@/types/problem";
+import { Problem } from "@/types/problem";
 
 export default async function Page({ params, searchParams }) {
   const { pid } = params;

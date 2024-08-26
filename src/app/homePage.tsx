@@ -43,7 +43,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
 import updateProblemLockStatus from "@/utils/problems/updateProblemLockStatus";
 import useGetProblemGroup from "@/hooks/useGetProblemGroup";
-import chunkArray from "@/utils/chunkArray";
+import CountUp from "react-countup";
+import useGetUserInfo from "@/hooks/useGetUserInfo";
 
 const DIFFICULTY_CLASSES = {
   Easy: "text-dark-green-s",
@@ -56,13 +57,9 @@ const orbitron = Orbitron({
   subsets: ["latin"],
 });
 
-const mockMatrix = [
-  ["hello-world", "greet-n-times"],
-  ["two-sum", "findgcd"],
-];
-
 export default function Home() {
   const [user] = useAuthState(auth);
+  const userInfo = useGetUserInfo();
   const [loadingProblems, setLoadingProblems] = useState(true);
   const [progressValue, setProgressValue] = useState(0);
   const { problems } = useGetProblems(setLoadingProblems);
@@ -90,7 +87,30 @@ export default function Home() {
       <main className="container relative overflow-x-auto mx-auto grid gap-6 grid-cols-1">
         {loadingProblems && <LoadingTableSkeleton />}
         {/* 完成進度條 */}
-        <Progress className="mt-3" value={progressValue} max={100} />
+        <section className="flex items-center gap-3 mt-3">
+          <h1 className=" text-xl font-extrabold tracking-tight lg:text-base">
+            <CountUp
+              start={0}
+              end={userInfo?.completionRate}
+              duration={2}
+              separator=" "
+              // decimals={4}
+              // decimal=","
+              // prefix="EUR "
+              suffix="%"
+              // onEnd={() => console.log("Ended! 👏")}
+              // onStart={() => console.log("Started! 💨")}
+            >
+              {({ countUpRef, start }) => (
+                <div>
+                  <span className={`${orbitron.className}`} ref={countUpRef} />
+                </div>
+              )}
+            </CountUp>
+          </h1>
+          <Progress className="" value={progressValue} max={100} />
+        </section>
+
         {/* 問題列表 */}
         <Table className="">
           {!loadingProblems && (
@@ -121,7 +141,7 @@ export default function Home() {
         </Table>
 
         {/* pagination  */}
-        <Pagination>
+        {/* <Pagination>
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious href="#" />
@@ -138,7 +158,7 @@ export default function Home() {
               <PaginationNext href="#" />
             </PaginationItem>
           </PaginationContent>
-        </Pagination>
+        </Pagination> */}
       </main>
     </>
   );
