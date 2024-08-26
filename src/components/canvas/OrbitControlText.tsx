@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { View } from "./canvas/View";
+import { View } from "@/components/canvas/View";
 
 const CustomText3D = dynamic(
   () => import("@/components/canvas/Models").then((mod) => mod.StrokeText3D),

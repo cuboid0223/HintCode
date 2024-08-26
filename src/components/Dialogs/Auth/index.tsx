@@ -3,6 +3,7 @@ import Login from "./components/Login";
 import ResetPassword from "./components/ResetPassword";
 import Signup from "./components/Signup";
 import { AuthDialog as AuthDialogType } from "@/types/global";
+import { FORGET_PASSWORD, LOGIN, REGISTER } from "@/utils/const";
 
 type AuthDialogProps = {
   authDialog: AuthDialogType;
@@ -14,11 +15,11 @@ const AuthDialog: React.FC<AuthDialogProps> = ({
   setAuthDialog,
 }) => {
   switch (authDialog.type) {
-    case "login":
+    case LOGIN:
       return <Login setAuthDialog={setAuthDialog} />;
-    case "register":
+    case REGISTER:
       return <Signup setAuthDialog={setAuthDialog} />;
-    case "forgotPassword":
+    case FORGET_PASSWORD:
       return <ResetPassword setAuthDialog={setAuthDialog} />;
     default:
       return null;

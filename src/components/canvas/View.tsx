@@ -1,11 +1,7 @@
 "use client";
 
-import { forwardRef, Suspense, useImperativeHandle, useRef } from "react";
-import {
-  OrbitControls,
-  PerspectiveCamera,
-  View as ViewImpl,
-} from "@react-three/drei";
+import { forwardRef, useImperativeHandle, useRef } from "react";
+import { OrbitControls, View as ViewImpl } from "@react-three/drei";
 import { Three } from "@/providers/ThreeProvider";
 
 const View = forwardRef(({ children, orbit, ...props }, ref) => {

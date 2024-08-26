@@ -1,5 +1,5 @@
 import React from "react";
-import { diffWords, diffLines } from "diff";
+import { diffWords } from "diff";
 
 type HighlightedDiffProps = {
   output: string;
@@ -62,8 +62,6 @@ const HighlightedDiff: React.FC<HighlightedDiffProps> = ({
       );
     }
   });
-
-  // console.log("result: ", result);
 
   return <div>{result}</div>;
 };

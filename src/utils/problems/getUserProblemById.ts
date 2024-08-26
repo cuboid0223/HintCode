@@ -9,10 +9,7 @@ const getUserProblemById = async (uid: string, problemId: string) => {
     if (userProblemSnapshot.exists()) {
       // 文檔存在時返回其數據
       return userProblemSnapshot.data() as UserProblem;
-    } else {
-      console.log("Problem not found");
-      return null;
-    }
+    } else return null;
   } catch (error) {
     console.error("Error fetching problem by ID:", error);
   }

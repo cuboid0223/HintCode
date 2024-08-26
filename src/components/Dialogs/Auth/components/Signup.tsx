@@ -1,14 +1,7 @@
 import { auth, firestore } from "@/firebase/firebase";
 import { useEffect, useState } from "react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import {
-  collection,
-  doc,
-  DocumentReference,
-  getDocs,
-  query,
-  setDoc,
-} from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { createAvatar } from "@dicebear/core";
@@ -100,7 +93,6 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
     return avatar.toString();
   };
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(`handleOnSubmit -> ${JSON.stringify(values)}`);
     try {
       showLoadingToast("正在創建帳號");
       const newUser = await createUserWithEmailAndPassword(

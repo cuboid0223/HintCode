@@ -2,7 +2,6 @@ import RecoilRootProvider from "../providers/RecoilRootProvider";
 import { ThemeProvider } from "../providers/ThemeProvider";
 import { Metadata } from "next";
 import type { Viewport } from "next";
-// import Document from "next/document";
 
 import "@/styles/globals.css";
 import "@/styles/prism.css";
@@ -11,11 +10,11 @@ import ToastProvider from "@/providers/ToastProvider";
 
 export const metadata: Metadata = {
   title: "HintCode",
-  description: "提供 GPT 產生的個人化提示，提升程式能力",
+  description: "根據學習者狀態提供具體程式建議，以提升 Python 程式能力",
   generator: "Next.js",
   applicationName: "HintCode",
   referrer: "origin-when-cross-origin",
-  keywords: ["Next.js", "React", "TypeScript"],
+  keywords: ["Python 提示", "GPT 輔助程式學習", "中興大學"],
   authors: [{ name: "CUBE" }],
   creator: "Cube Chen",
   publisher: "NCHU LAB 678",
@@ -32,10 +31,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  //   maximumScale: 1,
-  //   userScalable: false,
-  // Also supported by less commonly used
-  // interactiveWidget: 'resizes-visual',
 };
 
 export default function RootLayout({

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Form,
@@ -15,13 +15,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import useGetProblems from "@/hooks/useGetProblems";
 import { doc, updateDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useParams, useRouter } from "next/navigation";
-
-const RADIO_VALUE = ["非常不同意", "不同意", "普通", "同意", "非常同意"];
+import { RADIO_VALUE } from "@/utils/const";
 
 const formSchema = z.object({
   useful: z.string(),
@@ -40,7 +38,6 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
   setSuccess,
 }) => {
   const router = useRouter();
-  const { handleProblemChange } = useGetProblems();
   const [user] = useAuthState(auth);
   const params = useParams<{ pid: string }>();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -51,7 +48,6 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     const userProblemRef = doc(
       firestore,
       "users",
@@ -72,9 +68,6 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
     router.push("/");
   };
 
-  useEffect(() => {
-    console.log("isHintUsefulDialogOpen: ", isHintUsefulDialogOpen);
-  }, [isHintUsefulDialogOpen]);
   return (
     <div>
       {/* 在按下繳交按鈕時 顯示 */}

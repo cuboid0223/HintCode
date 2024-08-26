@@ -23,7 +23,6 @@ export async function POST(request: Request, { params: { threadId } }) {
 export async function GET(request: Request, { params: { threadId } }) {
   try {
     // console.log("Fetching messages for thread:", threadId);
-    // thread_uUpAk93haL1KArBqT9hF3lh6
     const messages = await openai.beta.threads.messages.list(threadId);
     // console.log(messages.data[1].role);
     // console.log(messages.data[0].content[0].text.value);

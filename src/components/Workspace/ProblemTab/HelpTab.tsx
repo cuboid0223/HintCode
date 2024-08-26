@@ -13,7 +13,7 @@ import {
 } from "@/atoms/submissionsDataAtom";
 import Message from "../Playground/components/Message";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { problemDataState } from "@/atoms/ProblemData";
@@ -33,9 +33,7 @@ type ProblemHelpProps = {
 const HelpTab: React.FC<ProblemHelpProps> = ({
   threadId,
   setMessages,
-  setRemainTimes,
   messages,
-  remainTimes,
 }) => {
   const problem = useRecoilValue(problemDataState);
   const [user] = useAuthState(auth);
@@ -72,7 +70,6 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
       try {
         const promises = msgs.map((msg) => {
           if (!msg.id) {
-            console.log("no msg id");
             throw new Error("no msg id");
           }
           const msgRef = doc(
@@ -88,7 +85,6 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
         });
 
         await Promise.all(promises);
-        // msgs.forEach((msg) => console.log(`Document added with ID: ${msg.id}`));
       } catch (e) {
         console.error("Error adding documents: ", e);
       }
@@ -112,25 +108,6 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     };
   }, [messages, user, problem]);
 
-  // update remaining times and gradually prompt
-  // useEffect(() => {
-  //   const updateRemainingTimes = async () => {
-  //     if (!user?.uid || !problem) return;
-  //     const userProblemRef = doc(
-  //       firestore,
-  //       "users",
-  //       user?.uid,
-  //       "problems",
-  //       problem.id
-  //     );
-  //     await updateDoc(userProblemRef, {
-  //       remainTimes: problem.totalTimes - messages.length / 2,
-  //     });
-  //     setRemainTimes(problem.totalTimes - messages.length / 2);
-  //   };
-  //   updateRemainingTimes();
-  // }, [messages, problem, remainTimes, setRemainTimes, user?.uid]);
-
   // 當通過所有測資，將請求幫助按鈕 disable
   useEffect(() => {
     if (isAllTestCasesAccepted(submissions)) {
@@ -145,7 +122,6 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
   };
 
   useEffect(() => {
-    // console.log("msgs ", messages);
     scrollToBottom();
   }, [messages]);
 

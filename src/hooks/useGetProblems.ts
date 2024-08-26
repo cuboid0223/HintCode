@@ -54,7 +54,7 @@ function useGetProblems(
       querySnapshot.forEach((doc) => {
         tmp.push({ id: doc.id, ...doc.data() } as Problem);
       });
-      // console.log("problems from Firestore", tmp);
+
       setProblems(tmp);
       setLoadingProblems && setLoadingProblems(false);
     };

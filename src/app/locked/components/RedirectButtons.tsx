@@ -6,9 +6,9 @@ import React from "react";
 export default function RedirectButtons() {
   const router = useRouter();
 
-  const handleGoBack = () => {
-    router.back(); // 返回上一頁
-  };
+  // const handleGoBack = () => {
+  //   router.back(); // 返回上一頁
+  // };
 
   const handleGoHomePage = () => {
     router.push("/");

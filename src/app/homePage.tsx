@@ -13,15 +13,15 @@ import Link from "next/link";
 import useGetUserProblems from "@/hooks/useGetUserProblems";
 import useGetProblems from "@/hooks/useGetProblems";
 import { LoadingTableSkeleton } from "./loading";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+// import {
+//   Pagination,
+//   PaginationContent,
+//   PaginationEllipsis,
+//   PaginationItem,
+//   PaginationLink,
+//   PaginationNext,
+//   PaginationPrevious,
+// } from "@/components/ui/pagination";
 import { Progress } from "@/components/ui/progress";
 
 import {
@@ -38,24 +38,13 @@ import {
 import { useRecoilState } from "recoil";
 import { Problem, UserProblem } from "@/types/problem";
 import { percentage } from "@/utils/percentage";
-import { Orbitron } from "next/font/google";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
 import updateProblemLockStatus from "@/utils/problems/updateProblemLockStatus";
 import useGetProblemGroup from "@/hooks/useGetProblemGroup";
 import CountUp from "react-countup";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
-
-const DIFFICULTY_CLASSES = {
-  Easy: "text-dark-green-s",
-  Medium: "text-dark-yellow",
-  Hard: "text-dark-pink",
-};
-
-const orbitron = Orbitron({
-  weight: "400",
-  subsets: ["latin"],
-});
+import { DIFFICULTY_CLASSES, orbitron } from "@/utils/const";
 
 export default function Home() {
   const [user] = useAuthState(auth);
@@ -194,7 +183,6 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
       const result = problemGroup.find((subArray) =>
         subArray.includes(userProblem?.id)
       );
-      console.log("目標 array", result);
       if (result) {
         const index = result.indexOf(userProblem.id);
         if (index > 0) {
@@ -203,7 +191,6 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
           const previousProblems = userProblems.filter(
             (p) => p.id === previousElementId
           );
-          console.log(previousProblems);
           if (previousProblems[0]?.is_solved) {
             setIsLocked(false);
             updateProblemLockStatus(userId, problem?.id, false);

@@ -1,3 +1,4 @@
+import { LOGIN } from "@/utils/const";
 import { atom } from "recoil";
 
 type AuthDialogState = {
@@ -7,7 +8,7 @@ type AuthDialogState = {
 
 const initialAuthDialogState: AuthDialogState = {
   isOpen: true,
-  type: "login",
+  type: LOGIN,
 };
 
 export const authDialogState = atom<AuthDialogState>({

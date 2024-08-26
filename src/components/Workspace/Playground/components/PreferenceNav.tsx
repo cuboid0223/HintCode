@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import { Settings } from "..";
 import {
   Select,
   SelectContent,
@@ -12,7 +10,6 @@ import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
   AlertDialog,
@@ -31,15 +28,8 @@ import { useTheme } from "next-themes";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { problemDataState } from "@/atoms/ProblemData";
 import { useRecoilValue } from "recoil";
-const EDITOR_FONT_SIZES = [
-  "12px",
-  "14px",
-  "16px",
-  "18px",
-  "20px",
-  "22px",
-  "24px",
-];
+import { Settings } from "@/types/global";
+import { EDITOR_FONT_SIZES } from "@/utils/const";
 
 type PreferenceNavProps = {
   settings: Settings;
@@ -53,38 +43,12 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
   setUserCode,
 }) => {
   const problem = useRecoilValue(problemDataState);
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const { resolvedTheme } = useTheme();
   const [selectedLang, setSelectedLang] = useLocalStorage("selectedLang", "py");
   const [fontSize, setFontSize] = useLocalStorage(
     "playground-fontSize",
     "16px"
   );
-  // const handleFullScreen = () => {
-  //   if (isFullScreen) {
-  //     document.exitFullscreen();
-  //   } else {
-  //     document.documentElement.requestFullscreen();
-  //   }
-  //   setIsFullScreen(!isFullScreen);
-  // };
-
-  // useEffect(() => {
-  //   function exitHandler(e: any) {
-  //     if (!document.fullscreenElement) {
-  //       setIsFullScreen(false);
-  //       return;
-  //     }
-  //     setIsFullScreen(true);
-  //   }
-
-  //   if (document.addEventListener) {
-  //     document.addEventListener("fullscreenchange", exitHandler);
-  //     document.addEventListener("webkitfullscreenchange", exitHandler);
-  //     document.addEventListener("mozfullscreenchange", exitHandler);
-  //     document.addEventListener("MSFullscreenChange", exitHandler);
-  //   }
-  // }, [isFullScreen]);
 
   const handleSelectedLang = (lang: "py" | "js") => {
     setSelectedLang(lang);

@@ -31,7 +31,7 @@ function useGetProblemMessages(
       querySnapshot.forEach((doc) => {
         tmp.push(doc.data() as Message);
       });
-      console.log(`${problemId} messages from user(${userId})`, tmp);
+      // console.log(`${problemId} messages from user(${userId})`, tmp);
       setProblemMessage(tmp);
       setLoadingProblemMessages(false);
     };

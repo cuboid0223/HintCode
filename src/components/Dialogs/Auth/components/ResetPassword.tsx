@@ -1,7 +1,6 @@
 import { auth } from "@/firebase/firebase";
 import React, { useEffect } from "react";
 import { useSendPasswordResetEmail } from "react-firebase-hooks/auth";
-import { toast } from "react-toastify";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -16,9 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useTheme } from "next-themes";
-import { AuthDialog, ThemeType } from "@/types/global";
+import { AuthDialog } from "@/types/global";
 import { ChevronLeft } from "lucide-react";
 import { showSuccessToast } from "@/utils/Toast/message";
+import { LOGIN } from "@/utils/const";
 
 const formSchema = z.object({
   email: z.string().email({ message: "email 格式錯誤" }),
@@ -75,7 +75,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ setAuthDialog }) => {
                 setAuthDialog((prev) => ({
                   ...prev,
                   isOpen: true,
-                  type: "login",
+                  type: LOGIN,
                 }))
               }
             >

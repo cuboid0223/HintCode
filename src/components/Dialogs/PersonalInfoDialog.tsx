@@ -81,7 +81,6 @@ function PersonalInfoDialog({
   }, [currentUser?.completionRate, targetUser]);
 
   useEffect(() => {
-    console.log(currentUsers);
     setUserIndex(findUserIndex(currentUsers, targetUser));
   }, [targetUser, currentUsers]);
 

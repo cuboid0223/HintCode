@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import { ACCEPTED_STATUS_ID } from "@/utils/const";
+
 const DaGaKoToWaRuDialog = ({}) => {
   const [isDaGaKoToWaRuDialogOpen, setIsDaGaKoToWaRuDialogOpen] =
     useState(false);

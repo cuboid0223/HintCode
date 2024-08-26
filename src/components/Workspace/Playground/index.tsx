@@ -4,7 +4,6 @@ import Split from "react-split";
 import EditorFooter from "./components/EditorFooter";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, firestore } from "../../../firebase/firebase";
-import { toast } from "react-toastify";
 import { doc, updateDoc } from "firebase/firestore";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import {
@@ -25,23 +24,15 @@ import { motion } from "framer-motion";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { problemDataState } from "@/atoms/ProblemData";
 import { useSubscribedUserProblems } from "@/hooks/useGetUserProblems";
-import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
-import { ThemeType } from "../../../types/global";
 import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
 import useGetProblems from "@/hooks/useGetProblems";
 import { percentage } from "@/utils/percentage";
+import { Settings } from "@/types/global";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
   setSolved: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-export type Settings = {
-  fontSize: string;
-  settingsDialogIsOpen: boolean;
-  dropdownIsOpen: boolean;
-  selectedLang: "py" | "js";
 };
 
 const TEST_CASE = "testcase";

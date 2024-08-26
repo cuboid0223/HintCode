@@ -14,7 +14,6 @@ function useGetProblemGroup() {
       querySnapshot.forEach((doc) => {
         tmp.push({ id: doc.id, ...doc.data() });
       });
-      // console.log("problems from Firestore", tmp);
       const ids: string[] = tmp[0]?.matrix.map((item) => item.id);
       const chunkedArr = chunkArray(ids, 2);
       setProblemGroup(chunkedArr);

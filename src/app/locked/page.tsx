@@ -11,7 +11,6 @@ function page({ searchParams }) {
           {`${searchParams.pid} 已被鎖定`}
           <p>請先完成上一道題目</p>
         </h1>
-
         <RedirectButtons />
       </section>
     </div>

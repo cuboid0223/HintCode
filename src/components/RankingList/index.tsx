@@ -1,15 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell } from "@/components/ui/table";
 import { User } from "../../types/global";
-import { mockUsersData } from "@/mockProblems/mockUsersData";
+import { mockUsersData } from "@/mockData/mockUsersData";
 import {
   collection,
   limit,

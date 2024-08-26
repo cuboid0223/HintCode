@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import { Badge } from "@/components/ui/badge";
+import { EASY, HARD, MEDIUM } from "@/utils/const";
 
 const DescriptionTab = () => {
   const problem = useRecoilValue(problemDataState);
@@ -14,11 +15,11 @@ const DescriptionTab = () => {
 
   const handleBadgeColor = (difficulty: string) => {
     switch (difficulty.toLowerCase().trim()) {
-      case "easy":
+      case EASY:
         return "bg-green-500";
-      case "medium":
+      case MEDIUM:
         return "bg-yellow-500";
-      case "hard":
+      case HARD:
         return "bg-red-500";
       default:
         return "bg-gray-500";

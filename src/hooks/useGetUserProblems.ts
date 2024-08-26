@@ -19,7 +19,6 @@ function useGetUserProblems() {
       let temp = [];
       const userProblemSnapshot = await getDocs(userProblemRef);
       userProblemSnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
         // console.log(doc.id, " => ", doc.data());
         temp.push(doc.data());
       });
@@ -46,7 +45,6 @@ const fetchSubscribedUserProblems = async (
         problems.push(doc.data() as UserProblem);
       });
 
-      // console.log("users: ", problems);
       setUserProblems(problems);
     });
 

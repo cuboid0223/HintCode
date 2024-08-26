@@ -157,7 +157,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     data.code = localCurrentCode;
     data.prompt = NEXT_STEP_PROMPT;
     const promptTemplate = createPromptTemplate(data, problem.problemStatement);
-    console.log(promptTemplate);
+
     sendMessageToGPT(promptTemplate);
     addUserMessage(data, null);
   };
@@ -252,7 +252,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
   const sendMessageToGPT = async (text: string) => {
     if (!threadId) {
-      console.log("no thread id");
+      // console.log("no thread id");
     }
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
@@ -287,9 +287,6 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       appendToLastMessage(delta.value);
       setFinalText((prevText) => prevText + delta.value);
     }
-    // if (delta.annotations != null) {
-    //   annotateLastMessage(delta.annotations);
-    // }
   };
   /*
     =======================
@@ -297,7 +294,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     =======================
   */
   const appendMessage = (role: string, text: string) => {
-    console.log(text);
+    // console.log(text);
     setMessages(
       (prevMessages) =>
         [

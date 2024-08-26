@@ -6,11 +6,8 @@ const getDefaultIsLocked = async (problemId: string) => {
   const docSnap = await getDoc(problemRef);
 
   if (docSnap.exists()) {
-    // console.log("Document exists:", docSnap.data());
     return docSnap.data().isLocked;
-  } else {
-    return true;
-  }
+  } else return true;
 };
 
 export default getDefaultIsLocked;

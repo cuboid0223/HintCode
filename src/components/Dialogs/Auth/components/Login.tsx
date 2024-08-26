@@ -2,7 +2,6 @@ import { auth } from "@/firebase/firebase";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { toast } from "react-toastify";
 import { AuthDialog } from "@/types/global";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { showErrorToast } from "@/utils/Toast/message";
+import { FORGET_PASSWORD, REGISTER } from "@/utils/const";
 
 const formSchema = z.object({
   password: z.string(),
@@ -112,7 +112,7 @@ const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
           <a
             href="#"
             className="text-brand-orange hover:underline"
-            onClick={() => handleChangeDialog("register")}
+            onClick={() => handleChangeDialog(REGISTER)}
           >
             創造帳戶
           </a>
@@ -120,7 +120,7 @@ const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
 
         <a
           href="#"
-          onClick={() => handleChangeDialog("forgotPassword")}
+          onClick={() => handleChangeDialog(FORGET_PASSWORD)}
           className=" text-sm  text-brand-orange hover:underline text-right"
         >
           忘記密碼?

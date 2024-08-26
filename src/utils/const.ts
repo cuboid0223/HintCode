@@ -1,6 +1,42 @@
+import { Orbitron } from "next/font/google";
+
 export const EXPERIMENTAL = "experimental";
 export const CONTROL = "control";
 
+// Auth Dialog
+export const LOGIN = "login";
+export const REGISTER = "register";
+export const FORGET_PASSWORD = "forgotPassword";
+
+// DIFFICULTY_CLASSES
+export const DIFFICULTY_CLASSES = {
+  Easy: "text-dark-green-s",
+  Medium: "text-dark-yellow",
+  Hard: "text-dark-pink",
+};
+
+// EDITOR_FONT_SIZES
+export const EDITOR_FONT_SIZES = [
+  "12px",
+  "14px",
+  "16px",
+  "18px",
+  "20px",
+  "22px",
+  "24px",
+];
+
+// RADIO_VALUE
+export const RADIO_VALUE = ["非常不同意", "不同意", "普通", "同意", "非常同意"];
+
+// font text
+export const orbitron = Orbitron({
+  weight: "400",
+  subsets: ["latin"],
+});
+
+export const ASSISTANT_INSTRUCTIONS =
+  "You are a patient and proficient programming teacher who always responds in a Socratic manner. You *never* give the student the answer; instead, you offer progressive feedback tailored to the current problem, gradually guiding them towards the solution, step by step.  You aim to help them learn to think independently by asking the right questions. You should adjust your questions based on the student's  knowledge, breaking down the questions into simpler parts until they reach a level suitable for the student.";
 // Help Types
 export const NEXT_STEP = "nextStep";
 export const DEBUG_ERROR = "debugError";

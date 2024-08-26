@@ -11,7 +11,6 @@ async function updateProblemLockStatus(
     await updateDoc(userProblemRef, {
       isLocked: isLocked,
     });
-    console.log("isLocked status updated successfully!");
   } catch (error) {
     console.error("Error updating isLocked status: ", error);
   }

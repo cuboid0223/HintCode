@@ -1,5 +1,4 @@
 "use client";
-
 import { Submission } from "@/types/testCase";
 import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
@@ -9,6 +8,7 @@ import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import HighlightedDiff from "@/components/Workspace/components/HighlightedDiff";
 import { ACCEPTED_STATUS_ID } from "@/utils/const";
+
 type TestCaseListProps = {
   isTestResult?: boolean;
   submissions: Submission[];
@@ -20,15 +20,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
 }) => {
   const problem = useRecoilValue(problemDataState);
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
-  // automitcally scroll to bottom of testCase
   const testCaseEndRef = useRef(null);
-  // const scrollToBottom = () => {
-  //   testCaseEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // };
-
-  // useEffect(() => {
-  //   scrollToBottom();
-  // }, [activeTestCaseId]);
 
   useEffect(() => {
     if (!submissions) return;
@@ -36,7 +28,6 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
       (data) => data?.status.id !== 3
     );
     if (wrongSubmissionId === -1) {
-      // console.log("all pass");
       setActiveTestCaseId(0);
     } else {
       setActiveTestCaseId(wrongSubmissionId);
@@ -121,7 +112,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
                   expectedOutput={
                     problem.examples[activeTestCaseId]?.outputText
                   }
-                  diffMode={problem.diffmode}
+                  // diffMode={problem.diffmode}
                   addedHidden
                 />
               </div>
@@ -135,7 +126,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
                   expectedOutput={
                     problem.examples[activeTestCaseId]?.outputText
                   }
-                  diffMode={problem.diffmode}
+                  // diffMode={problem.diffmode}
                   removedHidden
                 />
               </div>

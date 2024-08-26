@@ -1,5 +1,3 @@
-// Import your Client Component
-
 import RankingList from "@/components/RankingList";
 import Topbar from "@/components/Topbar";
 import { SceneLayout } from "@/components/dom/SceneLayout";

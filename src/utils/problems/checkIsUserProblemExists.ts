@@ -23,10 +23,7 @@ async function checkIsUserProblemExists(userId: string, problemId: string) {
     // console.log("Document exists:", docSnap.data());
     // setThreadId(docSnap.data().threadId);
     return true;
-  } else {
-    console.log("Document does not exist");
-    return false;
-  }
+  } else return false;
 }
 
 export default checkIsUserProblemExists;

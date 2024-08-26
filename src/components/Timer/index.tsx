@@ -1,7 +1,6 @@
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useParams } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FiRefreshCcw } from "react-icons/fi";
 import { useRecoilState } from "recoil";
 import {
   submissionsState,
@@ -50,7 +49,6 @@ const Timer: React.FC<TimerProps> = () => {
 
   const stopTimer = () => {
     if (intervalIdRef.current) {
-      //   console.log("時間停止");
       clearInterval(intervalIdRef.current);
       intervalIdRef.current = null;
     }
@@ -74,10 +72,8 @@ const Timer: React.FC<TimerProps> = () => {
     const getAcceptedTime = async () => {
       const docSnap = await getDoc(userProblemRef);
       if (docSnap.exists() && docSnap.data().acceptedTime) {
-        // console.log("Document data:", docSnap.data());
         return docSnap.data().acceptedTime;
       } else {
-        // console.log("No such document!");
         return false;
       }
     };
@@ -86,10 +82,8 @@ const Timer: React.FC<TimerProps> = () => {
       stopTimer();
       const acceptedTime = await getAcceptedTime();
       if (acceptedTime) {
-        // console.log(`有時間 ${acceptedTime}`);
         setElapsedTime(acceptedTime);
       } else {
-        // console.log("開始時間");
         startTimer();
       }
     };

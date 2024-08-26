@@ -1,20 +1,13 @@
 import { auth, firestore } from "../../../firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTheme } from "next-themes";
 import DescriptionTab from "./DescriptionTab";
 import HelpTab from "./HelpTab";
 import { useEffect, useState } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
-import useGetUserProblems from "@/hooks/useGetUserProblems";
-import {
-  submissionsState,
-  SubmissionsState,
-} from "@/atoms/submissionsDataAtom";
 import { Message } from "../../../types/message";
-import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 import { CONTROL, EXPERIMENTAL } from "@/utils/const";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import checkIsUserProblemExists from "@/utils/problems/checkIsUserProblemExists";
@@ -23,51 +16,14 @@ type ProblemTabProps = {};
 
 const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
   const problem = useRecoilValue(problemDataState);
-
-  const userProblems = useGetUserProblems();
   const [user] = useAuthState(auth);
   const userData = useGetUserInfo();
-  const [loadingProblemMessages, setLoadingProblemMessages] = useState(false);
-  const problemMessages = useGetProblemMessages(
-    user?.uid,
-    problem.id,
-    setLoadingProblemMessages
-  );
-  const { resolvedTheme } = useTheme();
+
   const [threadId, setThreadId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [problemTab, setProblemTab] = useState("description");
   const [remainTimes, setRemainTimes] = useState(20);
   const [isUserControlGroup, setIsUserControlGroup] = useState(false);
-  const [submissions] = useRecoilState<SubmissionsState>(submissionsState);
-
-  // async function checkIsDocumentExists(userId: string, problemId: string) {
-  //   if (!userId || !problemId) {
-  //     throw new Error("Invalid userId or problemId");
-  //   }
-
-  //   // 獲取文件參考
-  //   const userProblemDocRef = doc(
-  //     firestore,
-  //     "users",
-  //     userId,
-  //     "problems",
-  //     problemId
-  //   );
-
-  //   // 獲取文件快照
-  //   const docSnap = await getDoc(userProblemDocRef);
-
-  //   // 確認文件是否存在
-  //   if (docSnap.exists()) {
-  //     console.log("Document exists:", docSnap.data());
-  //     setThreadId(docSnap.data().threadId);
-  //     return true;
-  //   } else {
-  //     console.log("Document does not exist");
-  //     return false;
-  //   }
-  // }
 
   const handleProblemTabChange = (value: string) => {
     setProblemTab(value);
@@ -76,35 +32,11 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
   useEffect(() => {
     if (!user) return;
 
-    // const createUserProblemDocument = async (threadId: string) => {
-    //   const userProblemRef = doc(
-    //     firestore,
-    //     "users",
-    //     user?.uid,
-    //     "problems",
-    //     problem.id
-    //   );
-    //   if (!threadId || !user) return;
-    //   try {
-    //     const userProblem = {
-    //       id: problem.id,
-    //       threadId: threadId,
-    //       isLocked: await getDefaultIsLocked(problem.id),
-    //     };
-
-    //     await setDoc(userProblemRef, userProblem);
-    //     console.log("userProblem document created successfully!");
-    //   } catch (error) {
-    //     console.error("Error creating userProblem document:", error);
-    //   }
-    // };
-
     const createThread = async () => {
       const res = await fetch(`/api/assistants/threads`, {
         method: "POST",
       });
       const data = await res.json();
-      console.log(data.threadId);
       setThreadId(data.threadId);
       return data.threadId;
     };
@@ -136,10 +68,10 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
       const groupRef = doc(firestore, "groups", CONTROL);
       const docSnap = await getDoc(groupRef);
       if (!docSnap.exists()) {
-        console.log("沒有控制組");
+        // console.log("沒有控制組");
         return <div>CONTROL not found!</div>;
       }
-      console.log("控制組為 : ", docSnap.data().unit.id);
+      // console.log("控制組為 : ", docSnap.data().unit.id);
       return docSnap.data().unit.id;
     };
 

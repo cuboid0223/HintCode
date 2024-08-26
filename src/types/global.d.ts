@@ -20,3 +20,10 @@ export type AuthDialog = {
   type: "login" | "register" | "forgotPassword";
   isOpen: boolean;
 };
+
+export type Settings = {
+  fontSize: string;
+  settingsDialogIsOpen: boolean;
+  dropdownIsOpen: boolean;
+  selectedLang: "py" | "js";
+};

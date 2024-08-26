@@ -3,10 +3,11 @@ import AuthDialog from "@/components/Dialogs/Auth";
 import TopBar from "@/components/Topbar";
 import { AuthDialog as AuthDialogType } from "../../types/global";
 import { useState } from "react";
+import { LOGIN } from "@/utils/const";
 
 const AuthPage = () => {
   const [authDialog, setAuthDialog] = useState<AuthDialogType>({
-    type: "login",
+    type: LOGIN,
     isOpen: true,
   });
 

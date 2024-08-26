@@ -2,10 +2,6 @@
 
 import { Text, useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import * as THREE from "three";
-import { useMemo, useRef, useState } from "react";
-import { Line, useCursor, MeshDistortMaterial } from "@react-three/drei";
-import { AsciiRenderer } from "@react-three/drei";
 
 export function Trophy(props) {
   const { scene } = useGLTF("/trophy.glb");
@@ -18,7 +14,6 @@ export function Trophy(props) {
         scale={Math.min(viewport.width, viewport.height) / 5}
         {...props}
       />
-      {/* <AsciiRenderer fgColor="white" bgColor="transparent" /> */}
     </>
   );
 }

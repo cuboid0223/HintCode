@@ -7,7 +7,6 @@ import Image from "next/image";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { BsList } from "react-icons/bs";
 import Timer from "../Timer";
-import { useRouter, useParams } from "next/navigation";
 import { Moon, Sun, Trophy } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
@@ -17,14 +16,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AuthDialog } from "../../types/global";
 import useGetProblems from "@/hooks/useGetProblems";
-import useGetUserInfo from "@/hooks/useGetUserInfo";
+
 import { Orbitron } from "next/font/google";
 import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import LogoutButton from "../Topbar/components/LogoutBtn";
-import { submissionsState } from "@/atoms/submissionsDataAtom";
 
 const orbitron = Orbitron({
   weight: "600",
@@ -39,10 +36,8 @@ type TopBarProps = {
 const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
   const [user] = useAuthState(auth);
 
-  // const router = useRouter();
   const { setTheme } = useTheme();
-  // const params = useParams<{ pid: string }>();
-  // const [submissionsData, setSubmissions] = useRecoilState(submissionsState);
+
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
   const [isProblemsLoading, setIsProblemsLoading] = useState(false);
@@ -128,9 +123,6 @@ const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
               <DropdownMenuItem onClick={() => setTheme("dark")}>
                 Dark
               </DropdownMenuItem>
-              {/* <DropdownMenuItem onClick={() => setTheme("cyber")}>
-                Cyber
-              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
           {!user && (

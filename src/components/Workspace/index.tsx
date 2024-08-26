@@ -1,7 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
 import Split from "react-split";
-
 import Playground from "./Playground";
 import Confetti from "react-confetti";
 import useWindowSize from "../../hooks/useWindowSize";
@@ -21,6 +20,7 @@ const Workspace = ({}) => {
   const [isHintUsefulDialogOpen, setIsHintUsefulDialogOpen] = useState(true);
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
+
   return (
     <>
       <Split
@@ -28,7 +28,7 @@ const Workspace = ({}) => {
         ref={splitRef}
         className="split flex-1 overflow-hidden "
         minSize={0}
-        gutter={(index, direction) => {
+        gutter={(_, direction) => {
           const gutter = document.createElement("div");
           gutter.className = `gutter gutter-${direction} ${
             resolvedTheme === "dark" ? "bg-gray-600" : "bg-gray-300 "
