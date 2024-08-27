@@ -27,7 +27,7 @@ import { RingLoader } from "react-spinners";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { Submission } from "@/types/testCase";
 import { useParams } from "next/navigation";
-import { Dispatch, useState, SetStateAction } from "react";
+import { Dispatch, useState, SetStateAction, useEffect } from "react";
 import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
@@ -62,6 +62,8 @@ const FormSchema = z.object({
 type SelectFormProps = {
   messages: Message[];
   setMessages: Dispatch<SetStateAction<MessageType[]>>;
+  isGPTTextReady: boolean;
+  setIsGPTTextReady: Dispatch<SetStateAction<boolean>>;
   threadId: string;
   submissions: SubmissionsState;
 };
@@ -69,6 +71,8 @@ type SelectFormProps = {
 export const SelectForm: React.FC<SelectFormProps> = ({
   messages,
   setMessages,
+  isGPTTextReady,
+  setIsGPTTextReady,
   threadId,
   submissions,
 }) => {
@@ -84,7 +88,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   );
 
   const params = useParams<{ pid: string }>();
-  const [isLoading, setIsLoading] = useState(false);
+
   const [finalText, setFinalText] = useState("");
   const [isHelpBtnEnable, setIsHelpBtnEnable] =
     useRecoilState(isHelpBtnEnableState);
@@ -119,12 +123,12 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   };
 
   const startLoading = () => {
-    setIsLoading(true);
+    setIsGPTTextReady(true);
     setIsHelpBtnEnable(false);
   };
 
   const stopLoading = () => {
-    setIsLoading(false);
+    setIsGPTTextReady(false);
   };
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
@@ -132,13 +136,11 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       showErrorToast("請先登入");
       return;
     }
-    startLoading();
+
     processHelpRequest(data);
-    stopLoading();
   };
 
   const processHelpRequest = (data: z.infer<typeof FormSchema>) => {
-    console.log("$$$", threadId);
     switch (data.helpType) {
       case NEXT_STEP:
         handleNextStep(data);
@@ -254,7 +256,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
   const sendMessageToGPT = async (text: string, threadId: string) => {
     if (!threadId || !text) return;
-    console.log("sendMessageToGPT ", threadId);
+    startLoading();
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
       {
@@ -264,12 +266,10 @@ export const SelectForm: React.FC<SelectFormProps> = ({
         }),
       }
     );
-    // if (!response.ok) {
-    //   console.error(`Error: ${response.status} ${response.statusText}`);
-    //   return;
-    // }
+
     const stream = AssistantStream.fromReadableStream(response.body);
     handleReadableStream(stream);
+    stopLoading();
   };
 
   const handleReadableStream = (stream: AssistantStream) => {
@@ -364,7 +364,11 @@ export const SelectForm: React.FC<SelectFormProps> = ({
               // hidden={isHelpBtnHidden}
               // disabled={isLoading || !isHelpBtnEnable}
             >
-              {isLoading ? <RingLoader color="#36d7b7" size={27} /> : "傳送"}
+              {isGPTTextReady ? (
+                <RingLoader color="#36d7b7" size={27} />
+              ) : (
+                "傳送"
+              )}
             </TooltipTrigger>
             <TooltipContent>
               {isAllTestCasesAccepted(submissions) ? (

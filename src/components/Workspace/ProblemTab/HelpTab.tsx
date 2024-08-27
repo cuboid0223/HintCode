@@ -21,6 +21,7 @@ import { Message as MessageType } from "../../../types/message";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { SelectForm } from "./components/SelectForm";
+import { PropagateLoader } from "react-spinners";
 
 type ProblemHelpProps = {
   threadId: string;
@@ -44,7 +45,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     useRecoilState(isHelpBtnEnableState);
   const [isMounted, setIsMounted] = useState(false);
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const [isGPTTextReady, setIsGPTTextReady] = useState(false);
   const [isMessageLoading, setIsMessageLoading] = useState(false);
   const prevMessages = useGetProblemMessages(
     user?.uid,
@@ -58,9 +59,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     =======================
   */
   useEffect(() => {
-    if (prevMessages.length > 0) {
-      setMessages(prevMessages);
-    }
+    if (prevMessages.length > 0) setMessages(prevMessages);
   }, [prevMessages, setMessages]);
 
   useEffect(() => {
@@ -91,9 +90,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     };
 
     // 如果 messages 更改，清除之前的timeout
-    if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current);
-    }
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
 
     // 設置新的timeout来延遲更新，避免　GPT　每產生一個字就發 request
     debounceTimeout.current = setTimeout(() => {
@@ -102,17 +99,13 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
 
     // 清理函數，如果元件卸載則清除timeout
     return () => {
-      if (debounceTimeout.current) {
-        clearTimeout(debounceTimeout.current);
-      }
+      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
     };
   }, [messages, user, problem]);
 
   // 當通過所有測資，將請求幫助按鈕 disable
   useEffect(() => {
-    if (isAllTestCasesAccepted(submissions)) {
-      setIsHelpBtnEnable(false);
-    }
+    if (isAllTestCasesAccepted(submissions)) setIsHelpBtnEnable(false);
   }, [submissions, setIsHelpBtnEnable]);
 
   // automatically scroll to bottom of chat
@@ -131,9 +124,8 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) {
-    return null;
-  }
+  if (!isMounted) return null;
+
   return (
     <section className="flex-1 px-5 flex flex-col ">
       {/* GPT output */}
@@ -146,11 +138,16 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
           ))}
         </div>
       </div>
-      {messages.length !== 0 && <div className="mb-24" ref={messagesEndRef} />}
+      <div className="bg-red-500 w-full h-full flex items-center justify-center">
+        <PropagateLoader color="#36cf47" size={10} loading={isGPTTextReady} />
+      </div>
+      {messages.length !== 0 && <div className="h-36" ref={messagesEndRef} />}
 
       <SelectForm
         messages={messages}
         setMessages={setMessages}
+        isGPTTextReady={isGPTTextReady}
+        setIsGPTTextReady={setIsGPTTextReady}
         threadId={threadId}
         submissions={submissions}
       />

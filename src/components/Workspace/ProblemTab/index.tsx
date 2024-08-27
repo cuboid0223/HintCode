@@ -55,9 +55,9 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
           const newThreadId = await createThread();
           updateDoc(userProblemRef, { threadId: newThreadId });
           setThreadId(newThreadId);
-          console.log("沒有，造一個", threadId);
+          // console.log("沒有，造一個", threadId);
         } else {
-          console.log(`threadId 為: ${threadId}`);
+          // console.log(`threadId 為: ${threadId}`);
           setThreadId(userProblem?.threadId);
         }
       } catch (error) {
@@ -93,9 +93,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
   }, [userData]);
 
   return (
-    <div className="relative flex flex-col ">
-      {/* TABs */}
-
+    <section className="relative flex flex-col ">
       <Tabs
         value={problemTab}
         onValueChange={handleProblemTabChange}
@@ -136,7 +134,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
           )}
         </div>
       </Tabs>
-    </div>
+    </section>
   );
 };
 export default ProblemTab;
