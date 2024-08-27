@@ -20,6 +20,7 @@ import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useParams, useRouter } from "next/navigation";
 import { RADIO_VALUE } from "@/utils/const";
+import useGetProblems from "@/hooks/useGetProblems";
 
 const formSchema = z.object({
   useful: z.string(),
@@ -38,6 +39,8 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
   setSuccess,
 }) => {
   const router = useRouter();
+  const { problems, handleProblemChange } =
+    useGetProblems();
   const [user] = useAuthState(auth);
   const params = useParams<{ pid: string }>();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -64,8 +67,8 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
     setSuccess(false);
     setIsHintUsefulDialogOpen(!isHintUsefulDialogOpen);
     // 前往主頁面，觸發解鎖
-    // handleProblemChange(true, user?.uid);
-    router.push("/");
+    handleProblemChange(true, user?.uid);
+    // router.push("/");
   };
 
   return (

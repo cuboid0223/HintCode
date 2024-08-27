@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import getUserProblemById from "@/utils/problems/getUserProblemById";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import createUserProblem from "@/utils/problems/createUserProblem";
 
 type ProblemPageProps = {
@@ -18,8 +18,7 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
   const router = useRouter();
   const hasMounted = useHasMounted();
   const [problemData, setProblemData] = useRecoilState(problemDataState);
-  const pathname = usePathname();
-  const pid = pathname.split("/")[2]; // 分割路徑並取得第三個部分 problem id
+  const { pid } = useParams<{ pid: string }>();
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId");
   const [isLocked, setIsLocked] = useState(false);
@@ -32,10 +31,7 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
     const fetchUserProblem = async () => {
       try {
         const userProblem = await getUserProblemById(userId, pid);
-        if (!userProblem) {
-          const newUserProblem = await createUserProblem(userId, pid);
-          setIsLocked(newUserProblem.isLocked);
-        }
+        setIsLocked(userProblem.isLocked);
       } catch (error) {
         console.error("Error fetching user problem:", error);
       }

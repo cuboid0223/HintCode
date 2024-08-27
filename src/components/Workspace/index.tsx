@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Split from "react-split";
 import Playground from "./Playground";
 import Confetti from "react-confetti";
@@ -10,9 +10,17 @@ import HintUsefulDialog from "../Dialogs/HintUsefulDialog";
 import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import DaGaKoToWaRuDialog from "../Dialogs/DaGaKoToWaRuDialog";
+import getUserProblemById from "@/utils/problems/getUserProblemById";
+import { auth } from "@/firebase/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import updateProblemLockStatus from "@/utils/problems/updateProblemLockStatus";
+import useGetProblemGroup from "@/hooks/useGetProblemGroup";
+import { useParams } from "next/navigation";
 
 const Workspace = ({}) => {
+  const [user] = useAuthState(auth);
   const { resolvedTheme } = useTheme();
+  const { pid } = useParams<{ pid: string }>();
   const { width, height } = useWindowSize();
   const splitRef = useRef();
   const [success, setSuccess] = useState(false);
@@ -20,6 +28,33 @@ const Workspace = ({}) => {
   const [isHintUsefulDialogOpen, setIsHintUsefulDialogOpen] = useState(true);
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
+  const { problemGroup } = useGetProblemGroup();
+
+  useEffect(() => {
+    // ***
+    const unlockNextProblem = async (pid: string, problemGroup: string[]) => {
+      const currentProblem = await getUserProblemById(user?.uid, pid);
+      if (currentProblem.isLocked) return;
+
+      // 獲取當前問題所在的組
+      const targetGroup = problemGroup.find((group) => group.includes(pid));
+
+      if (targetGroup && targetGroup.length !== 0) {
+        // 找出當前問題的索引
+        const currentProblemIndex = targetGroup.indexOf(pid);
+        // 如果下一個題目存在，檢查它是否解鎖
+        const nextProblemId = targetGroup[currentProblemIndex + 1];
+
+        if (currentProblem.is_solved) {
+          await updateProblemLockStatus(user?.uid, nextProblemId, false);
+        }
+      } else {
+        console.log(`找不到 ${pid} 所屬組別 `);
+      }
+    };
+
+    if (success) unlockNextProblem(pid, problemGroup);
+  }, [user?.uid, problemGroup, pid, success]);
 
   return (
     <>

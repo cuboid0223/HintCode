@@ -191,57 +191,6 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
 }) => {
   const difficultyColor = DIFFICULTY_CLASSES[problem.difficulty] || "";
   const userProblems = useGetUserProblems();
-  const { problemGroup } = useGetProblemGroup();
-
-  useEffect(() => {
-    // ***
-    const handleNextProblemUnlocked = async (
-      pid: string,
-      userProblems: UserProblem[],
-      problemGroup: string[]
-    ) => {
-      // 獲取當前問題所在的組
-      const targetGroup = problemGroup.find((group) => group.includes(pid));
-
-      if (targetGroup && targetGroup.length !== 0) {
-        // 找出當前問題的索引
-        const currentProblemIndex = targetGroup.indexOf(pid);
-        console.log(currentProblemIndex);
-        // 如果下一個題目存在，檢查它是否解鎖
-        if (currentProblemIndex === 0) {
-          const nextProblemId = targetGroup[currentProblemIndex + 1];
-          const nextProblems = userProblems.filter(
-            (p) => p.id === nextProblemId
-          );
-          const currentProblems = userProblems.filter((p) => p.id === pid);
-
-          if (nextProblems.length === 0 && currentProblems[0]?.is_solved) {
-            // nextProblems.length === 0 表示下一題的 doc 未被建立
-            await createUserProblem(userId, nextProblemId);
-            await updateProblemLockStatus(userId, nextProblemId, false); // 更新 Firebase 狀態
-            console.log(`建立${nextProblemId}中，並設置 isLocked 為 true`);
-            return;
-          }
-
-          if (nextProblems.length > 0 && !currentProblems[0]?.is_solved) {
-            // 有下一題的 doc 但上一題沒被解決
-            updateProblemLockStatus(userId, nextProblemId, true); // 更新 Firebase 狀態
-            console.log(
-              `有${nextProblemId}文件，但上一題${currentProblems[0]}沒被解決，設置 isLocked 為 false`
-            );
-            return;
-          }
-        } else {
-          // currentProblemIndex === 1; 表示該題沒有下一題
-        }
-      } else {
-        console.log(`找不到題目組: ${pid}`);
-      }
-    };
-
-    // 獲取用戶解題資料後執行
-    // handleNextProblemUnlocked(problem?.id, userProblems, problemGroup);
-  }, [idx, userProblems, problem?.id, userId, problemGroup]);
 
   return (
     <TableRow
