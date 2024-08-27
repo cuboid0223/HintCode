@@ -1,34 +1,25 @@
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useParams } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useRecoilState } from "recoil";
-import {
-  submissionsState,
-  SubmissionsState,
-} from "@/atoms/submissionsDataAtom";
-import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { auth, firestore } from "@/firebase/firebase";
+
 type TimerProps = {};
 
 const Timer: React.FC<TimerProps> = () => {
-  //   let intervalId: NodeJS.Timeout;
-  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
   const [user] = useAuthState(auth);
-  const [submissionsData, setSubmissions] =
-    useRecoilState<SubmissionsState>(submissionsState);
   const params = useParams<{ pid: string }>();
-  const [localElapsedTime, setLocalElapsedTime] = useLocalStorage(
+  const [showTimer, setShowTimer] = useState<boolean>(true);
+  const [elapsedTime, setElapsedTime] = useLocalStorage(
     `elapsed-time-${params.pid}-${user?.uid}`,
     0
   );
 
-  const [elapsedTime, setElapsedTime] = useState(
-    () => Number(localElapsedTime) || 0
-  ); // 單位是秒
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastUpdateRef = useRef<number>(Date.now());
+  const needsUpdateRef = useRef<boolean>(false);
 
-  const [showTimer, setShowTimer] = useState<boolean>(true);
   const userProblemRef = doc(
     firestore,
     "users",
@@ -41,122 +32,118 @@ const Timer: React.FC<TimerProps> = () => {
     const hours = Math.floor(time / 3600);
     const minutes = Math.floor((time % 3600) / 60);
     const seconds = time % 60;
-
-    return `${hours < 10 ? "0" + hours : hours}:${
-      minutes < 10 ? "0" + minutes : minutes
-    }:${seconds < 10 ? "0" + seconds : seconds}`;
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  const stopTimer = () => {
-    if (intervalIdRef.current) {
-      clearInterval(intervalIdRef.current);
-      intervalIdRef.current = null;
-    }
-  };
+  const updateAcceptedTime = useCallback(
+    (time: number) => {
+      if (user) {
+        updateDoc(userProblemRef, { acceptedTime: time })
+          .then(() => {
+            console.log("acceptedTime updated");
+            lastUpdateRef.current = Date.now();
+            needsUpdateRef.current = false;
+          })
+          .catch((error) =>
+            console.error("Error updating acceptedTime:", error)
+          );
+      }
+    },
+    [user, userProblemRef]
+  );
 
   const startTimer = useCallback(() => {
-    stopTimer();
-    intervalIdRef.current = setInterval(() => {
-      setElapsedTime((prevTime) => prevTime + 1);
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setElapsedTime((prevTime) => {
+        const newTime = prevTime + 1;
+        if (Date.now() - lastUpdateRef.current >= 60000) {
+          needsUpdateRef.current = true;
+        }
+        return newTime;
+      });
     }, 1000);
+  }, [setElapsedTime]);
+
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
   }, []);
 
-  const resetTimer = () => {
-    stopTimer();
-    setElapsedTime(0);
-    setLocalElapsedTime(0);
-    if (!intervalIdRef) startTimer();
-  };
-
   useEffect(() => {
-    const getAcceptedTime = async () => {
-      const docSnap = await getDoc(userProblemRef);
-      if (docSnap.exists() && docSnap.data().acceptedTime) {
-        return docSnap.data().acceptedTime;
-      } else {
-        return false;
-      }
-    };
-
-    const checkAcceptedTime = async () => {
-      stopTimer();
-      const acceptedTime = await getAcceptedTime();
-      if (acceptedTime) {
-        setElapsedTime(acceptedTime);
-      } else {
-        startTimer();
-      }
-    };
-
-    checkAcceptedTime();
-
-    return () => stopTimer();
-  }, [userProblemRef, startTimer]);
-
-  useEffect(() => {
-    const handleAcceptedTime = (submissions: SubmissionsState) => {
-      // 用來記錄每題的通過時間(秒)
+    const initializeTimer = async () => {
       if (!user) return;
 
-      // 更新 elapsedTime 到 localStorage
-      if (isAllTestCasesAccepted(submissions)) {
-        stopTimer();
-        return updateDoc(userProblemRef, {
-          acceptedTime: Number(localElapsedTime),
-        });
+      try {
+        const docSnap = await getDoc(userProblemRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.is_solved) {
+            setElapsedTime(data.acceptedTime);
+            stopTimer();
+          } else {
+            const storedTime = localStorage.getItem(
+              `elapsed-time-${params.pid}-${user.uid}`
+            );
+            if (storedTime) {
+              setElapsedTime(Number(storedTime));
+            } else if (data.acceptedTime) {
+              setElapsedTime(data.acceptedTime);
+            }
+            startTimer();
+          }
+        } else {
+          setElapsedTime(0);
+          startTimer();
+        }
+      } catch (error) {
+        console.error("Error initializing timer:", error);
       }
     };
-    // check is there acceptedTime attr exists
-    // if exist -> stopTimer();
-    // else ->　handleAcceptedTime
 
-    handleAcceptedTime(submissionsData);
-    setLocalElapsedTime(elapsedTime);
+    initializeTimer();
+
+    return () => {
+      stopTimer();
+      if (needsUpdateRef.current) {
+        updateAcceptedTime(elapsedTime);
+      }
+    };
   }, [
-    elapsedTime,
-    submissionsData,
-    params.pid,
     user,
+    params.pid,
+    startTimer,
+    stopTimer,
+    setElapsedTime,
+    updateAcceptedTime,
+    elapsedTime,
     userProblemRef,
-    localElapsedTime,
-    setLocalElapsedTime,
   ]);
+
+  useEffect(() => {
+    if (needsUpdateRef.current) {
+      updateAcceptedTime(elapsedTime);
+    }
+  }, [elapsedTime, updateAcceptedTime]);
 
   return (
     <div>
       {showTimer ? (
         <div className="flex items-center space-x-2 bg-dark-fill-3 p-1.5 cursor-pointer rounded hover:bg-dark-fill-2">
           <div>{formatTime(elapsedTime)}</div>
-          {/* <FiRefreshCcw
-            onClick={() => {
-              setShowTimer(false);
-              setTime(0);
-            }}
-          /> */}
         </div>
       ) : (
         <div
           className="flex items-center p-1 h-8 hover:bg-dark-fill-3 rounded cursor-pointer"
           onClick={() => setShowTimer(true)}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="1em"
-            height="1em"
-            fill="currentColor"
-            className="h-6 w-6"
-          >
-            <path
-              fillRule="evenodd"
-              d="M12 4a9 9 0 110 18 9 9 0 010-18zm0 2a7 7 0 100 14 7 7 0 000-14zm0 1.634a1 1 0 01.993.883l.007.117-.001 3.774 2.111 1.162a1 1 0 01.445 1.253l-.05.105a1 1 0 01-1.254.445l-.105-.05-2.628-1.447a1 1 0 01-.51-.756L11 13V8.634a1 1 0 011-1zM16.235 2.4a1 1 0 011.296-.269l.105.07 4 3 .095.08a1 1 0 01-1.19 1.588l-.105-.069-4-3-.096-.081a1 1 0 01-.105-1.319zM7.8 2.4a1 1 0 01-.104 1.319L7.6 3.8l-4 3a1 1 0 01-1.296-1.518L2.4 5.2l4-3a1 1 0 011.4.2z"
-              clipRule="evenodd"
-            ></path>
-          </svg>
+          {/* Timer icon SVG */}
         </div>
       )}
-      {/* <button onClick={resetTimer}>Reset Timer</button> */}
     </div>
   );
 };
+
 export default Timer;
