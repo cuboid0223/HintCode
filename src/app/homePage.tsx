@@ -10,7 +10,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import useGetUserProblems from "@/hooks/useGetUserProblems";
+import useGetUserProblems, {
+  useSubscribedUserProblems,
+} from "@/hooks/useGetUserProblems";
 import useGetProblems from "@/hooks/useGetProblems";
 import { LoadingTableSkeleton } from "./loading";
 // import {
@@ -53,7 +55,7 @@ export default function Home() {
   const [loadingProblems, setLoadingProblems] = useState(true);
   const [progressValue, setProgressValue] = useState(0);
   const { problems } = useGetProblems(setLoadingProblems);
-  const userProblems = useGetUserProblems();
+  const userProblems = useSubscribedUserProblems();
 
   const [submissions, setSubmissions] =
     useRecoilState<SubmissionsState>(submissionsState);
@@ -70,6 +72,31 @@ export default function Home() {
       percentage(solvedProblems(userProblems).length, problems.length)
     );
   }, [setSubmissions, userProblems, problems.length]);
+
+  useEffect(() => {
+    const findMissingProblems = (
+      problems: Problem[],
+      userProblems: UserProblem[]
+    ): Problem[] => {
+      return problems.filter(
+        (problem) =>
+          !userProblems.some((userProblem) => userProblem.id === problem.id)
+      );
+    };
+
+    const createMissingUserProblems = async (
+      userId: string,
+      problems: Problem[],
+      userProblems: UserProblem[]
+    ) => {
+      // 找到 problems 中不在 userProblems 裡的物件
+      const missingProblems = findMissingProblems(problems, userProblems);
+      for (const problem of missingProblems) {
+        await createUserProblem(userId, problem.id);
+      }
+    };
+    createMissingUserProblems(user?.uid, problems, userProblems);
+  }, [user?.uid, problems, userProblems]);
 
   return (
     <>
@@ -162,12 +189,12 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
   idx,
   userId,
 }) => {
-  const [isLocked, setIsLocked] = useState(false);
   const difficultyColor = DIFFICULTY_CLASSES[problem.difficulty] || "";
   const userProblems = useGetUserProblems();
   const { problemGroup } = useGetProblemGroup();
 
   useEffect(() => {
+    // ***
     const handleNextProblemUnlocked = async (
       pid: string,
       userProblems: UserProblem[],
@@ -213,7 +240,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
     };
 
     // 獲取用戶解題資料後執行
-    handleNextProblemUnlocked(problem?.id, userProblems, problemGroup);
+    // handleNextProblemUnlocked(problem?.id, userProblems, problemGroup);
   }, [idx, userProblems, problem?.id, userId, problemGroup]);
 
   return (
@@ -238,7 +265,11 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
       <TableCell className="p-0 dark:text-white">
         <Link
           className={`h-full flex ${userProblem?.isLocked ? "cursor-not-allowed" : "cursor-pointer"}`}
-          href={ userProblem?.isLocked ? "#" : `/problems/${problem.id}?userId=${userId}`}
+          href={
+            userProblem?.isLocked
+              ? "#"
+              : `/problems/${problem.id}?userId=${userId}`
+          }
           onClick={(e) => {
             if (userProblem?.isLocked) {
               e.preventDefault();

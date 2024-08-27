@@ -19,7 +19,7 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
   const hasMounted = useHasMounted();
   const [problemData, setProblemData] = useRecoilState(problemDataState);
   const pathname = usePathname();
-  const pid = pathname.split("/")[2]; // 分割路徑並取得第三個部分
+  const pid = pathname.split("/")[2]; // 分割路徑並取得第三個部分 problem id
   const searchParams = useSearchParams();
   const userId = searchParams.get("userId");
   const [isLocked, setIsLocked] = useState(false);
@@ -34,7 +34,7 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
         const userProblem = await getUserProblemById(userId, pid);
         if (!userProblem) {
           const newUserProblem = await createUserProblem(userId, pid);
-          newUserProblem.isLocked && setIsLocked(true);
+          setIsLocked(newUserProblem.isLocked);
         }
       } catch (error) {
         console.error("Error fetching user problem:", error);
