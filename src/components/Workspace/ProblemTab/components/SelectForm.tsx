@@ -216,7 +216,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 =========problem statement start========
     ${problemStatement}
 =========problem statement end==========
-
+    此題不需要自行呼叫函數，系統會自動呼叫並代入參數
     以下是我目前的程式碼:
 ==========code start==========
 
