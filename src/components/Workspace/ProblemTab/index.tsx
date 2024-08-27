@@ -44,7 +44,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
     const updateThreadId = async () => {
       try {
         const userProblem = await getUserProblemById(user.uid, problem.id);
-        if (!userProblem) {
+        if (!userProblem.threadId) {
           const userProblemRef = doc(
             firestore,
             "users",
@@ -57,7 +57,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
           setThreadId(newThreadId);
           console.log("沒有，造一個", threadId);
         } else {
-          console.log("有", threadId);
+          console.log(`threadId 為: ${threadId}`);
           setThreadId(userProblem?.threadId);
         }
       } catch (error) {
