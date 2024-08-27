@@ -21,7 +21,6 @@ import {
 import { useTheme } from "next-themes";
 import Editor from "@monaco-editor/react";
 import { motion } from "framer-motion";
-import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { problemDataState } from "@/atoms/ProblemData";
 import { useSubscribedUserProblems } from "@/hooks/useGetUserProblems";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
@@ -29,6 +28,7 @@ import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
 import useGetProblems from "@/hooks/useGetProblems";
 import { percentage } from "@/utils/percentage";
 import { Settings } from "@/types/global";
+import { useParams } from "next/navigation";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
@@ -40,8 +40,10 @@ const TEST_RESULT = "testResult";
 
 const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   const [user] = useAuthState(auth);
+  const { pid } = useParams<{ pid: string }>();
   const { problems } = useGetProblems();
   const problem = useRecoilValue(problemDataState);
+
   const userProblems = useSubscribedUserProblems();
   // 最後一次執行的程式碼
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
@@ -50,15 +52,13 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   );
   // playground 的程式碼
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
-    `py-code-${problem.id}-${user?.uid}`,
+    `py-code-${pid}-${user?.uid}`,
     ""
   );
 
   const { resolvedTheme } = useTheme();
   const [submissions, setSubmissions] =
     useRecoilState<SubmissionsState>(submissionsState);
-  const [isHelpBtnEnable, setIsHelpBtnEnable] =
-    useRecoilState(isHelpBtnEnableState);
 
   const [isLoading, setIsLoading] = useState(false);
   let [userCode, setUserCode] = useState<string>(problem.starterCode.py);
@@ -125,7 +125,6 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
     }
 
     setIsLoading(true);
-    setIsHelpBtnEnable(false);
     const extractedCode = extractCode(userCode);
     if (!isFuncNameCorrect(extractedCode)) return;
     if (!isCodeIncludesImport(extractedCode)) return;
@@ -154,7 +153,6 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
     setSubmissions(temp);
     setTestTab(TEST_RESULT);
     setIsLoading(false);
-    setIsHelpBtnEnable(true);
   };
 
   const onChange = (value: string) => {
@@ -195,7 +193,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
     } else {
       setUserCode(problem.starterCode.py);
     }
-  }, [problem.id, user, problem.starterCode.py, localCurrentCode]);
+  }, [pid, user, problem.starterCode.py, localCurrentCode]);
 
   return (
     <div className="flex flex-col relative overflow-x-hidden ">

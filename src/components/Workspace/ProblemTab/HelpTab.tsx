@@ -12,7 +12,6 @@ import {
   submissionsState,
 } from "@/atoms/submissionsDataAtom";
 import Message from "../Playground/components/Message";
-import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -22,6 +21,8 @@ import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { SelectForm } from "./components/SelectForm";
 import { PropagateLoader } from "react-spinners";
+import getUserProblemById from "@/utils/problems/getUserProblemById";
+import { pid } from "process";
 
 type ProblemHelpProps = {
   threadId: string;
@@ -41,8 +42,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
   const { resolvedTheme } = useTheme();
   const [submissions, setSubmissions] =
     useRecoilState<SubmissionsState>(submissionsState);
-  const [isHelpBtnEnable, setIsHelpBtnEnable] =
-    useRecoilState(isHelpBtnEnableState);
+  const [isHelpBtnDisable, setIsHelpBtnDisable] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isGPTTextReady, setIsGPTTextReady] = useState(false);
@@ -103,11 +103,6 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     };
   }, [messages, user, problem]);
 
-  // 當通過所有測資，將請求幫助按鈕 disable
-  useEffect(() => {
-    if (isAllTestCasesAccepted(submissions)) setIsHelpBtnEnable(false);
-  }, [submissions, setIsHelpBtnEnable]);
-
   // automatically scroll to bottom of chat
   const messagesEndRef = useRef(null);
   const scrollToBottom = () => {
@@ -117,6 +112,16 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const handleHelpBtnIsDisable = async () => {
+      const userProblem = await getUserProblemById(user?.uid, problem.id);
+      if (userProblem.remainTimes === 0 || userProblem.is_solved) {
+        setIsHelpBtnDisable(true);
+      }
+    };
+    handleHelpBtnIsDisable();
+  }, [problem.id, user?.uid]);
 
   // solve react-hydration-error
   useEffect(() => {
@@ -148,6 +153,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
         setMessages={setMessages}
         isGPTTextReady={isGPTTextReady}
         setIsGPTTextReady={setIsGPTTextReady}
+        isHelpBtnDisable={isHelpBtnDisable}
         threadId={threadId}
         submissions={submissions}
       />

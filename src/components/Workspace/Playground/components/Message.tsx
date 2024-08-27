@@ -156,7 +156,7 @@ const AssistantMessage: React.FC<MessageProps> = ({ msg, theme }) => {
           flex justify-between items-center px-2 py-1 
           rounded-br-sm rounded-bl-sm
           transition-colors duration-500  
-          ${isLiked === 1 && "bg-lime-600"} ${isLiked === -1 && "bg-red-600"}   
+          ${isLiked === 1 && "bg-lime-800"} ${isLiked === -1 && "bg-red-800"}   
           `}
       >
         <pre className="">這則提示是否有幫助 ?</pre>

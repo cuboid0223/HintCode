@@ -27,9 +27,8 @@ import { RingLoader } from "react-spinners";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { Submission } from "@/types/testCase";
 import { useParams } from "next/navigation";
-import { Dispatch, useState, SetStateAction, useEffect } from "react";
-import { isHelpBtnEnableState } from "@/atoms/isHelpBtnEnableAtom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { Dispatch, useState, SetStateAction } from "react";
+import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import { Message, Message as MessageType } from "../../../../types/message";
 import { Timestamp } from "firebase/firestore";
@@ -49,6 +48,8 @@ import {
 } from "@/utils/const";
 import { getPromptByType } from "@/utils/HelpTypes/getTextByType";
 import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
+import { updateProblemRemainTimes } from "@/utils/problems/updateProblemLockStatus";
+import { Send } from "lucide-react";
 
 const FormSchema = z.object({
   helpType: z.string({
@@ -64,6 +65,7 @@ type SelectFormProps = {
   setMessages: Dispatch<SetStateAction<MessageType[]>>;
   isGPTTextReady: boolean;
   setIsGPTTextReady: Dispatch<SetStateAction<boolean>>;
+  isHelpBtnDisable: boolean;
   threadId: string;
   submissions: SubmissionsState;
 };
@@ -73,25 +75,23 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   setMessages,
   isGPTTextReady,
   setIsGPTTextReady,
+  isHelpBtnDisable,
   threadId,
   submissions,
 }) => {
   const [user] = useAuthState(auth);
+  const { pid } = useParams<{ pid: string }>();
   const problem = useRecoilValue(problemDataState);
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
     `latest-test-py-code-${user?.uid}`,
     ""
   );
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
-    `py-code-${problem.id}-${user?.uid}`,
+    `py-code-${pid}-${user?.uid}`,
     ""
   );
 
-  const params = useParams<{ pid: string }>();
-
   const [finalText, setFinalText] = useState("");
-  const [isHelpBtnEnable, setIsHelpBtnEnable] =
-    useRecoilState(isHelpBtnEnableState);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -122,21 +122,12 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     return formattedData;
   };
 
-  const startLoading = () => {
-    setIsGPTTextReady(true);
-    setIsHelpBtnEnable(false);
-  };
-
-  const stopLoading = () => {
-    setIsGPTTextReady(false);
-  };
-
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     if (!user) {
       showErrorToast("請先登入");
       return;
     }
-
+    updateProblemRemainTimes(user?.uid, pid);
     processHelpRequest(data);
   };
 
@@ -256,7 +247,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
   const sendMessageToGPT = async (text: string, threadId: string) => {
     if (!threadId || !text) return;
-    startLoading();
+    setIsGPTTextReady(true);
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
       {
@@ -269,7 +260,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
     const stream = AssistantStream.fromReadableStream(response.body);
     handleReadableStream(stream);
-    stopLoading();
+    setIsGPTTextReady(false);
   };
 
   const handleReadableStream = (stream: AssistantStream) => {
@@ -361,20 +352,17 @@ export const SelectForm: React.FC<SelectFormProps> = ({
             <TooltipTrigger
               className="font-bold mr-3"
               type="submit"
-              // hidden={isHelpBtnHidden}
-              // disabled={isLoading || !isHelpBtnEnable}
+              disabled={isHelpBtnDisable}
             >
               {isGPTTextReady ? (
                 <RingLoader color="#36d7b7" size={27} />
               ) : (
-                "傳送"
+                <Send />
               )}
             </TooltipTrigger>
             <TooltipContent>
-              {isAllTestCasesAccepted(submissions) ? (
-                <p>您已通過測試</p>
-              ) : (
-                <p>需要按下執行按鈕產生結果</p>
+              {isHelpBtnDisable && (
+                <p>您已通過所有測試資料或是提示次數已用完</p>
               )}
             </TooltipContent>
           </Tooltip>

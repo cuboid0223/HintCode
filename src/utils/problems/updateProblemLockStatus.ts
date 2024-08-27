@@ -1,5 +1,5 @@
 import { firestore } from "@/firebase/firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 async function updateProblemLockStatus(
   uid: string,
@@ -16,4 +16,21 @@ async function updateProblemLockStatus(
   }
 }
 
+async function updateProblemRemainTimes(uid: string, problemId: string) {
+  try {
+    const userProblemRef = doc(firestore, "users", uid, "problems", problemId);
+
+    const problem = await getDoc(userProblemRef);
+
+    if (problem.data().remainTimes > 0) {
+      await updateDoc(userProblemRef, {
+        remainTimes: problem.data().remainTimes - 1,
+      });
+    }
+  } catch (error) {
+    console.error("Error updating remain times: ", error);
+  }
+}
+
 export default updateProblemLockStatus;
+export { updateProblemRemainTimes };
