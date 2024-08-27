@@ -2,8 +2,10 @@ import { useLocalStorage } from "@uidotdev/usehooks";
 import { useParams } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
+import getUserProblemById from "@/utils/problems/getUserProblemById";
+import { UserProblem } from "@/types/problem";
 
 type TimerProps = {};
 
@@ -11,6 +13,7 @@ const Timer: React.FC<TimerProps> = () => {
   const [user] = useAuthState(auth);
   const params = useParams<{ pid: string }>();
   const [showTimer, setShowTimer] = useState<boolean>(true);
+  const [userProblem, setUserProblem] = useState<UserProblem | null>(null);
   const [elapsedTime, setElapsedTime] = useLocalStorage(
     `elapsed-time-${params.pid}-${user?.uid}`,
     0
@@ -18,7 +21,7 @@ const Timer: React.FC<TimerProps> = () => {
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const lastUpdateRef = useRef<number>(Date.now());
-  const needsUpdateRef = useRef<boolean>(false);
+  const elapsedTimeRef = useRef(elapsedTime);
 
   const userProblemRef = doc(
     firestore,
@@ -42,7 +45,6 @@ const Timer: React.FC<TimerProps> = () => {
           .then(() => {
             console.log("acceptedTime updated");
             lastUpdateRef.current = Date.now();
-            needsUpdateRef.current = false;
           })
           .catch((error) =>
             console.error("Error updating acceptedTime:", error)
@@ -55,15 +57,14 @@ const Timer: React.FC<TimerProps> = () => {
   const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      setElapsedTime((prevTime) => {
-        const newTime = prevTime + 1;
-        if (Date.now() - lastUpdateRef.current >= 60000) {
-          needsUpdateRef.current = true;
-        }
-        return newTime;
-      });
+      elapsedTimeRef.current += 1;
+      setElapsedTime(elapsedTimeRef.current);
+
+      if (Date.now() - lastUpdateRef.current >= 60000) {
+        updateAcceptedTime(elapsedTimeRef.current);
+      }
     }, 1000);
-  }, [setElapsedTime]);
+  }, [setElapsedTime, updateAcceptedTime]);
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) {
@@ -74,30 +75,18 @@ const Timer: React.FC<TimerProps> = () => {
 
   useEffect(() => {
     const initializeTimer = async () => {
-      if (!user) return;
-
+      if (!user || !userProblem) return;
+      const { is_solved, acceptedTime } = userProblem;
       try {
-        const docSnap = await getDoc(userProblemRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (data.is_solved) {
-            setElapsedTime(data.acceptedTime);
-            stopTimer();
-          } else {
-            const storedTime = localStorage.getItem(
-              `elapsed-time-${params.pid}-${user.uid}`
-            );
-            if (storedTime) {
-              setElapsedTime(Number(storedTime));
-            } else if (data.acceptedTime) {
-              setElapsedTime(data.acceptedTime);
-            }
-            startTimer();
-          }
-        } else {
-          setElapsedTime(0);
-          startTimer();
+        if (is_solved) {
+          setElapsedTime(acceptedTime);
+          elapsedTimeRef.current = acceptedTime;
+          stopTimer();
+          return;
         }
+        setElapsedTime(elapsedTime);
+        elapsedTimeRef.current = elapsedTime;
+        startTimer();
       } catch (error) {
         console.error("Error initializing timer:", error);
       }
@@ -105,28 +94,26 @@ const Timer: React.FC<TimerProps> = () => {
 
     initializeTimer();
 
-    return () => {
-      stopTimer();
-      if (needsUpdateRef.current) {
-        updateAcceptedTime(elapsedTime);
-      }
-    };
+    return () => stopTimer();
   }, [
     user,
     params.pid,
     startTimer,
     stopTimer,
+    elapsedTime,
+    userProblem,
     setElapsedTime,
     updateAcceptedTime,
-    elapsedTime,
     userProblemRef,
   ]);
 
   useEffect(() => {
-    if (needsUpdateRef.current) {
-      updateAcceptedTime(elapsedTime);
-    }
-  }, [elapsedTime, updateAcceptedTime]);
+    const handleUserProblem = async () => {
+      if (!user.uid) return;
+      setUserProblem(await getUserProblemById(user.uid, params.pid));
+    };
+    handleUserProblem();
+  }, [user.uid, params.pid]);
 
   return (
     <div>
