@@ -7,6 +7,7 @@ export default async function createUserProblem(
   userId: string,
   pid: string
 ): Promise<UserProblem> {
+  if (!firestore || !userId || !pid) return;
   const newUserProblem: UserProblem = {
     id: pid,
     threadId: "",

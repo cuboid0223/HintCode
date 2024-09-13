@@ -21,20 +21,19 @@ function useGetProblems(
     // 當下題目的 pid
     const pid = params?.pid; // 當下題目的 pid
     if (!pid || !problems) return;
-
-    const problem = problems.find((p) => p.id === pid);
-
+    const currentProblemIndex = problems.findIndex((p) => p.id === pid);
     const direction = isForward ? 1 : -1;
-    const nextProblemOrder = problem.order + direction;
-    const nextProblem = problems.find((p) => p.order === nextProblemOrder);
+    const nextProblemIndex = currentProblemIndex + direction;
+    const nextProblem = problems[nextProblemIndex];
+    const firstProblem = problems[0];
+    const lastProblem = problems[problems.length - 1];
     setSubmissions([]);
     if (isForward && !nextProblem) {
       //  處理 edge case 當沒有下一個問題且是點 "往前" 給使用者第一個 problem
-      const firstProblem = problems.find((p) => p.order === 1);
       router.push(`/problems/${firstProblem.id}?userId=${userId}`);
     } else if (!isForward && !nextProblem) {
-      //  處理 edge case 當沒有下一個問題且是點 "往後" 給使用者最後一個 problem
-      const lastProblem = problems.find((p) => p.order === problems.length);
+      //  處理 edge case 當沒有上一個問題且是點 "往後" 給使用者最後一個 problem
+      console.log(lastProblem);
       router.push(`/problems/${lastProblem.id}?userId=${userId}`);
     } else {
       router.push(`/problems/${nextProblem.id}?userId=${userId}`);

@@ -42,8 +42,6 @@ import { Problem, UserProblem } from "@/types/problem";
 import { percentage } from "@/utils/percentage";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
-import updateProblemLockStatus from "@/utils/problems/updateProblemLockStatus";
-import useGetProblemGroup from "@/hooks/useGetProblemGroup";
 import CountUp from "react-countup";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { DIFFICULTY_CLASSES, orbitron } from "@/utils/const";
@@ -108,7 +106,7 @@ export default function Home() {
           <h1 className=" text-xl font-extrabold tracking-tight lg:text-base">
             <CountUp
               start={0}
-              end={userInfo?.completionRate}
+              end={userInfo ? userInfo.completionRate : 0}
               duration={2}
               separator=" "
               suffix="%"
