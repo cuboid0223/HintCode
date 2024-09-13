@@ -33,7 +33,6 @@ function useGetProblems(
       router.push(`/problems/${firstProblem.id}?userId=${userId}`);
     } else if (!isForward && !nextProblem) {
       //  處理 edge case 當沒有上一個問題且是點 "往後" 給使用者最後一個 problem
-      console.log(lastProblem);
       router.push(`/problems/${lastProblem.id}?userId=${userId}`);
     } else {
       router.push(`/problems/${nextProblem.id}?userId=${userId}`);

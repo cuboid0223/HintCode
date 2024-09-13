@@ -16,6 +16,9 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import updateProblemLockStatus from "@/utils/problems/updateProblemLockStatus";
 import useGetProblemGroup from "@/hooks/useGetProblemGroup";
 import { useParams } from "next/navigation";
+import useGetProblems from "@/hooks/useGetProblems";
+import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
+import { Button } from "../ui/button";
 
 const Workspace = ({}) => {
   const [user] = useAuthState(auth);
@@ -29,6 +32,8 @@ const Workspace = ({}) => {
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
   const { problemGroup } = useGetProblemGroup();
+  const [isHelpEnabled, setIsHelpEnabled] = useState(false);
+  const { problems, handleProblemChange } = useGetProblems();
 
   useEffect(() => {
     // ***
@@ -56,6 +61,12 @@ const Workspace = ({}) => {
     if (success) unlockNextProblem(pid, problemGroup);
   }, [user?.uid, problemGroup, pid, success]);
 
+  useEffect(() => {
+    if (!problems) return;
+    const problem = problems.find((p) => p.id === pid);
+    setIsHelpEnabled(problem?.isHelpEnabled);
+  }, [pid, problems]);
+
   return (
     <>
       <Split
@@ -79,14 +90,30 @@ const Workspace = ({}) => {
       </Split>
       {/* 提示有用問卷 */}
       {/* !isPersonalInfoDialogOpen -> 處理 Modal 同時顯示的問題 */}
-      {success && !isPersonalInfoDialogOpen && (
+      {success && !isPersonalInfoDialogOpen && isHelpEnabled && (
         <>
           <HintUsefulDialog
             isHintUsefulDialogOpen={isHintUsefulDialogOpen}
             setIsHintUsefulDialogOpen={setIsHintUsefulDialogOpen}
             setSuccess={setSuccess}
+            isHelpEnabled={isHelpEnabled}
           />
         </>
+      )}
+      {/* 當此題沒開放提示功能 */}
+      {success && !isHelpEnabled && (
+        <Dialog open={!isHelpEnabled}>
+          <DialogContent
+            className="sm:max-w-md"
+            //   isDialogOverlayHidden
+            isCloseIconHidden
+          >
+            <DialogTitle className="">恭喜你通過此題</DialogTitle>
+            <Button onClick={() => handleProblemChange(true, user?.uid)}>
+              前往下一題
+            </Button>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* 解題成功撒花  */}

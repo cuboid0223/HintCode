@@ -31,16 +31,17 @@ type HintUsefulDialogProps = {
   isHintUsefulDialogOpen: boolean;
   setIsHintUsefulDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
+  isHelpEnabled: boolean;
 };
 
 const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
   isHintUsefulDialogOpen,
   setIsHintUsefulDialogOpen,
   setSuccess,
+  isHelpEnabled,
 }) => {
   const router = useRouter();
-  const { problems, handleProblemChange } =
-    useGetProblems();
+  const { problems, handleProblemChange } = useGetProblems();
   const [user] = useAuthState(auth);
   const params = useParams<{ pid: string }>();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -68,14 +69,11 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
     setIsHintUsefulDialogOpen(!isHintUsefulDialogOpen);
     // 前往主頁面，觸發解鎖
     handleProblemChange(true, user?.uid);
-    // router.push("/");
   };
 
   return (
     <div>
       {/* 在按下繳交按鈕時 顯示 */}
-
-      {/* 笑臉動畫 */}
       <Dialog open={isHintUsefulDialogOpen}>
         <DialogContent
           className="sm:max-w-md"
