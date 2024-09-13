@@ -79,6 +79,7 @@ const HintUsefulDialog: React.FC<HintUsefulDialogProps> = ({
           className="sm:max-w-md"
           //   isDialogOverlayHidden
           isCloseIconHidden
+          aria-describedby={undefined}
         >
           <DialogTitle className="">
             恭喜你通過此題，根據此題 HintCode 提供給你的提示，你覺得...

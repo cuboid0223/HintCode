@@ -53,7 +53,7 @@ const DaGaKoToWaRuDialog = ({}) => {
         open={isDaGaKoToWaRuDialogOpen}
         onOpenChange={(open) => setIsDaGaKoToWaRuDialogOpen(open)}
       >
-        <DialogContent className="">
+        <DialogContent aria-describedby={undefined}>
           <Image
             src="/DaGaKoToWaRu.jpg"
             alt="DaGaKoToWaRu"

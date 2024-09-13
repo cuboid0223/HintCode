@@ -107,6 +107,7 @@ const Workspace = ({}) => {
             className="sm:max-w-md"
             //   isDialogOverlayHidden
             isCloseIconHidden
+            aria-describedby={undefined}
           >
             <DialogTitle className="">恭喜你通過此題</DialogTitle>
             <Button onClick={() => handleProblemChange(true, user?.uid)}>

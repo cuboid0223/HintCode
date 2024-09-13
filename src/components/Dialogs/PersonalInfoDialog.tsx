@@ -99,7 +99,10 @@ function PersonalInfoDialog({
           <p>email: {targetUser?.email}</p>
         </HoverCardContent>
       </HoverCard>
-      <DialogContent className="max-w-2xl max-h-96">
+      <DialogContent
+        className="max-w-2xl max-h-96"
+        aria-describedby={undefined}
+      >
         <DialogHeader>
           <DialogTitle className=" flex justify-between items-center">
             <p> {targetUser?.displayName}</p>

@@ -26,7 +26,7 @@ const LogoutButton: React.FC = () => {
         <DialogTrigger>
           <FiLogOut />
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>確定要登出 ?</DialogTitle>
             <Button
