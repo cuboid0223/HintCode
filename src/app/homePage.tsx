@@ -88,8 +88,10 @@ export default function Home() {
       userProblems: UserProblem[]
     ) => {
       // 找到 problems 中不在 userProblems 裡的物件
+      if (!userId || !problems) return;
       const missingProblems = findMissingProblems(problems, userProblems);
       for (const problem of missingProblems) {
+        console.log(`使用者(${userId}) 建立 ${problem.id} 文件 `);
         await createUserProblem(userId, problem.id);
       }
     };
