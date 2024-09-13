@@ -62,7 +62,7 @@ export const HELP_TYPE_OPTIONS = [
   {
     type: NEXT_STEP,
     prompt: NEXT_STEP_PROMPT,
-    text: "我不知道(下一步要怎麼做)",
+    text: "我不知道(下一步要怎麼做?)",
   },
   {
     type: DEBUG_ERROR,
