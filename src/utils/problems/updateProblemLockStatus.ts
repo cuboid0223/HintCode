@@ -6,6 +6,7 @@ async function updateProblemLockStatus(
   problemId: string,
   isLocked: boolean
 ) {
+  if (!uid || !problemId) return;
   try {
     const userProblemRef = doc(firestore, "users", uid, "problems", problemId);
     await updateDoc(userProblemRef, {

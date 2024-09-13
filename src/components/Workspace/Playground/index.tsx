@@ -79,8 +79,11 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
 
   const extractCode = (userCode: string) => {
     // 擷取第一個 function block
-    const pattern = /(?<!#)\bdef\s+\w+\s*\(.*?\)\s*:\s*\n(?:\s+.*(?:\n|$))+/;
-    userCode = userCode.trim() + "\n\n";
+    // const pattern = /(?<!#)\bdef\s+\w+\s*\(.*?\)\s*:\s*\n(?:\s+.*(?:\n|$))+/;
+    const pattern =
+      /(?<!#)\bdef\s+\w+\s*\(.*?\)\s*:\s*\n(?:\s+[\s\S]*(?:\n|$))+/;
+
+    userCode = userCode.trim() + "\n\n"; // 多一些換行，讓隱藏程式碼可以執行
     const match = userCode.match(pattern);
     if (match) return match[0];
     showErrorToast(
