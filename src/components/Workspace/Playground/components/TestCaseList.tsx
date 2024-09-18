@@ -112,7 +112,6 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
                   expectedOutput={
                     problem.examples[activeTestCaseId]?.outputText
                   }
-                  // diffMode={problem.diffmode}
                   addedHidden
                 />
               </div>
@@ -120,13 +119,13 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               <CardDescription className="font-bold mb-2">
                 預期輸出:
               </CardDescription>
+
               <div className="bg-background p-2 rounded-lg">
                 <HighlightedDiff
                   output={submissions[activeTestCaseId]?.stdout}
                   expectedOutput={
                     problem.examples[activeTestCaseId]?.outputText
                   }
-                  // diffMode={problem.diffmode}
                   removedHidden
                 />
               </div>

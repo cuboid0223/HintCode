@@ -16,7 +16,6 @@ export type Problem = {
   // likes: number;
   // dislikes: number;
   title: string;
-  // diffmode: string;
   problemStatement: string;
   examples: Example[];
   order: number;

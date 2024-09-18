@@ -1,64 +1,48 @@
 import React from "react";
-import { diffWords } from "diff";
+import { diffChars } from "diff";
 
 type HighlightedDiffProps = {
   output: string;
   expectedOutput: string;
   addedHidden?: boolean;
   removedHidden?: boolean;
-  diffMode?: string;
 };
 
 const HighlightedDiff: React.FC<HighlightedDiffProps> = ({
   output,
   expectedOutput,
-  addedHidden,
-  removedHidden,
-  diffMode = "word",
+  addedHidden, // 綠色不顯示
+  removedHidden, // 紅色不顯示
 }) => {
   if (!output) return <p>{output}</p>;
-  let diff;
-  if (diffMode === "line") {
-    diff = diffWords(output, expectedOutput);
-    // diff = diffLines(output, expectedOutput);
-  } else {
-    diff = diffWords(output, expectedOutput);
-  }
+  const diff = diffChars(output, expectedOutput);
+  // console.log(JSON.stringify(diff, null, 2));
 
   const result = diff.map((part, index) => {
     if (part.added) {
       return (
-        <div
+        <span
           key={index}
-          className={`bg-green-600 w-fit 
-          ${addedHidden ? "hidden" : ""} 
-          ${diffMode === "line" ? "block" : "inline-block"}`}
-          dangerouslySetInnerHTML={{
-            __html: part.value.replace(/\n/g, "<br>"),
-          }}
-        ></div>
+          className={`bg-green-600 w-fit  whitespace-pre-wrap
+          ${addedHidden ? "hidden" : ""} `}
+        >
+          {part.value}
+        </span>
       );
     } else if (part.removed) {
       return (
-        <div
+        <span
           key={index}
-          className={`bg-red-600 w-fit inline-block ${
-            removedHidden ? "hidden" : ""
-          }`}
-          dangerouslySetInnerHTML={{
-            __html: part.value.replace(/\n/g, "<br>"),
-          }}
-        ></div>
+          className={`bg-red-600 w-fit  whitespace-pre-wrap  ${removedHidden ? "hidden" : ""}`}
+        >
+          {part.value}
+        </span>
       );
     } else {
       return (
-        <div
-          key={index}
-          className={`${diffMode === "line" ? "block" : "inline-block"}`}
-          dangerouslySetInnerHTML={{
-            __html: part.value.replace(/\n/g, "<br>"),
-          }}
-        ></div>
+        <span key={index} className="whitespace-pre-wrap">
+          {part.value}
+        </span>
       );
     }
   });
