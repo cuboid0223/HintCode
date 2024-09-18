@@ -46,9 +46,11 @@ import CountUp from "react-countup";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { DIFFICULTY_CLASSES, orbitron } from "@/utils/const";
 import createUserProblem from "@/utils/problems/createUserProblem";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [user] = useAuthState(auth);
+  const router = useRouter();
   const userInfo = useGetUserInfo();
   const [loadingProblems, setLoadingProblems] = useState(true);
   const [progressValue, setProgressValue] = useState(0);
@@ -97,6 +99,12 @@ export default function Home() {
     };
     createMissingUserProblems(user?.uid, problems, userProblems);
   }, [user?.uid, problems, userProblems]);
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/auth");
+    }
+  }, [router, user]);
 
   return (
     <>
