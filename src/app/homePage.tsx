@@ -15,17 +15,7 @@ import useGetUserProblems, {
 } from "@/hooks/useGetUserProblems";
 import useGetProblems from "@/hooks/useGetProblems";
 import { LoadingTableSkeleton } from "./loading";
-// import {
-//   Pagination,
-//   PaginationContent,
-//   PaginationEllipsis,
-//   PaginationItem,
-//   PaginationLink,
-//   PaginationNext,
-//   PaginationPrevious,
-// } from "@/components/ui/pagination";
 import { Progress } from "@/components/ui/progress";
-
 import {
   BotMessageSquare,
   BotOff,
@@ -47,6 +37,7 @@ import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { DIFFICULTY_CLASSES, orbitron } from "@/utils/const";
 import createUserProblem from "@/utils/problems/createUserProblem";
 import { useRouter } from "next/navigation";
+import { useSubscribedSettings } from "@/hooks/useSettings";
 
 export default function Home() {
   const [user] = useAuthState(auth);
@@ -56,6 +47,7 @@ export default function Home() {
   const [progressValue, setProgressValue] = useState(0);
   const { problems } = useGetProblems(setLoadingProblems);
   const userProblems = useSubscribedUserProblems();
+  const settings = useSubscribedSettings();
 
   const [submissions, setSubmissions] =
     useRecoilState<SubmissionsState>(submissionsState);
@@ -89,7 +81,6 @@ export default function Home() {
       problems: Problem[],
       userProblems: UserProblem[]
     ) => {
-      // 這裡可能是自動 reset 的 bug 發生的地方
       // 找到 problems 中不在 userProblems 裡的物件
       if (!userId || !problems) return;
       const missingProblems = findMissingProblems(problems, userProblems);
@@ -102,11 +93,12 @@ export default function Home() {
     createMissingUserProblems(user?.uid, problems, userProblems);
   }, [user?.uid, problems, userProblems]);
 
-  useEffect(() => {
-    if (!user) {
-      router.push("/auth");
-    }
-  }, [router, user]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     router.push("/auth");
+  //   }
+
+  // }, [router, user]);
 
   return (
     <>

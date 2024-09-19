@@ -101,12 +101,18 @@ const DescriptionTab = () => {
               code({ children, className, node, ...rest }) {
                 // const match = /language-(\w+)/.exec(className || "");
                 return (
-                  <code
-                    {...rest}
-                    className="text-white dark:text-black bg-gray-400 px-1"
+                  // <code
+                  //   {...rest}
+                  //   className="text-white dark:text-black bg-red-400 px-1 w-full"
+                  // >
+                  //   {children}
+                  // </code>
+                  <SyntaxHighlighter
+                    style={resolvedTheme === "dark" ? a11yDark : docco}
+                    language="python"
                   >
-                    {children}
-                  </code>
+                    {String(children).trim()}
+                  </SyntaxHighlighter>
                 );
               },
             }}

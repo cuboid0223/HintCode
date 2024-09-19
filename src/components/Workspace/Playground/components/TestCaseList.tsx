@@ -8,6 +8,9 @@ import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import HighlightedDiff from "@/components/Workspace/components/HighlightedDiff";
 import { ACCEPTED_STATUS_ID } from "@/utils/const";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { useTheme } from "next-themes";
+import { a11yDark, docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 type TestCaseListProps = {
   isTestResult?: boolean;
@@ -21,6 +24,7 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
   const problem = useRecoilValue(problemDataState);
   const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
   const testCaseEndRef = useRef(null);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     if (!submissions) return;
@@ -79,9 +83,15 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               <CardDescription className="font-bold mb-2">
                 輸入:
               </CardDescription>
-              <div className="bg-background  p-2 rounded-lg mb-2">
+              {/* <div className="bg-background  p-2 rounded-lg mb-2">
                 {problem.examples[activeTestCaseId]?.inputText}
-              </div>
+              </div> */}
+              <SyntaxHighlighter
+                style={resolvedTheme === "dark" ? a11yDark : docco}
+                language="python"
+              >
+                {problem.examples[activeTestCaseId]?.inputText}
+              </SyntaxHighlighter>
             </>
           )}
 
@@ -97,6 +107,12 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               ),
             }}
           ></div>
+          {/* <SyntaxHighlighter
+            style={resolvedTheme === "dark" ? a11yDark : docco}
+            language="python"
+          >
+            {problem.examples[activeTestCaseId]?.outputText}
+          </SyntaxHighlighter> */}
         </CardContent>
       </Card>
       {isTestResult && (

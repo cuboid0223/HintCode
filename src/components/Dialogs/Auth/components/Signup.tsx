@@ -113,6 +113,7 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
         thumbnail: createThumbnail(name, 32),
         thumbnail_64px: createThumbnail(name, 64),
         unit: unitRef,
+        role: "user",
       };
       await setDoc(userRef, userData);
 

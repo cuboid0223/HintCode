@@ -1,4 +1,4 @@
-import { auth } from "@/firebase/firebase";
+import { auth, firestore } from "@/firebase/firebase";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
@@ -18,6 +18,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { showErrorToast } from "@/utils/Toast/message";
 import { FORGET_PASSWORD, REGISTER } from "@/utils/const";
+import { setCookie } from "cookies-next";
+import jwt from "jsonwebtoken";
+import { doc, getDoc } from "firebase/firestore";
 
 const formSchema = z.object({
   password: z.string(),
@@ -47,6 +50,19 @@ const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
     useSignInWithEmailAndPassword(auth);
   const router = useRouter();
 
+  const createToken = async (userId: string, role: string) => {
+    const response = await fetch("/api/createToken", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId, role }),
+    });
+
+    const data = await response.json();
+    return data.token;
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!values.email || !values.password)
       return alert("請填寫 Email 或是 密碼");
@@ -56,9 +72,19 @@ const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
         values.password
       );
       if (!newUser) return;
+      const userRef = doc(firestore, "users", newUser.user.uid);
+      const userSnap = await getDoc(userRef);
+
+      const token = await createToken(newUser.user.uid, userSnap.data().role);
+      setCookie("token", token, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7,
+        secure: true,
+      });
 
       router.push("/");
     } catch (error: any) {
+      console.log(error.message);
       showErrorToast(error.message);
     }
   };

@@ -14,6 +14,7 @@ export type User = {
   thumbnail: string;
   thumbnail_64px: string;
   unit: DocumentReference;
+  role: string;
 };
 
 export type AuthDialog = {
@@ -26,4 +27,8 @@ export type Settings = {
   settingsDialogIsOpen: boolean;
   dropdownIsOpen: boolean;
   selectedLang: "py" | "js";
+};
+
+export type DevSettings = {
+  isMaintained: boolean;
 };
