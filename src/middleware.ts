@@ -1,19 +1,45 @@
+import { Redis } from '@upstash/redis'
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { doc, getDoc } from "firebase/firestore";
 import { firestore } from "./firebase/firebase";
 import { jwtVerify } from "jose";
 
-async function getMaintenanceSettings() {
-  const settingsRef = doc(firestore, "settings", "data");
-  const settingsSnap = await getDoc(settingsRef);
+// 創建 Redis 客戶端
+const redis = new Redis({
+  url: 'https://quiet-basilisk-20437.upstash.io',
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+})
 
-  if (!settingsSnap.exists()) {
-    console.error("No such document in Firestore!");
-    return null;
+interface MaintenanceSettings {
+  isMaintained: boolean;
+  lastUpdated?: string;
+  maintenanceMessage?: string;
+}
+
+const CACHE_KEY = 'maintenance_settings';
+const CACHE_DURATION = 300; // 5分鐘，以秒為單位
+
+async function getMaintenanceSettings(): Promise<MaintenanceSettings | null> {
+  // 嘗試從 Redis 獲取緩存數據
+  const cachedSettings = await redis.get(CACHE_KEY);
+  
+  if (cachedSettings && typeof cachedSettings === 'string') {
+    return JSON.parse(cachedSettings);
   }
 
-  return settingsSnap.data();
+  // 如果緩存中沒有，從 Firestore 獲取
+  const settingsRef = doc(firestore, "settings", "data");
+  const settingsSnap = await getDoc(settingsRef);
+  
+  if (settingsSnap.exists()) {
+    const settings = settingsSnap.data() as MaintenanceSettings;
+    // 將數據存入 Redis
+    await redis.set(CACHE_KEY, JSON.stringify(settings), { ex: CACHE_DURATION });
+    return settings;
+  }
+
+  return null;
 }
 
 async function verifyToken(token: string | undefined) {
@@ -36,6 +62,7 @@ export async function middleware(request: NextRequest) {
   console.log("decodedToken: ", decodedToken);
   // 如果沒有 token 或驗證失敗，重導向至 /auth
   if (!decodedToken || !token) {
+    console.log("Invalid or missing token, redirecting to auth.");
     return redirectToAuth(request);
   }
 
