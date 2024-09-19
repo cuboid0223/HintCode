@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { doc, getDoc } from "firebase/firestore";
 import { firestore } from "./firebase/firebase";
-import { jwtVerify } from "jose"; // 使用 jose 來驗證 JWT
+import { jwtVerify } from "jose";
 
-// Firestore 設定讀取函數
 async function getMaintenanceSettings() {
   const settingsRef = doc(firestore, "settings", "data");
   const settingsSnap = await getDoc(settingsRef);
@@ -17,7 +16,6 @@ async function getMaintenanceSettings() {
   return settingsSnap.data();
 }
 
-// 使用 jose 驗證 JWT 的函數
 async function verifyToken(token: string | undefined) {
   if (!token) return null;
 
@@ -36,7 +34,7 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
   const decodedToken = await verifyToken(token); // 使用 await 調用 verifyToken
-  console.log(decodedToken);
+  console.log("decodedToken: ", decodedToken);
   // 如果沒有 token 或驗證失敗，重導向至 /auth
   if (!decodedToken) {
     return redirectToAuth(request);
@@ -44,17 +42,21 @@ export async function middleware(request: NextRequest) {
 
   // 檢查是否為 superuser，如果是則直接放行
   if (decodedToken.role === "superuser") {
+    console.log("Superuser detected, bypassing maintenance check.");
     return NextResponse.next();
   }
+  console.log("User role detected:", decodedToken.role);
 
   const settings = await getMaintenanceSettings();
 
   // 如果無法取得設定資料，繼續正常處理
   if (!settings) {
+    console.log("No settings found, proceeding without maintenance checks.");
     return NextResponse.next();
   }
 
   const { isMaintained } = settings;
+  console.log("Maintenance status:", isMaintained);
   const pathname = request.nextUrl.pathname;
 
   // 根據維護狀態決定是否重導向至 /maintained 或 /auth
@@ -72,18 +74,21 @@ function handleMaintenanceRedirect(
   pathname: string,
   request: NextRequest
 ) {
+  console.log("isMaintained:", isMaintained, "pathname:", pathname);
   if (isMaintained && pathname !== "/maintained") {
+    console.log("Redirecting to /maintained page.");
     return NextResponse.redirect(new URL("/maintained", request.url));
   }
 
   if (!isMaintained && pathname === "/maintained") {
+    console.log("Redirecting to /auth page.");
     return redirectToAuth(request);
   }
-
+  console.log("Proceeding without redirection.");
   return NextResponse.next();
 }
 
 // 設置 matcher 來決定 Middleware 應該在哪些路徑上運行
 export const config = {
-  matcher: ["/", "/problems/:path*"],
+  matcher: ["/", "/problems/:path*", "/maintained"],
 };

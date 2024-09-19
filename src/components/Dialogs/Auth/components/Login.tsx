@@ -1,6 +1,6 @@
 import { auth, firestore } from "@/firebase/firebase";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { AuthDialog } from "@/types/global";
 import { z } from "zod";
@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import { showErrorToast } from "@/utils/Toast/message";
 import { FORGET_PASSWORD, REGISTER } from "@/utils/const";
 import { setCookie } from "cookies-next";
-import jwt from "jsonwebtoken";
 import { doc, getDoc } from "firebase/firestore";
 
 const formSchema = z.object({
@@ -32,6 +31,7 @@ type LoginProps = {
 };
 
 const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const handleChangeDialog = (
     type: "login" | "register" | "forgotPassword"
   ) => {
@@ -67,6 +67,7 @@ const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
     if (!values.email || !values.password)
       return alert("請填寫 Email 或是 密碼");
     try {
+      setIsLoading(true);
       const newUser = await signInWithEmailAndPassword(
         values.email,
         values.password
@@ -82,6 +83,7 @@ const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
         secure: true,
       });
 
+      setIsLoading(false);
       router.push("/");
     } catch (error: any) {
       console.log(error.message);
@@ -127,7 +129,7 @@ const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
             )}
           />
           <Button className="w-full" type="submit">
-            {loading ? "登入中..." : "登入"}
+            {isLoading ? "登入中..." : "登入"}
           </Button>
         </form>
       </Form>
