@@ -89,11 +89,13 @@ export default function Home() {
       problems: Problem[],
       userProblems: UserProblem[]
     ) => {
+      // 這裡可能是自動 reset 的 bug 發生的地方
       // 找到 problems 中不在 userProblems 裡的物件
       if (!userId || !problems) return;
       const missingProblems = findMissingProblems(problems, userProblems);
+      // console.log(`使用者缺少的文件: ${JSON.stringify(missingProblems)}`);
       for (const problem of missingProblems) {
-        console.log(`使用者(${userId}) 建立 ${problem.id} 文件 `);
+        // console.log(`使用者(${userId}) 建立 ${problem.id} 文件 `);
         await createUserProblem(userId, problem.id);
       }
     };
