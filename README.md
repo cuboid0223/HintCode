@@ -4,4 +4,4 @@
 
 ![Screenshot of App](./public/screenshot1.png)
 
-<!-- # [Demo](https://youtu.be/igqiduZR-Gg) -->
+# [Demo](https://youtu.be/igqiduZR-Gg)
