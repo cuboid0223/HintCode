@@ -29,14 +29,13 @@ async function verifyToken(token: string | undefined) {
   }
 }
 
-// Middleware 主邏輯
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
   const decodedToken = await verifyToken(token); // 使用 await 調用 verifyToken
   console.log("decodedToken: ", decodedToken);
   // 如果沒有 token 或驗證失敗，重導向至 /auth
-  if (!decodedToken) {
+  if (!decodedToken || !token) {
     return redirectToAuth(request);
   }
 
@@ -90,5 +89,5 @@ function handleMaintenanceRedirect(
 
 // 設置 matcher 來決定 Middleware 應該在哪些路徑上運行
 export const config = {
-  matcher: ["/", "/problems/:path*", "/maintained"],
+  matcher: ["/", "/problems/:path*"],
 };
