@@ -5,10 +5,11 @@ import React from "react";
 import { redirect } from "next/navigation";
 import { Orbitron } from "next/font/google";
 import TopBar from "@/components/Topbar";
-export const orbitron = Orbitron({
+import { NextFont } from "next/dist/compiled/@next/font";
+const orbitron = Orbitron({
   weight: "600",
   subsets: ["latin"],
-});
+}) as NextFont;
 export default async function Page() {
   const settingsRef = doc(firestore, "settings", "data");
   const settingsSnap = await getDoc(settingsRef);
