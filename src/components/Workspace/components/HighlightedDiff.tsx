@@ -1,9 +1,6 @@
 import React from "react";
 import { diffChars } from "diff";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-
 import { useTheme } from "next-themes";
-import { a11yDark, docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 type HighlightedDiffProps = {
   output: string;
@@ -13,13 +10,14 @@ type HighlightedDiffProps = {
 };
 
 const HighlightedDiff: React.FC<HighlightedDiffProps> = ({
-  output,
-  expectedOutput,
+  output = "",
+  expectedOutput = "",
   addedHidden, // 綠色不顯示
   removedHidden, // 紅色不顯示
 }) => {
   const { resolvedTheme } = useTheme();
   if (!output) return <p>{output}</p>;
+  console.log(output);
   const diff = diffChars(output, expectedOutput);
   // console.log(JSON.stringify(diff, null, 2));
 
