@@ -8,7 +8,9 @@ import { useRecoilState } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import getUserProblemById from "@/utils/problems/getUserProblemById";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import createUserProblem from "@/utils/problems/createUserProblem";
+import useGetUserInfo from "@/hooks/useGetUserInfo";
+import { getMaintenanceSettings } from "@/utils/problems/getSettings";
+import { SUPER_USER } from "@/utils/const";
 
 type ProblemPageProps = {
   problem: Problem;
@@ -17,6 +19,7 @@ type ProblemPageProps = {
 const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
   const router = useRouter();
   const hasMounted = useHasMounted();
+  const userInfo = useGetUserInfo();
   const [problemData, setProblemData] = useRecoilState(problemDataState);
   const { pid } = useParams<{ pid: string }>();
   const searchParams = useSearchParams();
@@ -46,6 +49,20 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
   useEffect(() => {
     if (isLocked) router.push(`/locked?pid=${pid}`);
   }, [isLocked, pid, router]);
+
+  useEffect(() => {
+    const redirectToMaintainPage = async (userInfo) => {
+      if (!userInfo) return;
+      const isMaintained = await getMaintenanceSettings();
+      if (userInfo.role !== SUPER_USER && isMaintained) {
+        router.push("/maintained");
+        console.log("redirect to maintain page");
+        return;
+      }
+    };
+
+    redirectToMaintainPage(userInfo);
+  }, [userInfo]);
 
   if (!hasMounted || isLocked) return null;
 

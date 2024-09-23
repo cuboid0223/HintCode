@@ -1,5 +1,8 @@
 import { Orbitron } from "next/font/google";
 
+export const SUPER_USER = "superuser";
+export const USER = "user";
+
 export const EXPERIMENTAL = "experimental";
 export const CONTROL = "control";
 

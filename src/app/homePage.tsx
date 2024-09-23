@@ -36,9 +36,13 @@ import CountUp from "react-countup";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { DIFFICULTY_CLASSES, orbitron } from "@/utils/const";
 import createUserProblem from "@/utils/problems/createUserProblem";
+import { useRouter } from "next/navigation";
+import { getMaintenanceSettings } from "@/utils/problems/getSettings";
+import { User } from "@/types/global";
 
 export default function Home() {
   const [user] = useAuthState(auth);
+  const router = useRouter();
   const userInfo = useGetUserInfo();
   const [loadingProblems, setLoadingProblems] = useState(true);
   const [progressValue, setProgressValue] = useState(0);
@@ -87,6 +91,21 @@ export default function Home() {
     };
     createMissingUserProblems(user?.uid, problems, userProblems);
   }, [user?.uid, problems, userProblems]);
+
+  useEffect(() => {
+    const redirectToMaintainPage = async (userInfo: User) => {
+      if (!userInfo) return;
+      const isMaintained = await getMaintenanceSettings();
+      if (userInfo.role !== "superuser" && isMaintained) {
+        console.log("redirect to maintain page");
+        router.push("/maintained");
+        return;
+      }
+      console.log("redirect to home page");
+    };
+
+    redirectToMaintainPage(userInfo);
+  }, [userInfo]);
 
   return (
     <>

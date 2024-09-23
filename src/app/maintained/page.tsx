@@ -2,13 +2,20 @@ import React from "react";
 import { Orbitron } from "next/font/google";
 import TopBar from "@/components/Topbar";
 import { NextFont } from "next/dist/compiled/@next/font";
+import { redirect } from "next/navigation";
+import { getMaintenanceSettings } from "@/utils/problems/getSettings";
 
 const orbitron: NextFont = Orbitron({
   weight: "600",
   subsets: ["latin"],
 });
 
-export default function Page() {
+export default async function Page() {
+  const isMaintained = await getMaintenanceSettings();
+
+  if (!isMaintained) {
+    redirect("/");
+  }
   return (
     <main className="h-screen flex flex-col">
       <TopBar />
