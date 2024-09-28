@@ -18,15 +18,20 @@ async function verifyToken(token: string | undefined) {
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
-  const decodedToken = await verifyToken(token); // 使用 await 調用 verifyToken
-  console.log("decodedToken: ", decodedToken);
-  // 如果沒有 token 或驗證失敗，重導向至 /auth
+  const decodedToken = await verifyToken(token);
   if (!decodedToken || !token) {
-    console.log("Invalid or missing token, redirecting to auth.");
     return redirectToAuth(request);
   }
 
-  return NextResponse.next();
+  // 将解码后的 token 信息添加到请求头
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-user-info', JSON.stringify(decodedToken));
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 // 封裝重導向到 /auth 的邏輯
