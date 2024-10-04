@@ -1,15 +1,22 @@
 "use server";
 
-import { IN_QUEUE_STATUS_ID, PROCESSING_STATUS_ID } from "@/utils/const";
+import { Languages } from "@/types/global";
+import {
+  DEFAULT_LANGUAGE_ID,
+  IN_QUEUE_STATUS_ID,
+  LANGUAGE_IDS,
+  LANGUAGE_PYTHON_ID,
+  PROCESSING_STATUS_ID,
+} from "@/utils/const";
 import base64ToString from "@/utils/testCases/base64ToString";
 import stringToBase64 from "@/utils/testCases/stringToBase64";
 
 type CodeInfo = {
   userCode: string;
   expectedOutput: string;
+  selectedLang: Languages;
 };
 
-const LANGUAGE_PYTHON_ID = 71; // https://ce.judge0.com/#statuses-and-languages-language
 const JUDGE0_URL = process.env.JUDGE0_URL;
 const API_KEY = process.env.X_RAPIDAPI_KEY;
 const RETRY_DELAY_MS = 300; // 等待重試的時間
@@ -21,13 +28,13 @@ const HEADERS = {
 
 export const submitUserCodeForTesting = async (codeInfo: CodeInfo) => {
   // 創造新的 submission
-  const { userCode, expectedOutput } = codeInfo;
+  const { userCode, expectedOutput, selectedLang } = codeInfo;
 
   const options = {
     method: "POST",
     headers: HEADERS,
     body: JSON.stringify({
-      language_id: LANGUAGE_PYTHON_ID,
+      language_id: LANGUAGE_IDS[selectedLang] || DEFAULT_LANGUAGE_ID,
       source_code: stringToBase64(userCode),
       stdin: "",
       memory_limit: "10000",

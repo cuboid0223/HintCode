@@ -13,7 +13,7 @@ export type Submission = {
 };
 
 export type TestCase = {
-  id: string;
+  // id: string;
   inputCode: string;
   output: string;
 };

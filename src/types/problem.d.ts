@@ -30,7 +30,12 @@ export type Problem = {
     js: string;
     [key: string]: string;
   };
-  testCaseCode: TestCase[];
+  // testCaseCode: TestCase[];
+  testCode: {
+    py: TestCase[];
+    vb: TestCase[];
+    [key: string]: TestCase[];
+  };
   isPublished: boolean;
   isHelpEnabled: boolean;
   isLocked: boolean;

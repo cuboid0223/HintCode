@@ -90,3 +90,12 @@ export const EASY = "Easy";
 export const MEDIUM = "Medium";
 export const HARD = "Hard";
 // ----------------------------------------------------------------
+
+export const LANGUAGE_PYTHON_ID = 71; // https://ce.judge0.com/#statuses-and-languages-language
+export const LANGUAGE_VB_ID = 84;
+export const DEFAULT_LANGUAGE_ID = LANGUAGE_PYTHON_ID;
+export const LANGUAGE_IDS = {
+  py: LANGUAGE_PYTHON_ID, // Python
+  vb: LANGUAGE_VB_ID, // Visual Basic
+};
+// ----------------------------------------------------------------

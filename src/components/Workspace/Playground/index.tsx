@@ -12,7 +12,7 @@ import {
 } from "@/actions/testCodeAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TestCaseList from "./components/TestCaseList";
-import { Submission } from "@/types/testCase";
+import { Submission, TestCase } from "@/types/testCase";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   submissionsState,
@@ -78,14 +78,17 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   });
   const { selectedLang } = settings;
 
-  const extractCode = (userCode: string) => {
+  const extractCode = (userCode: string, selectedLang: Languages) => {
     // 擷取第一個 function block
     // const pattern = /(?<!#)\bdef\s+\w+\s*\(.*?\)\s*:\s*\n(?:\s+.*(?:\n|$))+/;
-    const pattern =
+    const Py_pattern =
       /(?<!#)\bdef\s+\w+\s*\(.*?\)\s*:\s*\n(?:\s+[\s\S]*(?:\n|$))+/;
-
+    const VB_pattern = /Public Sub [\s\S]*?End Sub/;
     userCode = userCode.trim() + "\n\n"; // 多一些換行，讓隱藏程式碼可以執行
-    const match = userCode.match(pattern);
+
+    const match = userCode.match(
+      selectedLang === "py" ? Py_pattern : VB_pattern
+    );
     if (match) return match[0];
     showErrorToast(
       `無法擷取 ${problem.starterFunctionName[selectedLang]} `,
@@ -117,6 +120,27 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
     return true;
   };
 
+  const formatExecutableCodeByLanguage = (
+    code: string,
+    testCase: TestCase,
+    lang: Languages
+  ) => {
+    switch (lang) {
+      case "py":
+        return `${code}\n${testCase.inputCode.trim()}`;
+      case "vb":
+        return `Public Module Program
+    ${code}
+
+    Public Sub Main()
+      ${testCase.inputCode.trim()}
+    End Sub
+End Module`;
+      default:
+        throw new Error(`不支持 ${lang} 語言`);
+    }
+  };
+
   const handleExecution = async () => {
     if (!user) {
       showErrorToast("登入後才能執行程式");
@@ -129,16 +153,27 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
     }
 
     setIsLoading(true);
-    const extractedCode = extractCode(userCode);
+
+    const extractedCode = extractCode(userCode, selectedLang);
+    console.log("vb extractedCode", extractedCode);
     if (!isFuncNameCorrect(extractedCode)) return;
     if (!isCodeIncludesImport(extractedCode)) return;
 
     let temp: Submission[] = [];
     try {
-      for (const testCase of problem.testCaseCode) {
+      for (const testCase of problem.testCode[selectedLang]) {
+        console.log(
+          "testCase: ",
+          `${extractedCode}\n${testCase.inputCode.trim()}`
+        );
         const token: string = await submitUserCodeForTesting({
-          userCode: `${extractedCode}\n${testCase.inputCode.trim()}`,
+          userCode: formatExecutableCodeByLanguage(
+            extractedCode,
+            testCase,
+            selectedLang
+          ),
           expectedOutput: testCase.output,
+          selectedLang: selectedLang,
         });
         if (!token) throw new Error("或許你用到流量上限了!!");
 
