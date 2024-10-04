@@ -1,4 +1,5 @@
 import { Submission } from "./testCase";
+import { z } from "zod";
 
 type Message = {
   code: string;
@@ -7,8 +8,8 @@ type Message = {
   role: "user" | "assistant";
   text?: string;
   result?: Submission[];
-  type: string;
+  type?: string;
   isLiked?: number;
 };
 
-export { Message, Result };
+export { Message };

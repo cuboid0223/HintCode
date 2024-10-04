@@ -29,7 +29,7 @@ import { useParams } from "next/navigation";
 import { Dispatch, useState, SetStateAction } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
-import { Message } from "../../../../types/message";
+import { Message } from "@/types/message";
 import { Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { SubmissionsState } from "@/atoms/submissionsDataAtom";
@@ -52,15 +52,43 @@ import { updateProblemRemainTimes } from "@/utils/problems/updateUserProblem";
 import { Send } from "lucide-react";
 import { Languages } from "@/types/global";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
+import createPromptTemplate from "@/utils/HelpTypes/createPromptTemplate";
+import sendMessageToGPT from "@/utils/HelpTypes/sendMessageToGPT";
 
-const FormSchema = z.object({
-  helpType: z.string({
-    required_error: "您需要何種幫助",
-  }),
-  code: z.string().optional(),
-  prompt: z.string().optional(),
-  submissions: z.custom<SubmissionsState>(),
-});
+// const FormSchema = z.object({
+//   helpType: z.string({
+//     required_error: "您需要何種幫助",
+//   }),
+//   code: z.string().optional(),
+//   prompt: z.string().optional(),
+//   submissions: z.custom<SubmissionsState>(),
+// });
+const FormSchema = z
+  .object({
+    helpType: z
+      .string({
+        required_error: "您需要何種幫助",
+      })
+      .optional(),
+    text: z
+      .string({
+        required_error: "請輸入問題",
+      })
+      .trim()
+      .optional(),
+    code: z.string().optional(),
+    prompt: z.string().optional(),
+    submissions: z.custom<SubmissionsState>(),
+  })
+  .refine(
+    (data) => {
+      return (data.helpType && !data.text) || (!data.helpType && data.text);
+    },
+    {
+      message: "必須提供 helpType 或 text 其中之一",
+      path: ["helpType", "text"],
+    }
+  );
 
 type SelectFormProps = {
   messages: Message[];
@@ -103,32 +131,6 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     resolver: zodResolver(FormSchema),
   });
 
-  const formatCode = (code: string) => {
-    // 這裡要檢查 formatCode 到底輸出是啥
-    return code
-      .replace(/^\s*'''\s*/, "") // 移除開始的'''以及前面的空格
-      .replace(/\s*'''$/, "") // 移除結尾的'''以及後面的空格
-      .trim(); // 移除前後的空格
-  };
-
-  const formatSubmissions = (data: Submission[]) => {
-    /*
-    將測試資料的結果轉成純文字(自然語言)，方便 GPT 讀取
-    */
-    const formattedData = data.map((ele, id) => {
-      const output = ele.stdout ? ele.stdout : "空";
-      const error = ele.stderr ? ele.stderr : "空";
-      const msg = ele.message ? ele.message : "空";
-      const status = ele.status.description;
-      return `
-      測資${
-        id + 1
-      } : 其輸出為 ${output}，錯誤為 ${error}，訊息為 ${msg}，判斷為 ${status}
-      `;
-    });
-    return formattedData;
-  };
-
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     if (!user) {
       showErrorToast("請先登入");
@@ -141,12 +143,15 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   const processHelpRequest = (data: z.infer<typeof FormSchema>) => {
     switch (data.helpType) {
       case NEXT_STEP:
+        setBehaviors([...behaviors, BEHAVIOR_IDS.NEXT_STEP]);
         handleNextStep(data);
         break;
       case DEBUG_ERROR:
+        setBehaviors([...behaviors, BEHAVIOR_IDS.DEBUG_ERROR]);
         handleDebugError(data, submissions);
         break;
       case PREV_HINT_NOT_HELP:
+        setBehaviors([...behaviors, BEHAVIOR_IDS.PREV_HINT_NOT_HELP]);
         handlePrevHintNotHelp();
         break;
       default:
@@ -158,8 +163,14 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     data.code = localCurrentCode;
     data.prompt = NEXT_STEP_PROMPT;
     const promptTemplate = createPromptTemplate(data, problem.problemStatement);
-    setBehaviors([...behaviors, BEHAVIOR_IDS.NEXT_STEP]);
-    sendMessageToGPT(promptTemplate, threadId);
+
+    sendMessageToGPT(
+      promptTemplate,
+      threadId,
+      setIsGPTTextReady,
+      handleTextCreated,
+      handleTextDelta
+    );
     addUserMessage(data, null);
   };
 
@@ -179,8 +190,14 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       problem.problemStatement,
       submissions
     );
-    setBehaviors([...behaviors, BEHAVIOR_IDS.DEBUG_ERROR]);
-    sendMessageToGPT(promptTemplate, threadId);
+
+    sendMessageToGPT(
+      promptTemplate,
+      threadId,
+      setIsGPTTextReady,
+      handleTextCreated,
+      handleTextDelta
+    );
     addUserMessage(data, submissions);
   };
 
@@ -205,37 +222,6 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     return lastUserMessage ? lastUserMessage : null;
   };
 
-  const createPromptTemplate = (
-    data: z.infer<typeof FormSchema>,
-    problemStatement: string,
-    submissions = null
-  ) => {
-    return `
-    題目如下:
-=========problem statement start========
-    ${problemStatement}
-=========problem statement end==========
-    此題不需要自行呼叫函數，系統會自動呼叫並代入參數
-    以下是我目前的程式碼:
-==========code start==========
-
-    ${formatCode(data.code)}
-
-===========code end===========
-
-    ${
-      submissions
-        ? `以下是我的程式經過測試後的輸出
-==========test start==========
-    ${formatSubmissions(submissions)}
-==========test end==========
-    `
-        : ""
-    }
-    ${data.prompt}
-  `;
-  };
-
   const addUserMessage = (
     data: z.infer<typeof FormSchema>,
     result: Submission[]
@@ -251,30 +237,6 @@ export const SelectForm: React.FC<SelectFormProps> = ({
         type: data.helpType,
       },
     ]);
-  };
-
-  const sendMessageToGPT = async (text: string, threadId: string) => {
-    if (!threadId || !text) return;
-    setIsGPTTextReady(true);
-    const response = await fetch(
-      `/api/assistants/threads/${threadId}/messages`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          content: text,
-        }),
-      }
-    );
-
-    const stream = AssistantStream.fromReadableStream(response.body);
-    handleReadableStream(stream);
-    setIsGPTTextReady(false);
-  };
-
-  const handleReadableStream = (stream: AssistantStream) => {
-    // messages
-    stream.on("textCreated", handleTextCreated);
-    stream.on("textDelta", handleTextDelta);
   };
 
   /* Stream Event Handlers */
@@ -304,7 +266,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
         [
           ...prevMessages,
           { role, text, id: uuidv4(), created_at: Timestamp.now().toMillis() },
-        ] as MessageType[]
+        ] as Message[]
     );
   };
 

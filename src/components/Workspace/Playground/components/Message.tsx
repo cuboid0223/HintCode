@@ -15,7 +15,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getTextByType } from "@/utils/HelpTypes/getTextByType";
 
 type MessageProps = {
@@ -59,8 +59,9 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
         >{`~~~py\n ${code.replace(/^"(.*)"$/, "$1").replace(/\\n/g, "\n")}\n~~~`}</CustomMarkdown>
       )}
 
-      <section className="flex justify-between items-center">
+      <section className={`flex ${result && "justify-between items-center"} `}>
         <p>{getTextByType(type)}</p>
+        <p>{text}</p>
         <div className="flex justify-end space-x-3 mt-3">
           {result && (
             <Popover>

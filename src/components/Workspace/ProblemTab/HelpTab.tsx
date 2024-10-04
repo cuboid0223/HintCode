@@ -16,7 +16,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { problemDataState } from "@/atoms/ProblemData";
-import { Message as MessageType } from "../../../types/message";
+import { Message as MessageType } from "@/types/message";
 import useGetProblemMessages from "@/hooks/useGetProblemMessages";
 import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { SelectForm } from "./components/SelectForm";
@@ -161,6 +161,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
           isGPTTextReady={isGPTTextReady}
           setIsGPTTextReady={setIsGPTTextReady}
           isHelpBtnDisable={isHelpBtnDisable}
+          threadId={threadId}
           isHidden={false}
         />
 
