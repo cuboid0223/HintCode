@@ -215,7 +215,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
         gutter={(index, direction) => {
           const gutter = document.createElement("div");
           gutter.className = `gutter gutter-${direction} ${
-            resolvedTheme === "dark" ? "bg-gray-600" : "bg-gray-300 "
+            resolvedTheme === "dark" ? "bg-gray-600" : "bg-gray-300"
           } `;
           return gutter;
         }}
@@ -225,7 +225,8 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
           <Editor
             value={userCode}
             theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
-            defaultLanguage="python"
+            // defaultLanguage="python"
+            language={selectedLang === "py" ? "python" : selectedLang}
             defaultValue=""
             onChange={onChange}
             options={{ fontSize: parseInt(settings.fontSize) }}
