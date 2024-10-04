@@ -24,13 +24,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RingLoader } from "react-spinners";
-import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { Submission } from "@/types/testCase";
 import { useParams } from "next/navigation";
 import { Dispatch, useState, SetStateAction } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
-import { Message, Message as MessageType } from "../../../../types/message";
+import { Message } from "../../../../types/message";
 import { Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { SubmissionsState } from "@/atoms/submissionsDataAtom";
@@ -65,12 +64,13 @@ const FormSchema = z.object({
 
 type SelectFormProps = {
   messages: Message[];
-  setMessages: Dispatch<SetStateAction<MessageType[]>>;
+  setMessages: Dispatch<SetStateAction<Message[]>>;
   isGPTTextReady: boolean;
   setIsGPTTextReady: Dispatch<SetStateAction<boolean>>;
   isHelpBtnDisable: boolean;
   threadId: string;
   submissions: SubmissionsState;
+  isHidden: boolean;
 };
 
 export const SelectForm: React.FC<SelectFormProps> = ({
@@ -81,6 +81,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   isHelpBtnDisable,
   threadId,
   submissions,
+  isHidden,
 }) => {
   const [user] = useAuthState(auth);
   const { pid } = useParams<{ pid: string }>();
@@ -323,7 +324,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="absolute bottom-0 left-0 p-3 z-50 flex w-full items-center space-x-2 bg-card "
+        className={`flex w-full items-center space-x-2 bg-card ${isHidden && "hidden"}`}
       >
         <FormField
           control={form.control}

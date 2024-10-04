@@ -178,22 +178,6 @@ code {
   color: rgba(239, 241, 246, 0.75);
 }
 
-.example-card pre {
-  background-color: hsla(0, 0%, 100%, 0.1);
-  border-radius: 0.5rem;
-  color: rgba(239, 241, 246, 0.75);
-  font-size: 0.98rem;
-  line-height: 1.25rem;
-  margin-bottom: 1rem;
-  margin-top: 1rem;
-  padding: 1rem;
-  white-space: pre-wrap;
-}
-.example-card pre strong {
-  color: white;
-  font-size: 1rem;
-}
-
 .transition-colors {
   transition-property: background-color;
   transition-timing-function: linear;

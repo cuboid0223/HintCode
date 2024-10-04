@@ -1,6 +1,6 @@
 "use client";
 import { Submission } from "@/types/testCase";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { CircleSlash, CircleCheckBig } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import HighlightedDiff from "@/components/Workspace/components/HighlightedDiff";
 import { ACCEPTED_STATUS_ID } from "@/utils/const";
-import SyntaxHighlighter from "react-syntax-highlighter";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { useTheme } from "next-themes";
 import { a11yDark, docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 

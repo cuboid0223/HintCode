@@ -23,6 +23,7 @@ import { SelectForm } from "./components/SelectForm";
 import { PropagateLoader } from "react-spinners";
 import getUserProblemById from "@/utils/problems/getUserProblemById";
 import { pid } from "process";
+import CustomInputForm from "./components/CustomInputForm";
 
 type ProblemHelpProps = {
   threadId: string;
@@ -152,16 +153,29 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
       {/* 聊天記錄底部 */}
       {messages.length !== 0 && <div className="h-36" ref={messagesEndRef} />}
 
-      {/* 選擇幫助類型表單 */}
-      <SelectForm
-        messages={messages}
-        setMessages={setMessages}
-        isGPTTextReady={isGPTTextReady}
-        setIsGPTTextReady={setIsGPTTextReady}
-        isHelpBtnDisable={isHelpBtnDisable}
-        threadId={threadId}
-        submissions={submissions}
-      />
+      <section className="absolute bottom-0 left-0 z-50 w-full flex flex-col gap-3 p-2 bg-card">
+        {/* 客製化對話框 */}
+        <CustomInputForm
+          messages={messages}
+          setMessages={setMessages}
+          isGPTTextReady={isGPTTextReady}
+          setIsGPTTextReady={setIsGPTTextReady}
+          isHelpBtnDisable={isHelpBtnDisable}
+          isHidden={false}
+        />
+
+        {/* 選擇幫助類型表單 */}
+        <SelectForm
+          messages={messages}
+          setMessages={setMessages}
+          isGPTTextReady={isGPTTextReady}
+          setIsGPTTextReady={setIsGPTTextReady}
+          isHelpBtnDisable={isHelpBtnDisable}
+          threadId={threadId}
+          submissions={submissions}
+          isHidden={true}
+        />
+      </section>
     </section>
   );
 };
