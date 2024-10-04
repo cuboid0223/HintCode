@@ -34,9 +34,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
 import CountUp from "react-countup";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
-import { DIFFICULTY_CLASSES, orbitron } from "@/utils/const";
+import { DIFFICULTY_CLASSES, orbitron400 as orbitron } from "@/utils/const";
 import createUserProblem from "@/utils/problems/createUserProblem";
-
 
 export default function Home() {
   const [user] = useAuthState(auth);
@@ -88,8 +87,6 @@ export default function Home() {
     };
     createMissingUserProblems(user?.uid, problems, userProblems);
   }, [user?.uid, problems, userProblems]);
-
-
 
   return (
     <>

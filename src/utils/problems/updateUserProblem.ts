@@ -33,5 +33,23 @@ async function updateProblemRemainTimes(uid: string, problemId: string) {
   }
 }
 
-export default updateProblemLockStatus;
-export { updateProblemRemainTimes };
+async function updateProblemBehaviors(
+  uid: string,
+  problemId: string,
+  behaviors: string[]
+) {
+  try {
+    const userProblemRef = doc(firestore, "users", uid, "problems", problemId);
+    await updateDoc(userProblemRef, {
+      behaviors: behaviors,
+    });
+  } catch (error) {
+    console.error("Error updating remain times: ", error);
+  }
+}
+
+export {
+  updateProblemRemainTimes,
+  updateProblemLockStatus,
+  updateProblemBehaviors,
+};

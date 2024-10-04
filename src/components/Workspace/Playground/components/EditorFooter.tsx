@@ -16,6 +16,8 @@ import { DotLoader } from "react-spinners";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useSpring, animated } from "react-spring";
 import { showSuccessToast, showWarningToast } from "@/utils/Toast/message";
+import { updateProblemBehaviors } from "@/utils/problems/updateUserProblem";
+import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 
 type EditorFooterProps = {
   handleExecution: () => void;
@@ -36,7 +38,8 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
     useRecoilState(isPersonalInfoDialogOpenState);
   const [isMessageLoading, setIsMessageLoading] = useState(false);
   const [isBouncing, setIsBouncing] = React.useState(false);
-
+  const [behaviors, setBehaviors] =
+    useRecoilState<BehaviorsState>(behaviorsState);
   const messages = useGetProblemMessages(
     user?.uid,
     problem?.id,
@@ -59,7 +62,7 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
       is_solved: true,
     });
     showSuccessToast("恭喜! 通過所有測試資料!");
-
+    updateProblemBehaviors(user?.uid, problem.id, behaviors);
     setIsBouncing(false);
     setSuccess(true);
     setIsPersonalInfoDialogOpen(true);

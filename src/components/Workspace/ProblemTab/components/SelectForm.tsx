@@ -28,7 +28,7 @@ import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { Submission } from "@/types/testCase";
 import { useParams } from "next/navigation";
 import { Dispatch, useState, SetStateAction } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import { Message, Message as MessageType } from "../../../../types/message";
 import { Timestamp } from "firebase/firestore";
@@ -39,6 +39,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import {
+  BEHAVIOR_IDS,
   DEBUG_ERROR,
   DEBUG_ERROR_PROMPT,
   HELP_TYPE_OPTIONS,
@@ -48,9 +49,10 @@ import {
 } from "@/utils/const";
 import { getPromptByType } from "@/utils/HelpTypes/getTextByType";
 import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
-import { updateProblemRemainTimes } from "@/utils/problems/updateProblemLockStatus";
+import { updateProblemRemainTimes } from "@/utils/problems/updateUserProblem";
 import { Send } from "lucide-react";
 import { Languages } from "@/types/global";
+import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 
 const FormSchema = z.object({
   helpType: z.string({
@@ -82,6 +84,8 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 }) => {
   const [user] = useAuthState(auth);
   const { pid } = useParams<{ pid: string }>();
+  const [behaviors, setBehaviors] =
+    useRecoilState<BehaviorsState>(behaviorsState);
   const problem = useRecoilValue(problemDataState);
   const [lang, setLang] = useLocalStorage<Languages>("selectedLang", "py");
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
@@ -153,7 +157,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     data.code = localCurrentCode;
     data.prompt = NEXT_STEP_PROMPT;
     const promptTemplate = createPromptTemplate(data, problem.problemStatement);
-
+    setBehaviors([...behaviors, BEHAVIOR_IDS.NEXT_STEP]);
     sendMessageToGPT(promptTemplate, threadId);
     addUserMessage(data, null);
   };
@@ -174,7 +178,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       problem.problemStatement,
       submissions
     );
-
+    setBehaviors([...behaviors, BEHAVIOR_IDS.DEBUG_ERROR]);
     sendMessageToGPT(promptTemplate, threadId);
     addUserMessage(data, submissions);
   };
@@ -191,6 +195,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       prompt: getPromptByType(prevMessage.type),
       submissions: prevMessage.result,
     };
+
     processHelpRequest(prevData);
   };
 

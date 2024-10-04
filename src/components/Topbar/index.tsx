@@ -17,16 +17,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useGetProblems from "@/hooks/useGetProblems";
-
-import { Orbitron } from "next/font/google";
 import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import LogoutButton from "../Topbar/components/LogoutBtn";
-
-const orbitron = Orbitron({
-  weight: "600",
-  subsets: ["latin"],
-});
+import { orbitron600 as orbitron } from "@/utils/const";
 
 import PersonalInfoDialog from "../Dialogs/PersonalInfoDialog";
 type TopBarProps = {

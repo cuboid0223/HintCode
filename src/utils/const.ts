@@ -17,6 +17,9 @@ export const DIFFICULTY_CLASSES = {
   Medium: "text-dark-yellow",
   Hard: "text-dark-pink",
 };
+export const EASY = "Easy";
+export const MEDIUM = "Medium";
+export const HARD = "Hard";
 
 // EDITOR_FONT_SIZES
 export const EDITOR_FONT_SIZES = [
@@ -33,9 +36,16 @@ export const EDITOR_FONT_SIZES = [
 export const RADIO_VALUE = ["非常不同意", "不同意", "普通", "同意", "非常同意"];
 
 // font text
-export const orbitron = Orbitron({
+export const orbitron400 = Orbitron({
   weight: "400",
   subsets: ["latin"],
+  variable: "--font-orbitron",
+});
+
+export const orbitron600 = Orbitron({
+  weight: "600",
+  subsets: ["latin"],
+  variable: "--font-orbitron",
 });
 
 export const ASSISTANT_INSTRUCTIONS =
@@ -80,16 +90,12 @@ export const HELP_TYPE_OPTIONS = [
 ];
 
 //----------------------------------------------------------------
+// Judge0 的 咚咚
 export const IN_QUEUE_STATUS_ID = 1;
 export const PROCESSING_STATUS_ID = 2;
 export const ACCEPTED_STATUS_ID = 3;
 export const WRONG_ANSWER_STATUS_ID = 4;
 export const RUNTIME_ERROR_STATUS_ID = 11;
-
-export const EASY = "Easy";
-export const MEDIUM = "Medium";
-export const HARD = "Hard";
-// ----------------------------------------------------------------
 
 export const LANGUAGE_PYTHON_ID = 71; // https://ce.judge0.com/#statuses-and-languages-language
 export const LANGUAGE_VB_ID = 84;
@@ -98,4 +104,17 @@ export const LANGUAGE_IDS = {
   py: LANGUAGE_PYTHON_ID, // Python
   vb: LANGUAGE_VB_ID, // Visual Basic
 };
+// ----------------------------------------------------------------
+// 這個變數，是為了監聽學生在解題的過程中，有沒有按照我們的預期行為
+// 目的是為了產生 行為轉換圖
+// 最終每題會產生一個 number array 透過 sliding window 來計算行為轉換的次數
+export const BEHAVIOR_IDS = {
+  NEXT_STEP: "1",
+  DEBUG_ERROR: "2",
+  ASK_CUSTOM_QUESTION: "4",
+  READ_QUESTION_AGAIN: "5",
+  EXECUTION_SUCCESS: "6",
+  EXECUTION_FAILURE: "7",
+};
+
 // ----------------------------------------------------------------

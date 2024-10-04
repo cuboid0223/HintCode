@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PreferenceNav from "./components/PreferenceNav";
 import Split from "react-split";
 import EditorFooter from "./components/EditorFooter";
@@ -29,6 +29,8 @@ import useGetProblems from "@/hooks/useGetProblems";
 import { percentage } from "@/utils/percentage";
 import { Languages, Settings } from "@/types/global";
 import { useParams } from "next/navigation";
+import { BEHAVIOR_IDS } from "@/utils/const";
+import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
@@ -43,6 +45,8 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   const { pid } = useParams<{ pid: string }>();
   const { problems } = useGetProblems();
   const problem = useRecoilValue(problemDataState);
+  const [behaviors, setBehaviors] =
+    useRecoilState<BehaviorsState>(behaviorsState);
 
   const userProblems = useSubscribedUserProblems();
   const [lang, setLang] = useLocalStorage<Languages>("selectedLang", "py");
@@ -201,12 +205,19 @@ End Module`;
   useEffect(() => {
     // 確認是否全部測資都通過
     if (submissions.length === 0) return;
-    setIsAccepted(isAllTestCasesAccepted(submissions));
-  }, [submissions]);
+
+    const allTestsPassed = isAllTestCasesAccepted(submissions);
+    const newBehavior = allTestsPassed
+      ? BEHAVIOR_IDS.EXECUTION_SUCCESS
+      : BEHAVIOR_IDS.EXECUTION_FAILURE;
+
+    setBehaviors((prevBehaviors) => [...prevBehaviors, newBehavior]);
+
+    setIsAccepted(allTestsPassed);
+  }, [submissions, setBehaviors]);
 
   useEffect(() => {
     // 如果全部測資都通過且按了繳交按鈕 則重新計算使用者完成率
-
     const updateUserCompletionRate = async () => {
       if (!user) return;
       const solvedProblems = userProblems.filter((p) => p.is_solved === true);
@@ -225,9 +236,9 @@ End Module`;
     if (user && localCurrentCode) {
       setUserCode(localCurrentCode);
     } else {
-      setUserCode(problem.starterCode.py);
+      setUserCode(problem.starterCode[selectedLang]);
     }
-  }, [pid, user, problem.starterCode.py, localCurrentCode]);
+  }, [pid, user, localCurrentCode, problem.starterCode, selectedLang]);
 
   return (
     <div className="flex flex-col relative overflow-x-hidden ">

@@ -18,12 +18,7 @@ import { View } from "@/components/canvas/View";
 import { animated } from "react-spring";
 import Avatar from "@/components/Avatar";
 import { useUserTransitions } from "@/hooks/useUsers";
-import { Orbitron } from "next/font/google";
-
-const orbitron = Orbitron({
-  weight: "600",
-  subsets: ["latin"],
-});
+import { orbitron600 as orbitron } from "@/utils/const";
 
 const Trophy = dynamic(
   () => import("@/components/canvas/Models").then((mod) => mod.Trophy),

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Split from "react-split";
 import Playground from "./Playground";
 import Confetti from "react-confetti";
@@ -13,7 +13,7 @@ import DaGaKoToWaRuDialog from "../Dialogs/DaGaKoToWaRuDialog";
 import getUserProblemById from "@/utils/problems/getUserProblemById";
 import { auth } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import updateProblemLockStatus from "@/utils/problems/updateProblemLockStatus";
+import { updateProblemLockStatus } from "@/utils/problems/updateUserProblem";
 import useGetProblemGroup from "@/hooks/useGetProblemGroup";
 import { useParams } from "next/navigation";
 import useGetProblems from "@/hooks/useGetProblems";

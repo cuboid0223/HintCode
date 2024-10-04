@@ -5,17 +5,21 @@ import DescriptionTab from "./DescriptionTab";
 import HelpTab from "./HelpTab";
 import { useEffect, useState } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import { Message } from "../../../types/message";
-import { CONTROL, EXPERIMENTAL } from "@/utils/const";
+import { BEHAVIOR_IDS, CONTROL, EXPERIMENTAL } from "@/utils/const";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import getUserProblemById from "@/utils/problems/getUserProblemById";
+import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
+import { updateProblemBehaviors } from "@/utils/problems/updateUserProblem";
 
 type ProblemTabProps = {};
 
 const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
   const problem = useRecoilValue(problemDataState);
+  const [behaviors, setBehaviors] =
+    useRecoilState<BehaviorsState>(behaviorsState);
   const [user] = useAuthState(auth);
   const userData = useGetUserInfo();
 
@@ -27,7 +31,16 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
 
   const handleProblemTabChange = (value: string) => {
     setProblemTab(value);
+    if (value === "description")
+      setBehaviors([...behaviors, BEHAVIOR_IDS.READ_QUESTION_AGAIN]);
   };
+
+  useEffect(() => {
+    if (behaviors.length > 0 && behaviors.length % 2 === 0) {
+      console.log("Behaviors updated:", behaviors);
+      updateProblemBehaviors(user?.uid, problem.id, behaviors);
+    }
+  }, [behaviors, user?.uid, problem.id]);
 
   useEffect(() => {
     if (!user) return;

@@ -1,14 +1,8 @@
 import React from "react";
-import { Orbitron } from "next/font/google";
 import TopBar from "@/components/Topbar";
-import { NextFont } from "next/dist/compiled/@next/font";
 import { redirect } from "next/navigation";
 import { getMaintenanceSettings } from "@/utils/problems/getSettings";
-
-const orbitron: NextFont = Orbitron({
-  weight: "600",
-  subsets: ["latin"],
-});
+import { orbitron600 } from "@/utils/const";
 
 export default async function MaintainedPage() {
   const isMaintained = await getMaintenanceSettings();
@@ -20,7 +14,7 @@ export default async function MaintainedPage() {
     <main className="h-screen flex flex-col">
       <TopBar />
       <section className="flex-grow flex justify-center items-center h-full">
-        <h1 className={`${orbitron.className} text-2xl`}>
+        <h1 className={`${orbitron600.className} text-2xl`}>
           System maintenance in progress
         </h1>
       </section>

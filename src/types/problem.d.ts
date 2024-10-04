@@ -49,6 +49,7 @@ export type UserProblem = {
   remainTimes: number;
   is_solved: boolean;
   isLocked: boolean;
+  behaviors: string[];
 };
 
 export type Difficulty = "Easy" | "Medium" | "Hard";
