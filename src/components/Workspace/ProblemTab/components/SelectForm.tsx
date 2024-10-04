@@ -50,6 +50,7 @@ import { getPromptByType } from "@/utils/HelpTypes/getTextByType";
 import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
 import { updateProblemRemainTimes } from "@/utils/problems/updateProblemLockStatus";
 import { Send } from "lucide-react";
+import { Languages } from "@/types/global";
 
 const FormSchema = z.object({
   helpType: z.string({
@@ -82,12 +83,13 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   const [user] = useAuthState(auth);
   const { pid } = useParams<{ pid: string }>();
   const problem = useRecoilValue(problemDataState);
+  const [lang, setLang] = useLocalStorage<Languages>("selectedLang", "py");
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
-    `latest-test-py-code-${user?.uid}`,
+    `latest-test-${lang}-code-${user?.uid}`,
     ""
   );
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
-    `py-code-${pid}-${user?.uid}`,
+    `${lang}-code-${pid}-${user?.uid}`,
     ""
   );
 

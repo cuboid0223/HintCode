@@ -59,6 +59,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     =======================
   */
   useEffect(() => {
+    // 渲染之前的聊天記錄
     if (prevMessages.length > 0) setMessages(prevMessages);
   }, [prevMessages, setMessages]);
 
@@ -143,11 +144,15 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
           ))}
         </div>
       </div>
+      {/* GPT response Loader */}
       <div className="bg-red-500 w-full h-full flex items-center justify-center">
         <PropagateLoader color="#36cf47" size={10} loading={isGPTTextReady} />
       </div>
+
+      {/* 聊天記錄底部 */}
       {messages.length !== 0 && <div className="h-36" ref={messagesEndRef} />}
 
+      {/* 選擇幫助類型表單 */}
       <SelectForm
         messages={messages}
         setMessages={setMessages}

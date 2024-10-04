@@ -155,17 +155,12 @@ End Module`;
     setIsLoading(true);
 
     const extractedCode = extractCode(userCode, selectedLang);
-    console.log("vb extractedCode", extractedCode);
     if (!isFuncNameCorrect(extractedCode)) return;
     if (!isCodeIncludesImport(extractedCode)) return;
 
     let temp: Submission[] = [];
     try {
       for (const testCase of problem.testCode[selectedLang]) {
-        console.log(
-          "testCase: ",
-          `${extractedCode}\n${testCase.inputCode.trim()}`
-        );
         const token: string = await submitUserCodeForTesting({
           userCode: formatExecutableCodeByLanguage(
             extractedCode,

@@ -1,8 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { a11yDark, docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import {
+  a11yDark,
+  androidstudio,
+  docco,
+} from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { Languages } from "@/types/global";
 
 type CustomMarkdownType = {
   theme: string;
@@ -11,6 +17,25 @@ type CustomMarkdownType = {
 
 const CustomMarkdown: React.FC<CustomMarkdownType> = ({ theme, children }) => {
   const ref = useRef<SyntaxHighlighter>(null);
+  const [lang] = useLocalStorage("selectedLang", "py");
+
+  const getLanguage = (className: string | undefined) => {
+    // const match = /language-(\w+)/.exec(className || "");
+    // console.log("match[1]", match);
+    // if (match) {
+    //   return match[1];
+    // }
+
+    // console.log(lang === "vb" ? "vbnet" : "python");
+    return lang === "vb" ? "vbnet" : "python";
+  };
+
+  const getStyle = (theme: string, lang: string) => {
+    if (theme === "dark" && lang === "py") return a11yDark;
+    if (theme === "light" && lang === "py") return docco;
+    if (theme === "dark" && lang === "vb") return androidstudio;
+    return androidstudio; // 默认样式
+  };
 
   return (
     <Markdown
@@ -18,11 +43,11 @@ const CustomMarkdown: React.FC<CustomMarkdownType> = ({ theme, children }) => {
       components={{
         code(props) {
           const { children, className, node, ...rest } = props;
-          const match = /language-(\w+)/.exec(className || "");
-          return match ? (
+          const language = getLanguage(className);
+          return language ? (
             <SyntaxHighlighter
-              style={theme === "dark" ? a11yDark : docco}
-              language="python"
+              style={getStyle(theme, lang)}
+              language={language}
               showLineNumbers
             >
               {String(children).trim()}
