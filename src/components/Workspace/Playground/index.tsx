@@ -27,7 +27,7 @@ import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
 import useGetProblems from "@/hooks/useGetProblems";
 import { percentage } from "@/utils/percentage";
-import { Settings } from "@/types/global";
+import { Languages, Settings } from "@/types/global";
 import { useParams } from "next/navigation";
 
 type PlaygroundProps = {
@@ -45,14 +45,15 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   const problem = useRecoilValue(problemDataState);
 
   const userProblems = useSubscribedUserProblems();
-  // 最後一次執行的程式碼
+  const [lang, setLang] = useLocalStorage<Languages>("selectedLang", "py");
+  // 最一次執行的程式碼
   const [localLatestTestCode, setLocalLatestTestCode] = useLocalStorage(
-    `latest-test-py-code-${user?.uid}`,
+    `latest-test-${lang}-code-${user?.uid}`,
     ""
   );
   // playground 的程式碼
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
-    `py-code-${pid}-${user?.uid}`,
+    `${lang}-code-${pid}-${user?.uid}`,
     ""
   );
 
@@ -73,7 +74,7 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
     fontSize: fontSize,
     settingsDialogIsOpen: false,
     dropdownIsOpen: false,
-    selectedLang: "py",
+    selectedLang: lang as Languages,
   });
   const { selectedLang } = settings;
 

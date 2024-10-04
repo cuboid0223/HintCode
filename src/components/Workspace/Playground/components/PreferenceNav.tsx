@@ -28,8 +28,9 @@ import { useTheme } from "next-themes";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { problemDataState } from "@/atoms/ProblemData";
 import { useRecoilValue } from "recoil";
-import { Settings } from "@/types/global";
+import { Languages, Settings } from "@/types/global";
 import { EDITOR_FONT_SIZES } from "@/utils/const";
+import { useEffect } from "react";
 
 type PreferenceNavProps = {
   settings: Settings;
@@ -44,13 +45,16 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
 }) => {
   const problem = useRecoilValue(problemDataState);
   const { resolvedTheme } = useTheme();
-  const [selectedLang, setSelectedLang] = useLocalStorage("selectedLang", "py");
+  const [selectedLang, setSelectedLang] = useLocalStorage<Languages>(
+    "selectedLang",
+    "py"
+  );
   const [fontSize, setFontSize] = useLocalStorage(
     "playground-fontSize",
     "16px"
   );
 
-  const handleSelectedLang = (lang: "py" | "js") => {
+  const handleSelectedLang = (lang: "py" | "js" | "vb") => {
     setSelectedLang(lang);
     setSettings({ ...settings, selectedLang: lang });
   };
@@ -66,7 +70,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
 
   return (
     <div className="flex items-center justify-between w-full ">
-      <Select onValueChange={handleSelectedLang}>
+      <Select onValueChange={handleSelectedLang} value={selectedLang}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Python" />
         </SelectTrigger>
@@ -75,6 +79,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
           <SelectItem value="js" disabled>
             JavaScript
           </SelectItem>
+          <SelectItem value="vb">Visual Basic.Net</SelectItem>
         </SelectContent>
       </Select>
 

@@ -22,11 +22,13 @@ export type AuthDialog = {
   isOpen: boolean;
 };
 
+export type Languages = "py" | "js" | "vb";
+
 export type Settings = {
   fontSize: string;
   settingsDialogIsOpen: boolean;
   dropdownIsOpen: boolean;
-  selectedLang: "py" | "js";
+  selectedLang: Languages;
 };
 
 export type DevSettings = {
