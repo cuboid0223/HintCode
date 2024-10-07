@@ -68,9 +68,6 @@ export const getSubmissionData = async (token: string) => {
         status.id === IN_QUEUE_STATUS_ID ||
         status.id === PROCESSING_STATUS_ID
       ) {
-        console.log(
-          `Current status(id: ${status.id}): ${status.description}. Retrying...`
-        );
         await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
         return fetchSubmissionResult();
       } else {

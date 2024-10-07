@@ -43,7 +43,6 @@ const Timer: React.FC<TimerProps> = () => {
       if (user) {
         updateDoc(userProblemRef, { acceptedTime: time })
           .then(() => {
-            console.log("acceptedTime updated");
             lastUpdateRef.current = Date.now();
           })
           .catch((error) =>

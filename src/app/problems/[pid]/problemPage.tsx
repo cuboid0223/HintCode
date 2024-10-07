@@ -11,6 +11,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { getMaintenanceSettings } from "@/utils/problems/getSettings";
 import { SUPER_USER } from "@/utils/const";
+import MaintainedPage from "@/components/Maintained";
 
 type ProblemPageProps = {
   problem: Problem;
@@ -51,17 +52,15 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
   }, [isLocked, pid, router]);
 
   useEffect(() => {
-    const redirectToMaintainPage = async (userInfo) => {
+    const returnMaintainPage = async (userInfo) => {
       if (!userInfo) return;
       const isMaintained = await getMaintenanceSettings();
       if (userInfo.role !== SUPER_USER && isMaintained) {
-        router.push("/maintained");
-        console.log("redirect to maintain page");
-        return;
+        return <MaintainedPage />;
       }
     };
 
-    redirectToMaintainPage(userInfo);
+    returnMaintainPage(userInfo);
   }, [userInfo]);
 
   if (!hasMounted || isLocked) return null;

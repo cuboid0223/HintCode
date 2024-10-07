@@ -28,8 +28,5 @@ async function shouldShowMaintainedPage(
   if (!userInfo) return false;
 
   const isMaintained = await getMaintenanceSettings();
-  console.log("isMaintained : ", isMaintained);
-  console.log("userInfo.role !== SUPER_USER : ", userInfo.role !== SUPER_USER);
-  console.log(userInfo.role !== SUPER_USER && isMaintained);
   return userInfo.role !== SUPER_USER && isMaintained;
 }

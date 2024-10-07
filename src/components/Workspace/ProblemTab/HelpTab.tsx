@@ -108,10 +108,6 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     }
   };
 
-  useEffect(() => {
-    console.log(finalText);
-  }, [finalText]);
-
   /*
     =======================
     === Utility Helpers ===
