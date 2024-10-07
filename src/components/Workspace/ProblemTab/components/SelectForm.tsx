@@ -43,7 +43,6 @@ import {
   HELP_TYPE_OPTIONS,
   NEXT_STEP,
   NEXT_STEP_PROMPT,
-  PREV_HINT_NOT_HELP,
 } from "@/utils/const";
 import { getPromptByType } from "@/utils/HelpTypes/getTextByType";
 import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
@@ -154,10 +153,10 @@ export const SelectForm: React.FC<SelectFormProps> = ({
         setBehaviors([...behaviors, BEHAVIOR_IDS.DEBUG_ERROR]);
         handleDebugError(data, submissions);
         break;
-      case PREV_HINT_NOT_HELP:
-        // setBehaviors([...behaviors, BEHAVIOR_IDS.PREV_HINT_NOT_HELP]);
-        handlePrevHintNotHelp();
-        break;
+      // case PREV_HINT_NOT_HELP:
+      //   // setBehaviors([...behaviors, BEHAVIOR_IDS.PREV_HINT_NOT_HELP]);
+      //   handlePrevHintNotHelp();
+      //   break;
       default:
         console.error("Unknown help type:", data.helpType);
     }

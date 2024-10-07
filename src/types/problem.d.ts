@@ -30,7 +30,7 @@ export type Problem = {
     js: string;
     [key: string]: string;
   };
-  // testCaseCode: TestCase[];
+  testCaseCode: TestCase[]; // *** 這個未來需要移除
   testCode: {
     py: TestCase[];
     vb: TestCase[];

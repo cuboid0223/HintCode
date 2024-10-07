@@ -150,7 +150,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>詢問下一步如何進行，選擇此標籤不會附帶執行結果</p>
+              <p>詢問下一步如何進行，選擇此標籤不會附帶執行結果給 AI</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -169,7 +169,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>詢問報錯問題，選擇此標籤會附帶執行結果</p>
+              <p>詢問報錯問題，選擇此標籤會附帶執行結果給 AI</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

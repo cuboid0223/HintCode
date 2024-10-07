@@ -53,7 +53,7 @@ export const ASSISTANT_INSTRUCTIONS =
 // Help Types
 export const NEXT_STEP = "nextStep";
 export const DEBUG_ERROR = "debugError";
-export const PREV_HINT_NOT_HELP = "perviousHintNotHelp";
+// export const PREV_HINT_NOT_HELP = "perviousHintNotHelp";
 
 export const ASK_CUSTOM_QUESTION_PROMPT = `
 但請不要透漏完整解法讓我複製，
@@ -73,10 +73,10 @@ export const DEBUG_ERROR_PROMPT = `只能告訴我程式碼哪裡出錯，請不
   不需要給我應用到我的問題或範例的程式碼。
   請使用繁體中文回覆`;
 
-export const PREV_HINT_NOT_HELP_PROMPT = `
-上一個提示對我沒有幫助，請給我新的提示，但不要透漏正確且完整解法讓我複製。
-請使用繁體中文回覆
-`;
+// export const PREV_HINT_NOT_HELP_PROMPT = `
+// 上一個提示對我沒有幫助，請給我新的提示，但不要透漏正確且完整解法讓我複製。
+// 請使用繁體中文回覆
+// `;
 
 export const HELP_TYPE_OPTIONS = [
   {
@@ -89,11 +89,11 @@ export const HELP_TYPE_OPTIONS = [
     prompt: DEBUG_ERROR_PROMPT,
     text: "輸出報錯了，哪裡有問題?",
   },
-  {
-    type: PREV_HINT_NOT_HELP,
-    prompt: PREV_HINT_NOT_HELP_PROMPT,
-    text: "上一個提示沒有幫助",
-  },
+  // {
+  //   type: PREV_HINT_NOT_HELP,
+  //   prompt: PREV_HINT_NOT_HELP_PROMPT,
+  //   text: "上一個提示沒有幫助",
+  // },
 ];
 
 //----------------------------------------------------------------

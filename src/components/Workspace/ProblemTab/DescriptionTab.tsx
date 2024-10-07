@@ -8,7 +8,7 @@ import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import { Badge } from "@/components/ui/badge";
 import { EASY, HARD, MEDIUM } from "@/utils/const";
-import { useRef } from "react";
+import { LegacyRef, useRef } from "react";
 import { Difficulty } from "@/types/problem";
 
 const DescriptionTab = () => {
@@ -108,6 +108,8 @@ const DescriptionTab = () => {
                   //   {children}
                   // </code>
                   <SyntaxHighlighter
+                    PreTag="code"
+                    customStyle={{ display: "block", fontSize: "14px" }}
                     style={resolvedTheme === "dark" ? a11yDark : docco}
                     language="python"
                   >

@@ -1,15 +1,8 @@
 import React from "react";
 import TopBar from "@/components/Topbar";
-import { redirect } from "next/navigation";
-import { getMaintenanceSettings } from "@/utils/problems/getSettings";
 import { orbitron600 } from "@/utils/const";
 
 export default async function MaintainedPage() {
-  const isMaintained = await getMaintenanceSettings();
-
-  if (!isMaintained) {
-    redirect("/");
-  }
   return (
     <main className="h-screen flex flex-col">
       <TopBar />

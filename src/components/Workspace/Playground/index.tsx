@@ -164,7 +164,12 @@ End Module`;
 
     let temp: Submission[] = [];
     try {
-      for (const testCase of problem.testCode[selectedLang]) {
+      //  *** 這個未來需移除-------------
+      const testCases = problem.testCode
+        ? problem.testCode[selectedLang] // 這個保留
+        : problem.testCaseCode;
+      //  *** --------------------------
+      for (const testCase of testCases) {
         const token: string = await submitUserCodeForTesting({
           userCode: formatExecutableCodeByLanguage(
             extractedCode,

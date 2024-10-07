@@ -29,8 +29,8 @@ import { useLocalStorage } from "@uidotdev/usehooks";
 import { problemDataState } from "@/atoms/ProblemData";
 import { useRecoilValue } from "recoil";
 import { Languages, Settings } from "@/types/global";
-import { EDITOR_FONT_SIZES } from "@/utils/const";
-import { useEffect } from "react";
+import { EDITOR_FONT_SIZES, SUPER_USER } from "@/utils/const";
+import useGetUserInfo from "@/hooks/useGetUserInfo";
 
 type PreferenceNavProps = {
   settings: Settings;
@@ -43,6 +43,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
   settings,
   setUserCode,
 }) => {
+  const userInfo = useGetUserInfo();
   const problem = useRecoilValue(problemDataState);
   const { resolvedTheme } = useTheme();
   const [selectedLang, setSelectedLang] = useLocalStorage<Languages>(
@@ -79,7 +80,9 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
           <SelectItem value="js" disabled>
             JavaScript
           </SelectItem>
-          <SelectItem value="vb">Visual Basic.Net</SelectItem>
+          <SelectItem value="vb" disabled={userInfo?.role !== SUPER_USER}>
+            Visual Basic.Net
+          </SelectItem>
         </SelectContent>
       </Select>
 

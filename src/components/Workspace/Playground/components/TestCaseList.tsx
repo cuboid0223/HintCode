@@ -87,6 +87,8 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
                 {problem.examples[activeTestCaseId]?.inputText}
               </div> */}
               <SyntaxHighlighter
+                PreTag="code"
+                customStyle={{ display: "block", fontSize: "14px" }}
                 style={resolvedTheme === "dark" ? a11yDark : docco}
                 language="python"
               >
