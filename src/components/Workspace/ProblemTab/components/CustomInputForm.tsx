@@ -1,5 +1,5 @@
 import { Message } from "@/types/message";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -29,7 +29,7 @@ import { useParams } from "next/navigation";
 import { ASK_CUSTOM_QUESTION_PROMPT, BEHAVIOR_IDS } from "@/utils/const";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 import createPromptTemplate from "@/utils/HelpTypes/createPromptTemplate";
 import { problemDataState } from "@/atoms/ProblemData";
@@ -38,6 +38,7 @@ import { Submission } from "@/types/testCase";
 import { FormSchema } from "@/utils/HelpTypes/FormSchemas";
 
 import { Button } from "@/components/ui/button";
+import { userCodeState } from "@/atoms/userCodeAtom";
 
 type CustomInputFormProps = {
   messages: Message[];
@@ -67,6 +68,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   const [user] = useAuthState(auth);
   const { pid } = useParams<{ pid: string }>();
   const problem = useRecoilValue(problemDataState);
+  const userCode = useRecoilValue(userCodeState);
   const [behaviors, setBehaviors] =
     useRecoilState<BehaviorsState>(behaviorsState);
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -74,10 +76,6 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   });
   const [selectedHelpType, setSelectedHelpType] = useState<string | null>(null);
   const [lang, setLang] = useLocalStorage("selectedLang", "py");
-  const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
-    `${lang}-code-${pid}-${user?.uid}`,
-    ""
-  );
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     if (!user) {
@@ -99,7 +97,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   };
 
   const processTextRequest = (data: z.infer<typeof FormSchema>) => {
-    data.code = localCurrentCode;
+    data.code = userCode;
     data.prompt = ASK_CUSTOM_QUESTION_PROMPT;
     data.helpType = selectedHelpType;
     const promptTemplate = createPromptTemplate(
@@ -132,9 +130,9 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   };
 
   return (
-    <div className=" ">
+    <div className={`${isHidden && "hidden"}`}>
       {/* helpType 標籤選擇區 */}
-      <section>
+      <section className="flex gap-3">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -142,7 +140,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
                 variant={
                   selectedHelpType === BEHAVIOR_IDS["NEXT_STEP"]
                     ? "default"
-                    : "ghost"
+                    : "outline"
                 }
                 onClick={() => setSelectedHelpType(BEHAVIOR_IDS["NEXT_STEP"])}
               >
@@ -161,7 +159,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
                 variant={
                   selectedHelpType === BEHAVIOR_IDS["DEBUG_ERROR"]
                     ? "default"
-                    : "ghost"
+                    : "outline"
                 }
                 onClick={() => setSelectedHelpType(BEHAVIOR_IDS["DEBUG_ERROR"])}
               >
@@ -178,7 +176,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className={`flex w-full items-center p-2  ${isHidden && "hidden"}`}
+          className={`flex w-full items-center p-2  `}
         >
           <FormField
             control={form.control}
@@ -186,7 +184,13 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
             render={({ field }) => (
               <FormItem className="flex-1">
                 <Textarea
-                  placeholder="輸入問題..."
+                  placeholder={
+                    selectedHelpType === BEHAVIOR_IDS["DEBUG_ERROR"]
+                      ? "請幫我除錯..."
+                      : selectedHelpType === BEHAVIOR_IDS["NEXT_STEP"]
+                        ? "我不知道下一步怎麼做..."
+                        : "輸入問題"
+                  }
                   value={field.value || ""}
                   onChange={field.onChange}
                 />

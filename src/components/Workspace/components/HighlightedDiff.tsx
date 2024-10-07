@@ -17,7 +17,7 @@ const HighlightedDiff: React.FC<HighlightedDiffProps> = ({
 }) => {
   const { resolvedTheme } = useTheme();
   if (!output) return <p>{output}</p>;
-  console.log(output);
+  // console.log(output);
   const diff = diffChars(output, expectedOutput);
   // console.log(JSON.stringify(diff, null, 2));
 

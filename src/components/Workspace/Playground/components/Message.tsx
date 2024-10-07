@@ -17,7 +17,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { getTextByType } from "@/utils/HelpTypes/getTextByType";
-
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 type MessageProps = {
   theme: string;
   msg: MessageType;
@@ -56,6 +57,7 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
       {code && (
         <CustomMarkdown
           theme={theme}
+          showLineNumbers
         >{`~~~py\n ${code.replace(/^"(.*)"$/, "$1").replace(/\\n/g, "\n")}\n~~~`}</CustomMarkdown>
       )}
 
@@ -148,7 +150,9 @@ const AssistantMessage: React.FC<MessageProps> = ({ msg, theme }) => {
       <Card
         className={` p-2 dark:text-white dark:bg-[#083344] bg-blue-50 rounded-br-none rounded-bl-none`}
       >
-        <CustomMarkdown theme={theme}>{msg.text}</CustomMarkdown>
+        <CustomMarkdown theme={theme} customStyle={{ display: "inline" }}>
+          {msg.text}
+        </CustomMarkdown>
       </Card>
 
       {/* 按讚區 */}

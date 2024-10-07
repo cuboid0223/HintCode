@@ -26,6 +26,7 @@ import { pid } from "process";
 import CustomInputForm from "./components/CustomInputForm";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import { v4 as uuidv4 } from "uuid";
+import getSettings from "@/utils/problems/getSettings";
 
 type ProblemHelpProps = {
   threadId: string;
@@ -50,6 +51,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isGPTTextReady, setIsGPTTextReady] = useState(false);
   const [isMessageLoading, setIsMessageLoading] = useState(false);
+  const [showCustomInput, setShowCustomInput] = useState(false);
   const prevMessages = useGetProblemMessages(
     user?.uid,
     problem.id,
@@ -200,6 +202,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
   }, [messages]);
 
   useEffect(() => {
+    // 當提示次數用盡或是該題已經解決則關閉傳送訊息按鈕
     const handleHelpBtnIsDisable = async () => {
       const userProblem = await getUserProblemById(user?.uid, problem.id);
       if (userProblem.remainTimes === 0 || userProblem.is_solved) {
@@ -208,6 +211,14 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     };
     handleHelpBtnIsDisable();
   }, [problem.id, user?.uid]);
+
+  useEffect(() => {
+    const handleShowCustomInput = async () => {
+      const settings = await getSettings();
+      setShowCustomInput(settings.showCustomInput);
+    };
+    handleShowCustomInput();
+  }, []);
 
   // solve react-hydration-error
   useEffect(() => {
@@ -247,7 +258,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
           isHelpBtnDisable={isHelpBtnDisable}
           threadId={threadId}
           sendMessageToGPT={sendMessageToGPT}
-          isHidden={false}
+          isHidden={!showCustomInput}
         />
 
         {/* 選擇幫助類型表單 - 對照組  */}
@@ -260,7 +271,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
           threadId={threadId}
           sendMessageToGPT={sendMessageToGPT}
           submissions={submissions}
-          isHidden={true}
+          isHidden={showCustomInput}
         />
       </section>
     </section>

@@ -12,4 +12,15 @@ const getMaintenanceSettings = async () => {
   }
 };
 
+const getSettings = async () => {
+  const settingsRef = doc(firestore, "settings", "data");
+  const settingsSnap = await getDoc(settingsRef);
+
+  if (settingsSnap.exists()) {
+    const settings = settingsSnap.data() as DevSettings;
+    return settings;
+  }
+};
+
+export default getSettings;
 export { getMaintenanceSettings };

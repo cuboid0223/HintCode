@@ -33,4 +33,5 @@ export type Settings = {
 
 export type DevSettings = {
   isMaintained: boolean;
+  showCustomInput: boolean;
 };

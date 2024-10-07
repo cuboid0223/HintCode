@@ -31,6 +31,7 @@ import { Languages, Settings } from "@/types/global";
 import { useParams } from "next/navigation";
 import { BEHAVIOR_IDS } from "@/utils/const";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
+import { userCodeState } from "@/atoms/userCodeAtom";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
@@ -64,9 +65,10 @@ const Playground: React.FC<PlaygroundProps> = ({ setSuccess }) => {
   const { resolvedTheme } = useTheme();
   const [submissions, setSubmissions] =
     useRecoilState<SubmissionsState>(submissionsState);
-
+  const [userCode, setUserCode] = useRecoilState(userCodeState);
+  useRecoilState<SubmissionsState>(submissionsState);
   const [isLoading, setIsLoading] = useState(false);
-  let [userCode, setUserCode] = useState<string>(problem.starterCode.py);
+
   const [isAccepted, setIsAccepted] = useState(false);
   const [fontSize, setFontSize] = useLocalStorage(
     "playground-fontSize",
@@ -201,11 +203,20 @@ End Module`;
   const onChange = (value: string) => {
     setUserCode(value);
     setLocalCurrentCode(value);
+    setUserCode(value);
   };
 
   const handleTestTabChange = (value: string) => {
     setTestTab(value);
   };
+
+  useEffect(() => {
+    if (user && localCurrentCode) {
+      setUserCode(localCurrentCode);
+    } else {
+      setUserCode(problem.starterCode[selectedLang]); // 設置題目程式碼初始值
+    }
+  }, [user, localCurrentCode, problem.starterCode, selectedLang, setUserCode]);
 
   useEffect(() => {
     // 確認是否全部測資都通過
@@ -238,12 +249,15 @@ End Module`;
   }, [userProblems, user, submissions, problems.length]);
 
   useEffect(() => {
-    if (user && localCurrentCode) {
-      setUserCode(localCurrentCode);
-    } else {
-      setUserCode(problem.starterCode[selectedLang]);
-    }
-  }, [pid, user, localCurrentCode, problem.starterCode, selectedLang]);
+    const handleStorageUserCode = () => {
+      if (user && localCurrentCode) {
+        setUserCode(localCurrentCode);
+      } else {
+        setUserCode(problem.starterCode[selectedLang]);
+      }
+    };
+    handleStorageUserCode();
+  }, [user, localCurrentCode, problem.starterCode, selectedLang, setUserCode]);
 
   return (
     <div className="flex flex-col relative overflow-x-hidden ">
@@ -318,11 +332,12 @@ End Module`;
                 )}
               </TabsTrigger>
             </TabsList>
-            {/* <ScrollArea className="flex bg-red-300"> */}
+            {/* 測試範例視窗 */}
             <TabsContent value="testcase" className=" flex flex-col  px-3">
               {/* 測試資料區 */}
               <TestCaseList submissions={submissions} />
             </TabsContent>
+            {/* 測試結果視窗 */}
             <TabsContent value={TEST_RESULT} className=" px-3 h-full">
               {submissions.length === 0 ? (
                 <div className="h-full flex flex-col place-content-center	">
@@ -365,6 +380,7 @@ End Module`;
           </Tabs>
         </div>
       </Split>
+      {/* 執行按鈕 繳交按鈕 */}
       <EditorFooter
         handleExecution={handleExecution}
         isLoading={isLoading}

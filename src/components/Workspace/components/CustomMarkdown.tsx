@@ -1,4 +1,4 @@
-import React, { LegacyRef, useRef } from "react";
+import React, { useRef } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -7,14 +7,21 @@ import {
   docco,
 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 type CustomMarkdownType = {
   theme: string;
+  customStyle?: React.CSSProperties;
+  showLineNumbers?: boolean;
   children: string | null | undefined;
 };
 
-const CustomMarkdown: React.FC<CustomMarkdownType> = ({ theme, children }) => {
+const CustomMarkdown: React.FC<CustomMarkdownType> = ({
+  theme,
+  customStyle = { display: "block", fontSize: "14px" },
+  showLineNumbers = false,
+  children,
+}) => {
   const ref = useRef<SyntaxHighlighter>(null);
   const [lang] = useLocalStorage("selectedLang", "py");
 
@@ -39,10 +46,16 @@ const CustomMarkdown: React.FC<CustomMarkdownType> = ({ theme, children }) => {
           return selectedLanguage ? (
             <SyntaxHighlighter
               PreTag="code"
-              customStyle={{ display: "block", fontSize: "14px" }}
+              codeTagProps={{
+                style: { border: "none", fontSize: "14px", lineHeight: "1.5" },
+              }}
+              customStyle={{
+                display: "block",
+                ...customStyle,
+              }}
               style={getStyle(theme, lang)}
               language={selectedLanguage}
-              showLineNumbers
+              showLineNumbers={showLineNumbers}
             >
               {String(children).trim()}
             </SyntaxHighlighter>

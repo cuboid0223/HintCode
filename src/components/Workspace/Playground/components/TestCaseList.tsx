@@ -88,7 +88,14 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
               </div> */}
               <SyntaxHighlighter
                 PreTag="code"
-                customStyle={{ display: "block", fontSize: "14px" }}
+                codeTagProps={{
+                  style: {
+                    border: "none",
+                    fontSize: "14px",
+                    lineHeight: "1.5",
+                  },
+                }}
+                customStyle={{ display: "block" }}
                 style={resolvedTheme === "dark" ? a11yDark : docco}
                 language="python"
               >
