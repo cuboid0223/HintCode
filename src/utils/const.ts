@@ -34,8 +34,8 @@ export const EDITOR_FONT_SIZES = [
 
 // RADIO_VALUE
 export const RADIO_VALUE = ["非常不同意", "不同意", "普通", "同意", "非常同意"];
-
-// font text
+// ------------------------------------------------------------------------------
+// font style
 export const orbitron400 = Orbitron({
   weight: "400",
   subsets: ["latin"],
@@ -47,7 +47,7 @@ export const orbitron600 = Orbitron({
   subsets: ["latin"],
   variable: "--font-orbitron",
 });
-
+// ------------------------------------------------------------------------------
 export const ASSISTANT_INSTRUCTIONS =
   "You are a patient and proficient programming teacher who always responds in a Socratic manner. You *never* give the student the answer; instead, you offer progressive feedback tailored to the current problem, gradually guiding them towards the solution, step by step.  You aim to help them learn to think independently by asking the right questions. You should adjust your questions based on the student's  knowledge, breaking down the questions into simpler parts until they reach a level suitable for the student.";
 // Help Types
@@ -97,13 +97,13 @@ export const HELP_TYPE_OPTIONS = [
 ];
 
 //----------------------------------------------------------------
-// Judge0 的 咚咚
+// Judge0 定義的 status ID
 export const IN_QUEUE_STATUS_ID = 1;
 export const PROCESSING_STATUS_ID = 2;
 export const ACCEPTED_STATUS_ID = 3;
 export const WRONG_ANSWER_STATUS_ID = 4;
 export const RUNTIME_ERROR_STATUS_ID = 11;
-
+// Judge0 定義的 Language ID
 export const LANGUAGE_PYTHON_ID = 71; // https://ce.judge0.com/#statuses-and-languages-language
 export const LANGUAGE_VB_ID = 84;
 export const DEFAULT_LANGUAGE_ID = LANGUAGE_PYTHON_ID;
@@ -111,10 +111,12 @@ export const LANGUAGE_IDS = {
   py: LANGUAGE_PYTHON_ID, // Python
   vb: LANGUAGE_VB_ID, // Visual Basic
 };
+
 // ----------------------------------------------------------------
 // 這個變數，是為了監聽學生在解題的過程中，有沒有按照我們的預期行為
 // 目的是為了產生 行為轉換圖
-// 最終每題會產生一個 number array 透過 sliding window 來計算行為轉換的次數
+// 最終每題會產生一個 string array(e.g. ["1","3","4","2"....]) 透過 sliding window 來計算行為轉換的次數
+export const UPDATE_BEHAVIORS_EVERY_N_TIMES = 4; // 本地端每新增四次行為，更新資料庫，避免資料庫 loading 過重
 export const BEHAVIOR_IDS = {
   NEXT_STEP: "1",
   DEBUG_ERROR: "2",

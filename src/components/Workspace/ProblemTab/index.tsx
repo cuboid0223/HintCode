@@ -8,7 +8,11 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import { Message } from "../../../types/message";
-import { BEHAVIOR_IDS, CONTROL, EXPERIMENTAL } from "@/utils/const";
+import {
+  BEHAVIOR_IDS,
+  CONTROL,
+  UPDATE_BEHAVIORS_EVERY_N_TIMES,
+} from "@/utils/const";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import getUserProblemById from "@/utils/problems/getUserProblemById";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
@@ -36,8 +40,11 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
   };
 
   useEffect(() => {
-    if (behaviors.length > 0 && behaviors.length % 2 === 0) {
-      console.log("Behaviors updated:", behaviors);
+    if (
+      behaviors.length > 0 &&
+      behaviors.length % UPDATE_BEHAVIORS_EVERY_N_TIMES === 0
+    ) {
+      // console.log("Behaviors updated:", behaviors);
       updateProblemBehaviors(user?.uid, problem.id, behaviors);
     }
   }, [behaviors, user?.uid, problem.id]);

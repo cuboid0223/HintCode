@@ -36,12 +36,13 @@ async function updateProblemRemainTimes(uid: string, problemId: string) {
 async function updateProblemBehaviors(
   uid: string,
   problemId: string,
-  behaviors: string[]
+  newBehaviors: string[]
 ) {
   try {
     const userProblemRef = doc(firestore, "users", uid, "problems", problemId);
+    const problem = await getDoc(userProblemRef);
     await updateDoc(userProblemRef, {
-      behaviors: behaviors,
+      behaviors: [...problem.data().behaviors, ...newBehaviors],
     });
   } catch (error) {
     console.error("Error updating remain times: ", error);

@@ -25,6 +25,7 @@ export default async function createUserProblem(
     isLocked: await getDefaultIsLocked(pid),
     remainTimes: 20,
     acceptedTime: 0,
+    behaviors: [],
   };
   await setDoc(userProblemRef, newUserProblem);
 
