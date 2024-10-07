@@ -121,6 +121,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
 
     updateProblemRemainTimes(user?.uid, pid);
     processTextRequest(data);
+    form.reset(); // 清空輸入框
   };
 
   const processTextRequest = (data: z.infer<typeof FormSchema>) => {
@@ -211,7 +212,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
           name="text"
           render={({ field }) => (
             <FormItem className="flex-1">
-              <Input type="text" placeholder="輸入問題..." {...field} />
+              <Input type="text" placeholder="輸入問題..."  value={field.value || ""} onChange={field.onChange}/>
               {/* <FormDescription>輸入問題... </FormDescription> */}
               <FormMessage />
             </FormItem>
