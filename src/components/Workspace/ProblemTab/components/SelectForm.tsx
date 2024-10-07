@@ -31,9 +31,8 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import { Message } from "@/types/message";
 import { Timestamp } from "firebase/firestore";
-import { v4 as uuidv4 } from "uuid";
+
 import { SubmissionsState } from "@/atoms/submissionsDataAtom";
-import { AssistantStream } from "openai/lib/AssistantStream";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
 import { useLocalStorage } from "@uidotdev/usehooks";
@@ -53,7 +52,7 @@ import { Send } from "lucide-react";
 import { Languages } from "@/types/global";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 import createPromptTemplate from "@/utils/HelpTypes/createPromptTemplate";
-import sendMessageToGPT from "@/utils/HelpTypes/sendMessageToGPT";
+import { v4 as uuidv4 } from "uuid";
 
 // const FormSchema = z.object({
 //   helpType: z.string({
@@ -98,6 +97,11 @@ type SelectFormProps = {
   isHelpBtnDisable: boolean;
   threadId: string;
   submissions: SubmissionsState;
+  sendMessageToGPT: (
+    prompt: string,
+    threadId: string,
+    setIsGPTTextReady: Dispatch<SetStateAction<boolean>>
+  ) => Promise<void>;
   isHidden: boolean;
 };
 
@@ -109,6 +113,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   isHelpBtnDisable,
   threadId,
   submissions,
+  sendMessageToGPT,
   isHidden,
 }) => {
   const [user] = useAuthState(auth);
@@ -126,7 +131,6 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     ""
   );
 
-  const [finalText, setFinalText] = useState("");
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -151,7 +155,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
         handleDebugError(data, submissions);
         break;
       case PREV_HINT_NOT_HELP:
-        setBehaviors([...behaviors, BEHAVIOR_IDS.PREV_HINT_NOT_HELP]);
+        // setBehaviors([...behaviors, BEHAVIOR_IDS.PREV_HINT_NOT_HELP]);
         handlePrevHintNotHelp();
         break;
       default:
@@ -162,15 +166,13 @@ export const SelectForm: React.FC<SelectFormProps> = ({
   const handleNextStep = (data: z.infer<typeof FormSchema>) => {
     data.code = localCurrentCode;
     data.prompt = NEXT_STEP_PROMPT;
-    const promptTemplate = createPromptTemplate(data, problem.problemStatement);
-
-    sendMessageToGPT(
-      promptTemplate,
-      threadId,
-      setIsGPTTextReady,
-      handleTextCreated,
-      handleTextDelta
+    const finalPrompt = createPromptTemplate(
+      data,
+      problem.problemStatement,
+      problem.starterFunctionName[lang]
     );
+
+    sendMessageToGPT(finalPrompt, threadId, setIsGPTTextReady);
     addUserMessage(data, null);
   };
 
@@ -188,16 +190,11 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     const promptTemplate = createPromptTemplate(
       data,
       problem.problemStatement,
+      problem.starterFunctionName[lang],
       submissions
     );
 
-    sendMessageToGPT(
-      promptTemplate,
-      threadId,
-      setIsGPTTextReady,
-      handleTextCreated,
-      handleTextDelta
-    );
+    sendMessageToGPT(promptTemplate, threadId, setIsGPTTextReady);
     addUserMessage(data, submissions);
   };
 
@@ -237,49 +234,6 @@ export const SelectForm: React.FC<SelectFormProps> = ({
         type: data.helpType,
       },
     ]);
-  };
-
-  /* Stream Event Handlers */
-
-  // textCreated - create new assistant message
-  const handleTextCreated = () => {
-    // 在使用者傳程式碼之前，assistant message 是先被建立的，所以整個 array 需要 revert
-    appendMessage("assistant", "");
-  };
-
-  // textDelta - append text to last assistant message
-  const handleTextDelta = (delta) => {
-    if (delta.value != null) {
-      appendToLastMessage(delta.value);
-      setFinalText((prevText) => prevText + delta.value);
-    }
-  };
-  /*
-    =======================
-    === Utility Helpers ===
-    =======================
-  */
-  const appendMessage = (role: string, text: string) => {
-    // console.log(text);
-    setMessages(
-      (prevMessages) =>
-        [
-          ...prevMessages,
-          { role, text, id: uuidv4(), created_at: Timestamp.now().toMillis() },
-        ] as Message[]
-    );
-  };
-
-  const appendToLastMessage = (text: string) => {
-    setMessages((prevMessages) => {
-      const lastMessage = prevMessages[prevMessages.length - 1];
-      const updatedLastMessage = {
-        ...lastMessage,
-        text: lastMessage.text + text,
-      };
-
-      return [...prevMessages.slice(0, -1), updatedLastMessage];
-    });
   };
 
   return (

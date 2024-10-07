@@ -1,90 +1,43 @@
-import { SubmissionsState } from "@/atoms/submissionsDataAtom";
 import { Submission } from "@/types/testCase";
 import { z } from "zod";
-
-const FormSchema = z
-  .object({
-    helpType: z
-      .string({
-        required_error: "您需要何種幫助",
-      })
-      .optional(),
-    text: z
-      .string({
-        required_error: "請輸入問題",
-      })
-      .trim()
-      .optional(),
-    code: z.string().optional(),
-    prompt: z.string().optional(),
-    submissions: z.custom<SubmissionsState>(),
-  })
-  .refine(
-    (data) => {
-      return (data.helpType && !data.text) || (!data.helpType && data.text);
-    },
-    {
-      message: "必須提供 helpType 或 text 其中之一",
-      path: ["helpType", "text"],
-    }
-  );
+import { FormSchema } from "./FormSchemas";
+/*
+這個 function 是將 題目資訊、程式測資輸出與 隱藏的 prompt 格式化成自然語言
+合併成一大串字串給 GPT
+*/
 
 const createPromptTemplate = (
   data: z.infer<typeof FormSchema>,
   problemStatement: string,
-  submissions = null
+  starterFunctionName: string,
+  submissions: Submission[] | null = null
 ) => {
-  console.log(`
-    題目如下:
-=========problem statement start========
-    ${problemStatement}
-=========problem statement end==========
-    此題不需要自行呼叫函數，系統會自動呼叫並代入參數
-    以下是我目前的程式碼:
-==========code start==========
-
-    ${formatCode(data.code)}
-
-===========code end===========
-
-    ${
-      submissions
-        ? `以下是我的程式經過測試後的輸出
-==========test start==========
-    ${formatSubmissions(submissions)}
-==========test end==========
-    `
-        : ""
-    }
-  我的問題是 
-    ${data.text}
-    ${data.prompt}
-  `);
   return `
     題目如下:
 =========problem statement start========
     ${problemStatement}
 =========problem statement end==========
-    此題不需要自行呼叫函數，系統會自動呼叫並代入參數
+
+    此題不需要自行呼叫函數，系統會自動呼叫 ${starterFunctionName} 並代入參數
     以下是我目前的程式碼:
 ==========code start==========
 
-    ${formatCode(data.code)}
+${formatCode(data.code)}
 
 ===========code end===========
 
-    ${
-      submissions
-        ? `以下是我的程式經過測試後的輸出
-==========test start==========
-    ${formatSubmissions(submissions)}
-==========test end==========
-    `
-        : ""
-    }
+    ${submissions ? formatSubmissionsSection(submissions) : ""}
+    ${data?.customText ? formatCustomTextSection(data.customText) : ""}
     ${data.prompt}
   `;
 };
+
+// 新增一個函數來格式化 submissions 部分
+const formatSubmissionsSection = (submissions: Submission[]) => `
+以下是我的程式經過測試後的輸出
+==========submissions start==========
+    ${formatSubmissions(submissions)}
+==========submissions end==========`;
 
 const formatCode = (code: string) => {
   return code
@@ -109,6 +62,10 @@ const formatSubmissions = (data: Submission[]) => {
       `;
   });
   return formattedData;
+};
+
+const formatCustomTextSection = (text: string) => {
+  return `我想知道的是，${text}`;
 };
 
 export default createPromptTemplate;

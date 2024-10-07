@@ -56,8 +56,8 @@ export const DEBUG_ERROR = "debugError";
 export const PREV_HINT_NOT_HELP = "perviousHintNotHelp";
 
 export const ASK_CUSTOM_QUESTION_PROMPT = `
-但請不要透漏正確且完整解法讓我複製，
-給我的範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。
+但請不要透漏完整解法讓我複製，
+若我有需要範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。
 不需要給我應用到我的問題或範例的程式碼。
 請使用繁體中文回覆
 `;
@@ -118,11 +118,11 @@ export const LANGUAGE_IDS = {
 export const BEHAVIOR_IDS = {
   NEXT_STEP: "1",
   DEBUG_ERROR: "2",
-  PREV_HINT_NOT_HELP: "3",
-  ASK_CUSTOM_QUESTION: "4",
-  READ_QUESTION_AGAIN: "5",
-  EXECUTION_SUCCESS: "6",
-  EXECUTION_FAILURE: "7",
+  // PREV_HINT_NOT_HELP: "3",
+  // ASK_CUSTOM_QUESTION: "4",
+  READ_QUESTION_AGAIN: "3",
+  EXECUTION_SUCCESS: "4",
+  EXECUTION_FAILURE: "5",
 };
 
 // ----------------------------------------------------------------

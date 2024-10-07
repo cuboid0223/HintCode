@@ -12,7 +12,7 @@ import {
   submissionsState,
 } from "@/atoms/submissionsDataAtom";
 import Message from "../Playground/components/Message";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { problemDataState } from "@/atoms/ProblemData";
@@ -24,6 +24,8 @@ import { PropagateLoader } from "react-spinners";
 import getUserProblemById from "@/utils/problems/getUserProblemById";
 import { pid } from "process";
 import CustomInputForm from "./components/CustomInputForm";
+import { AssistantStream } from "openai/lib/AssistantStream";
+import { v4 as uuidv4 } from "uuid";
 
 type ProblemHelpProps = {
   threadId: string;
@@ -53,6 +55,88 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     problem.id,
     setIsMessageLoading
   );
+  const [finalText, setFinalText] = useState("");
+
+  const sendMessageToGPT = async (
+    text: string,
+    threadId: string,
+    setIsGPTTextReady: Dispatch<SetStateAction<boolean>>
+  ) => {
+    if (!threadId || !text) return;
+    setIsGPTTextReady(true);
+    try {
+      const response = await fetch(
+        `/api/assistants/threads/${threadId}/messages`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            content: text,
+          }),
+        }
+      );
+
+      const stream = AssistantStream.fromReadableStream(response.body);
+      handleReadableStream(stream);
+    } catch (error) {
+      console.error("Error sending message to GPT:", error);
+    } finally {
+      setIsGPTTextReady(false);
+    }
+  };
+
+  const handleReadableStream = (stream: AssistantStream) => {
+    // messages
+    stream.on("textCreated", handleTextCreated);
+    stream.on("textDelta", handleTextDelta);
+  };
+
+  /* Stream Event Handlers */
+
+  // textCreated - create new assistant message
+  const handleTextCreated = () => {
+    // 在使用者傳程式碼之前，assistant message 是先被建立的，所以整個 array 之後需要 revert
+    appendMessage("assistant", "");
+  };
+
+  // textDelta - append text to last assistant message 因為生成是一個字一個字新增的
+  const handleTextDelta = (delta) => {
+    if (delta.value != null) {
+      appendToLastMessage(delta.value);
+      setFinalText((prevText) => prevText + delta.value);
+    }
+  };
+
+  useEffect(() => {
+    console.log(finalText);
+  }, [finalText]);
+
+  /*
+    =======================
+    === Utility Helpers ===
+    =======================
+  */
+  const appendMessage = (role: string, text: string) => {
+    // console.log(text);
+    setMessages(
+      (prevMessages) =>
+        [
+          ...prevMessages,
+          { role, text, id: uuidv4(), created_at: Timestamp.now().toMillis() },
+        ] as MessageType[]
+    );
+  };
+
+  const appendToLastMessage = (text: string) => {
+    setMessages((prevMessages) => {
+      const lastMessage = prevMessages[prevMessages.length - 1];
+      const updatedLastMessage = {
+        ...lastMessage,
+        text: lastMessage.text + text,
+      };
+      // 在使用者傳程式碼之前，assistant message 是先被建立的，所以整個 array 需要 revert
+      return [...prevMessages.slice(0, -1), updatedLastMessage];
+    });
+  };
 
   /*
     =======================
@@ -154,7 +238,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
       {messages.length !== 0 && <div className="h-36" ref={messagesEndRef} />}
 
       <section className="absolute bottom-0 left-0 z-50 w-full flex flex-col gap-3 p-2 bg-card">
-        {/* 客製化對話框 */}
+        {/* 客製化對話框 - 實驗組 */}
         <CustomInputForm
           messages={messages}
           setMessages={setMessages}
@@ -162,10 +246,11 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
           setIsGPTTextReady={setIsGPTTextReady}
           isHelpBtnDisable={isHelpBtnDisable}
           threadId={threadId}
+          sendMessageToGPT={sendMessageToGPT}
           isHidden={false}
         />
 
-        {/* 選擇幫助類型表單 */}
+        {/* 選擇幫助類型表單 - 對照組  */}
         <SelectForm
           messages={messages}
           setMessages={setMessages}
@@ -173,6 +258,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
           setIsGPTTextReady={setIsGPTTextReady}
           isHelpBtnDisable={isHelpBtnDisable}
           threadId={threadId}
+          sendMessageToGPT={sendMessageToGPT}
           submissions={submissions}
           isHidden={true}
         />

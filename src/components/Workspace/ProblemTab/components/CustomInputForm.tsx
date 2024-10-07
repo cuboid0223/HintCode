@@ -1,5 +1,5 @@
 import { Message } from "@/types/message";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -29,13 +29,12 @@ import { ASK_CUSTOM_QUESTION_PROMPT, BEHAVIOR_IDS } from "@/utils/const";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { Languages } from "@/types/global";
-import { SubmissionsState } from "@/atoms/submissionsDataAtom";
+
 import createPromptTemplate from "@/utils/HelpTypes/createPromptTemplate";
 import { problemDataState } from "@/atoms/ProblemData";
-import sendMessageToGPT from "@/utils/HelpTypes/sendMessageToGPT";
 import { v4 as uuidv4 } from "uuid";
 import { Submission } from "@/types/testCase";
+import { FormSchema } from "@/utils/HelpTypes/FormSchemas";
 
 type CustomInputFormProps = {
   messages: Message[];
@@ -44,46 +43,13 @@ type CustomInputFormProps = {
   setIsGPTTextReady: Dispatch<SetStateAction<boolean>>;
   isHelpBtnDisable: boolean;
   isHidden: boolean;
+  sendMessageToGPT: (
+    prompt: string,
+    threadId: string,
+    setIsGPTTextReady: Dispatch<SetStateAction<boolean>>
+  ) => Promise<void>;
   threadId: string;
 };
-
-// const FormSchema = z.object({
-//   text: z
-//     .string({
-//       required_error: "請輸入問題",
-//     })
-//     .trim(),
-//   code: z.string().optional(),
-//   prompt: z.string().optional(),
-//   submissions: z.custom<SubmissionsState>(),
-// });
-
-const FormSchema = z
-  .object({
-    helpType: z
-      .string({
-        required_error: "您需要何種幫助",
-      })
-      .optional(),
-    text: z
-      .string({
-        required_error: "請輸入問題",
-      })
-      .trim()
-      .optional(),
-    code: z.string().optional(),
-    prompt: z.string().optional(),
-    submissions: z.custom<SubmissionsState>(),
-  })
-  .refine(
-    (data) => {
-      return (data.helpType && !data.text) || (!data.helpType && data.text);
-    },
-    {
-      message: "必須提供 helpType 或 text 其中之一",
-      path: ["helpType", "text"],
-    }
-  );
 
 const CustomInputForm: React.FC<CustomInputFormProps> = ({
   messages,
@@ -91,6 +57,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   isGPTTextReady,
   setIsGPTTextReady,
   isHelpBtnDisable,
+  sendMessageToGPT,
   isHidden,
   threadId,
 }) => {
@@ -102,7 +69,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-  const [finalText, setFinalText] = useState("");
+
   const [lang, setLang] = useLocalStorage("selectedLang", "py");
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
     `${lang}-code-${pid}-${user?.uid}`,
@@ -114,7 +81,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
       showErrorToast("請先登入");
       return;
     }
-    if (!data.text.trim()) {
+    if (!data.customText.trim()) {
       showErrorToast("請輸入問題");
       return;
     }
@@ -126,19 +93,16 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
 
   const processTextRequest = (data: z.infer<typeof FormSchema>) => {
     data.code = localCurrentCode;
-    console.log(data.code);
     data.prompt = ASK_CUSTOM_QUESTION_PROMPT;
-    const promptTemplate = createPromptTemplate(data, problem.problemStatement);
-
-    sendMessageToGPT(
-      promptTemplate,
-      threadId,
-      setIsGPTTextReady,
-      handleTextCreated,
-      handleTextDelta
+    const promptTemplate = createPromptTemplate(
+      data,
+      problem.problemStatement,
+      problem.starterFunctionName[lang]
     );
+
+    sendMessageToGPT(promptTemplate, threadId, setIsGPTTextReady);
     addUserMessage(data, null);
-    setBehaviors([...behaviors, BEHAVIOR_IDS.ASK_CUSTOM_QUESTION]);
+    // setBehaviors([...behaviors, BEHAVIOR_IDS.ASK_CUSTOM_QUESTION]);
   };
 
   const addUserMessage = (
@@ -153,52 +117,9 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
         code: data.code,
         created_at: Timestamp.now().toMillis(),
         result: result,
-        text: data.text,
+        text: data.customText,
       },
     ]);
-  };
-
-  /* Stream Event Handlers */
-
-  // textCreated - create new assistant message
-  const handleTextCreated = () => {
-    // 在使用者傳程式碼之前，assistant message 是先被建立的，所以整個 array 需要 revert
-    appendMessage("assistant", "");
-  };
-
-  // textDelta - append text to last assistant message
-  const handleTextDelta = (delta) => {
-    if (delta.value != null) {
-      appendToLastMessage(delta.value);
-      setFinalText((prevText) => prevText + delta.value);
-    }
-  };
-  /*
-    =======================
-    === Utility Helpers ===
-    =======================
-  */
-  const appendMessage = (role: string, text: string) => {
-    // console.log(text);
-    setMessages(
-      (prevMessages) =>
-        [
-          ...prevMessages,
-          { role, text, id: uuidv4(), created_at: Timestamp.now().toMillis() },
-        ] as Message[]
-    );
-  };
-
-  const appendToLastMessage = (text: string) => {
-    setMessages((prevMessages) => {
-      const lastMessage = prevMessages[prevMessages.length - 1];
-      const updatedLastMessage = {
-        ...lastMessage,
-        text: lastMessage.text + text,
-      };
-
-      return [...prevMessages.slice(0, -1), updatedLastMessage];
-    });
   };
 
   return (
@@ -209,10 +130,15 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
       >
         <FormField
           control={form.control}
-          name="text"
+          name="customText"
           render={({ field }) => (
             <FormItem className="flex-1">
-              <Input type="text" placeholder="輸入問題..."  value={field.value || ""} onChange={field.onChange}/>
+              <Input
+                type="text"
+                placeholder="輸入問題..."
+                value={field.value || ""}
+                onChange={field.onChange}
+              />
               {/* <FormDescription>輸入問題... </FormDescription> */}
               <FormMessage />
             </FormItem>
