@@ -235,9 +235,9 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
       </div>
 
       {/* 聊天記錄底部 */}
-      {messages.length !== 0 && <div className="h-36" ref={messagesEndRef} />}
+      {messages.length !== 0 && <div className="h-48" ref={messagesEndRef} />}
 
-      <section className="absolute bottom-0 left-0 z-50 w-full flex flex-col gap-3 p-2 bg-card">
+      <section className="absolute bottom-0 left-0 z-50 w-full flex flex-col gap-3 p-2 bg-[#030711]  bg-opacity-40 backdrop-blur-lg">
         {/* 客製化對話框 - 實驗組 */}
         <CustomInputForm
           messages={messages}

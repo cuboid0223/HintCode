@@ -1,5 +1,5 @@
 import { Message } from "@/types/message";
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -17,12 +17,13 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { showErrorToast } from "@/utils/Toast/message";
+import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
 import { Send } from "lucide-react";
 import { RingLoader } from "react-spinners";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
 import { updateProblemRemainTimes } from "@/utils/problems/updateUserProblem";
 import { useParams } from "next/navigation";
 import { ASK_CUSTOM_QUESTION_PROMPT, BEHAVIOR_IDS } from "@/utils/const";
@@ -35,6 +36,8 @@ import { problemDataState } from "@/atoms/ProblemData";
 import { v4 as uuidv4 } from "uuid";
 import { Submission } from "@/types/testCase";
 import { FormSchema } from "@/utils/HelpTypes/FormSchemas";
+
+import { Button } from "@/components/ui/button";
 
 type CustomInputFormProps = {
   messages: Message[];
@@ -69,7 +72,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-
+  const [selectedHelpType, setSelectedHelpType] = useState<string | null>(null);
   const [lang, setLang] = useLocalStorage("selectedLang", "py");
   const [localCurrentCode, setLocalCurrentCode] = useLocalStorage(
     `${lang}-code-${pid}-${user?.uid}`,
@@ -81,8 +84,12 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
       showErrorToast("請先登入");
       return;
     }
-    if (!data.customText.trim()) {
-      showErrorToast("請輸入問題");
+    if (!data.customText || !data.customText.trim()) {
+      showWarningToast("請輸入問題");
+      return;
+    }
+    if (!selectedHelpType) {
+      showWarningToast("請選擇問題標籤 ('下一步' 或是 '除錯')");
       return;
     }
 
@@ -94,6 +101,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   const processTextRequest = (data: z.infer<typeof FormSchema>) => {
     data.code = localCurrentCode;
     data.prompt = ASK_CUSTOM_QUESTION_PROMPT;
+    data.helpType = selectedHelpType;
     const promptTemplate = createPromptTemplate(
       data,
       problem.problemStatement,
@@ -102,7 +110,8 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
 
     sendMessageToGPT(promptTemplate, threadId, setIsGPTTextReady);
     addUserMessage(data, null);
-    // setBehaviors([...behaviors, BEHAVIOR_IDS.ASK_CUSTOM_QUESTION]);
+    setBehaviors([...behaviors, selectedHelpType]);
+    setSelectedHelpType(null);
   };
 
   const addUserMessage = (
@@ -123,50 +132,93 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={`flex w-full items-center p-2 bg-card ${isHidden && "hidden"}`}
-      >
-        <FormField
-          control={form.control}
-          name="customText"
-          render={({ field }) => (
-            <FormItem className="flex-1">
-              <Input
-                type="text"
-                placeholder="輸入問題..."
-                value={field.value || ""}
-                onChange={field.onChange}
-              />
-              {/* <FormDescription>輸入問題... </FormDescription> */}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {/* submit button */}
+    <div className=" ">
+      {/* helpType 標籤選擇區 */}
+      <section>
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger
-              className="font-bold px-2"
-              type="submit"
-              disabled={isHelpBtnDisable}
-            >
-              {isGPTTextReady ? (
-                <RingLoader color="#36d7b7" size={27} />
-              ) : (
-                <Send />
-              )}
+            <TooltipTrigger asChild>
+              <Button
+                variant={
+                  selectedHelpType === BEHAVIOR_IDS["NEXT_STEP"]
+                    ? "default"
+                    : "ghost"
+                }
+                onClick={() => setSelectedHelpType(BEHAVIOR_IDS["NEXT_STEP"])}
+              >
+                下一步
+              </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {isHelpBtnDisable && (
-                <p>您已通過所有測試資料或是提示次數已用完</p>
-              )}
+              <p>詢問下一步如何進行，選擇此標籤不會附帶執行結果</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-      </form>
-    </Form>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={
+                  selectedHelpType === BEHAVIOR_IDS["DEBUG_ERROR"]
+                    ? "default"
+                    : "ghost"
+                }
+                onClick={() => setSelectedHelpType(BEHAVIOR_IDS["DEBUG_ERROR"])}
+              >
+                除錯
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>詢問報錯問題，選擇此標籤會附帶執行結果</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </section>
+      {/* 輸入框 */}
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className={`flex w-full items-center p-2  ${isHidden && "hidden"}`}
+        >
+          <FormField
+            control={form.control}
+            name="customText"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <Textarea
+                  placeholder="輸入問題..."
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                />
+                {/* <FormDescription>輸入問題... </FormDescription> */}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* submit button */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger
+                className="font-bold px-2"
+                type="submit"
+                disabled={isHelpBtnDisable}
+              >
+                {isGPTTextReady ? (
+                  <RingLoader color="#36d7b7" size={27} />
+                ) : (
+                  <Send />
+                )}
+              </TooltipTrigger>
+              <TooltipContent>
+                {isHelpBtnDisable && (
+                  <p>您已通過所有測試資料或是提示次數已用完</p>
+                )}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </form>
+      </Form>
+    </div>
   );
 };
 
