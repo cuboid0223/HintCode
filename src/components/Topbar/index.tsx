@@ -25,9 +25,13 @@ import { orbitron600 as orbitron } from "@/utils/const";
 import PersonalInfoDialog from "../Dialogs/PersonalInfoDialog";
 type TopBarProps = {
   isProblemPage?: boolean;
+  isLoginBtnHidden: boolean;
 };
 
-const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
+const TopBar: React.FC<TopBarProps> = ({
+  isProblemPage,
+  isLoginBtnHidden = false,
+}) => {
   const [user] = useAuthState(auth);
 
   const { setTheme } = useTheme();
@@ -119,8 +123,8 @@ const TopBar: React.FC<TopBarProps> = ({ isProblemPage }) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          {!user && (
-            <Link href="/auth">
+          {isLoginBtnHidden && (
+            <Link href="/login">
               <button className="bg-dark-fill-3 py-1 px-2 cursor-pointer rounded ">
                 登入
               </button>

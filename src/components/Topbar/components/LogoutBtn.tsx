@@ -11,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { deleteCookie } from "cookies-next";
 
 const LogoutButton: React.FC = () => {
   const router = useRouter();

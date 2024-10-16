@@ -36,9 +36,8 @@ import CountUp from "react-countup";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { DIFFICULTY_CLASSES, orbitron400 as orbitron } from "@/utils/const";
 import createUserProblem from "@/utils/problems/createUserProblem";
-import { useRouter } from "next/navigation";
+
 export default function Home() {
-  const router = useRouter();
   const [user] = useAuthState(auth);
   const userInfo = useGetUserInfo();
   const [loadingProblems, setLoadingProblems] = useState(true);

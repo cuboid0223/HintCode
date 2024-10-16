@@ -1,4 +1,4 @@
-import { auth, firestore } from "@/firebase/firebase";
+import { auth } from "@/firebase/firebase";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
@@ -18,8 +18,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { showErrorToast } from "@/utils/Toast/message";
 import { FORGET_PASSWORD, REGISTER } from "@/utils/const";
-import { setCookie } from "cookies-next";
-import { doc, getDoc } from "firebase/firestore";
 
 const formSchema = z.object({
   password: z.string(),

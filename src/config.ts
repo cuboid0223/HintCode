@@ -4,9 +4,9 @@ export const serverConfig = {
   cookieSerializeOptions: {
     path: "/",
     httpOnly: true,
-    secure: false, // Set this to true on HTTPS environments
+    secure: process.env.USE_SECURE_COOKIES === "true", // Set this to true on HTTPS environments
     sameSite: "lax" as const,
-    maxAge: 12 * 60 * 60 * 24,
+    maxAge: 12 * 60 * 60 * 24, // 12天
   },
   serviceAccount: {
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,

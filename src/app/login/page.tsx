@@ -1,26 +1,51 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase/firebase";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { showErrorToast } from "@/utils/Toast/message";
+import { Input } from "@/components/ui/input";
+import TopBar from "@/components/Topbar";
+import { useSubscribedSettings } from "@/hooks/useSettings";
+
+const formSchema = z.object({
+  password: z.string(),
+  email: z.string().email({ message: "email 格式錯誤" }),
+});
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [isLogged, setIsLogged] = useState(false);
+  const setting = useSubscribedSettings();
   const router = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      password: "",
+      email: "",
+    },
+  });
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
-    setError("");
-
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setIsLogged(false);
       const credential = await signInWithEmailAndPassword(
         auth,
-        email,
-        password
+        values.email,
+        values.password
       );
       const idToken = await credential.user.getIdToken();
 
@@ -31,85 +56,82 @@ export default function Login() {
       });
 
       router.push("/");
+      setIsLogged(true);
     } catch (e) {
-      setError((e as Error).message);
+      showErrorToast((e as Error).message);
     }
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8">
-      <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-        <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-            Speak thy secret word!
-          </h1>
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4 md:space-y-6"
-            action="#"
-          >
-            <div>
-              <label
-                htmlFor="email"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Your email
-              </label>
-              <input
-                type="email"
+    <>
+      <TopBar />
+      <main className="grid grid-cols-4 grid-rows-4">
+        <section className="col-start-2 col-span-2 row-start-2 row-span-2 p-2 flex flex-col space-y-5 border-4  dark:border-none  ">
+          <h3 className="text-xl font-medium text-white">登入 Hint Code</h3>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4 w-full"
+            >
+              <FormField
+                control={form.control}
                 name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                id="email"
-                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="name@company.com"
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="studentid@gmail.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Password
-              </label>
-              <input
-                type="password"
+              <FormField
+                control={form.control}
                 name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                id="password"
-                placeholder="••••••••"
-                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>密碼</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="********"
+                        {...field}
+                        type="password"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            {error && (
-              <div
-                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-                role="alert"
-              >
-                <span className="block sm:inline">{error}</span>
+              <Button className="w-full" type="submit">
+                {isLogged ? "登入中..." : "登入"}
+              </Button>
+            </form>
+          </Form>
+
+          <section className="flex  justify-between">
+            {setting?.showCreateAccountButton && (
+              <div className="text-sm font-medium text-gray-300 ">
+                還未註冊?
+                <Link
+                  className="text-brand-orange hover:underline"
+                  href="/register"
+                >
+                  創造帳戶
+                </Link>
               </div>
             )}
-            <button
-              type="submit"
-              className="w-full text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-primary-800"
-            >
-              Enter
-            </button>
-            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-              Don&apos;t have an account?{" "}
+            {setting?.showForgetPasswordButton && (
               <Link
-                href="/register"
-                className="font-medium text-gray-600 hover:underline dark:text-gray-500"
+                className="text-sm text-brand-orange hover:underline text-right"
+                href="/forget-password"
               >
-                Register here
+                忘記密碼?
               </Link>
-            </p>
-          </form>
-        </div>
-      </div>
-    </main>
+            )}
+          </section>
+        </section>
+      </main>
+    </>
   );
 }

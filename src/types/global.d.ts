@@ -34,4 +34,6 @@ export type Settings = {
 export type DevSettings = {
   isMaintained: boolean;
   showCustomInput: boolean;
+  showCreateAccountButton: boolean;
+  showForgetPasswordButton: boolean;
 };
