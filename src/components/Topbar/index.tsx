@@ -25,7 +25,7 @@ import { orbitron600 as orbitron } from "@/utils/const";
 import PersonalInfoDialog from "../Dialogs/PersonalInfoDialog";
 type TopBarProps = {
   isProblemPage?: boolean;
-  isLoginBtnHidden: boolean;
+  isLoginBtnHidden?: boolean;
 };
 
 const TopBar: React.FC<TopBarProps> = ({
