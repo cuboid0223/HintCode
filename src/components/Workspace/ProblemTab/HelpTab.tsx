@@ -26,7 +26,7 @@ import { pid } from "process";
 import CustomInputForm from "./components/CustomInputForm";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import { v4 as uuidv4 } from "uuid";
-import getSettings from "@/utils/problems/getSettings";
+import getSettings from "@/utils/problems/getSystemSettings";
 
 type ProblemHelpProps = {
   threadId: string;

@@ -9,7 +9,7 @@ import { problemDataState } from "@/atoms/ProblemData";
 import getUserProblemById from "@/utils/problems/getUserProblemById";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
-import { getMaintenanceSettings } from "@/utils/problems/getSettings";
+import getSettings from "@/utils/problems/getSystemSettings";
 import { SUPER_USER } from "@/utils/const";
 import MaintainedPage from "@/components/Maintained";
 
@@ -54,8 +54,8 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
   useEffect(() => {
     const returnMaintainPage = async (userInfo) => {
       if (!userInfo) return;
-      const isMaintained = await getMaintenanceSettings();
-      if (userInfo.role !== SUPER_USER && isMaintained) {
+      const system = await getSettings();
+      if (userInfo.role !== SUPER_USER && system.isMaintained) {
         return <MaintainedPage />;
       }
     };

@@ -1,32 +1,29 @@
-import { headers } from "next/headers";
 import { User } from "@/types/global";
 import HomePage from "./homePage";
 import MaintainedPage from "@/components/Maintained";
-import { getMaintenanceSettings } from "@/utils/problems/getSettings";
+import { cookies } from "next/headers";
+import getSystemSettings from "@/utils/problems/getSystemSettings";
 import fetchUserById from "@/utils/fetchUserById";
+import { getTokens } from "next-firebase-auth-edge";
 import { SUPER_USER } from "@/utils/const";
+import { notFound } from "next/navigation";
+import { clientConfig, serverConfig } from "@/config";
 
 export default async function Page() {
-  const userInfo = await getUserInfo();
+  const tokens = await getTokens(cookies(), {
+    apiKey: clientConfig.apiKey,
+    cookieName: serverConfig.cookieName,
+    cookieSignatureKeys: serverConfig.cookieSignatureKeys,
+    serviceAccount: serverConfig.serviceAccount,
+  });
 
-  if (await shouldShowMaintainedPage(userInfo)) {
-    return <MaintainedPage />;
-  }
+  const userInfo = await fetchUserById(tokens.decodedToken.uid);
+
+  if (!tokens) notFound();
+
+  if (await shouldShowMaintainedPage(userInfo)) return <MaintainedPage />;
+
   return <HomePage />;
-}
-
-async function getUserInfo(): Promise<User | null> {
-  const headersList = headers();
-  const userInfoHeader = headersList.get("x-user-info");
-  if (!userInfoHeader) return null;
-
-  try {
-    const { userId } = JSON.parse(userInfoHeader || "{}");
-    return userId ? await fetchUserById(userId) : null;
-  } catch (error) {
-    console.error("Error parsing user info header:", error);
-    return null;
-  }
 }
 
 async function shouldShowMaintainedPage(
@@ -34,6 +31,7 @@ async function shouldShowMaintainedPage(
 ): Promise<boolean> {
   if (!userInfo) return true;
 
-  const isMaintained = await getMaintenanceSettings();
-  return userInfo.role !== SUPER_USER && isMaintained;
+  const system = await getSystemSettings();
+  // 方便 superuser 維修
+  return userInfo.role !== SUPER_USER && system.isMaintained;
 }

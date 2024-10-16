@@ -17,10 +17,10 @@ const LogoutButton: React.FC = () => {
   const router = useRouter();
   const [signOut, loading, error] = useSignOut(auth);
 
-  const handleLogout = () => {
-    deleteCookie("token");
+  const handleLogout = async () => {
+    await fetch("/api/logout");
     signOut();
-    router.push("/auth");
+    router.push("/login");
   };
   return (
     <>

@@ -72,23 +72,20 @@ const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
         values.email,
         values.password
       );
-      if (!userCredential) return;
-      const userRef = doc(firestore, "users", userCredential.user.uid);
-      const userSnap = await getDoc(userRef);
 
-      const token = await createToken(
-        userCredential.user.uid,
-        userSnap.data().role
-      );
-      setCookie("token", token, {
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7,
-        secure: true,
+      // const userRef = doc(firestore, "users", userCredential.user.uid);
+      // const userSnap = await getDoc(userRef);
+      const idToken = await userCredential.user.getIdToken();
+      await fetch("/api/login", {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
       });
-      await new Promise((resolve) => setTimeout(resolve, 500)); // 延遲 500ms 讓 token 產生順利
-      setIsLoading(false);
 
-      router.push("/");
+      setIsLoading(false);
+      // Refresh page after updating browser cookies
+      router.refresh();
+      // router.push("/");
     } catch (error: any) {
       console.log(error.message);
       showErrorToast(error.message);
