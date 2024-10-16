@@ -6,9 +6,9 @@ async function verifyToken(token: string | undefined) {
   if (!token) return null;
 
   try {
-    const secret = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET); // 使用 JWT_SECRET
-    const { payload } = await jwtVerify(token, secret); // 驗證 JWT
-    return payload; // 返回解碼後的 payload
+    const secret = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET); // Use JWT_SECRET instead of NEXT_PUBLIC
+    const { payload } = await jwtVerify(token, secret); // Verify JWT
+    return payload; // Return the decoded payload
   } catch (err) {
     console.error("Invalid or expired JWT", err);
     return null;
@@ -19,13 +19,14 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
   const decodedToken = await verifyToken(token);
-  if (!decodedToken || !token) {
-    return redirectToAuth(request);
+
+  if (!decodedToken) {
+    // If the token is missing or invalid, redirect to /auth
+    return redirectToAuth(request, "Token-is-invalid-or-expired");
   }
 
-  // 将解码后的 token 信息添加到请求头
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-user-info', JSON.stringify(decodedToken));
+  requestHeaders.set("x-user-info", JSON.stringify(decodedToken));
 
   return NextResponse.next({
     request: {
@@ -34,12 +35,17 @@ export async function middleware(request: NextRequest) {
   });
 }
 
-// 封裝重導向到 /auth 的邏輯
-function redirectToAuth(request: NextRequest) {
-  return NextResponse.redirect(new URL("/auth", request.url));
+// Custom redirect function with an optional message
+function redirectToAuth(request: NextRequest, message?: string) {
+  console.log("送你回來");
+  const authUrl = new URL("/auth", request.url);
+  if (message) {
+    authUrl.searchParams.set("message", message); // Pass an optional error message
+  }
+  return NextResponse.redirect(authUrl);
 }
 
-// 設置 matcher 來決定 Middleware 應該在哪些路徑上運行
+// Configure paths where the middleware should run
 export const config = {
   matcher: ["/", "/problems/:path*"],
 };

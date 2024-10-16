@@ -12,20 +12,27 @@ export default async function Page() {
   if (await shouldShowMaintainedPage(userInfo)) {
     return <MaintainedPage />;
   }
-
   return <HomePage />;
 }
 
 async function getUserInfo(): Promise<User | null> {
   const headersList = headers();
-  const { userId } = JSON.parse(headersList.get("x-user-info") || "{}");
-  return userId ? await fetchUserById(userId) : null;
+  const userInfoHeader = headersList.get("x-user-info");
+  if (!userInfoHeader) return null;
+
+  try {
+    const { userId } = JSON.parse(userInfoHeader || "{}");
+    return userId ? await fetchUserById(userId) : null;
+  } catch (error) {
+    console.error("Error parsing user info header:", error);
+    return null;
+  }
 }
 
 async function shouldShowMaintainedPage(
   userInfo: User | null
 ): Promise<boolean> {
-  if (!userInfo) return false;
+  if (!userInfo) return true;
 
   const isMaintained = await getMaintenanceSettings();
   return userInfo.role !== SUPER_USER && isMaintained;

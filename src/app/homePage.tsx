@@ -89,10 +89,10 @@ export default function Home() {
     createMissingUserProblems(user?.uid, problems, userProblems);
   }, [user?.uid, problems, userProblems]);
 
-  useEffect(() => {
-    // 沒登入強制轉址
-    if (!user) router.push("/auth");
-  }, [user, router]);
+  // useEffect(() => {
+  //   // 沒登入強制轉址
+  //   if (!user) router.push("/auth");
+  // }, [user, router]);
 
   return (
     <>

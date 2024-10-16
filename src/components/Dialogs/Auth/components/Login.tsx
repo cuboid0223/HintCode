@@ -68,22 +68,26 @@ const Login: React.FC<LoginProps> = ({ setAuthDialog }) => {
       return alert("請填寫 Email 或是 密碼");
     try {
       setIsLoading(true);
-      const newUser = await signInWithEmailAndPassword(
+      const userCredential = await signInWithEmailAndPassword(
         values.email,
         values.password
       );
-      if (!newUser) return;
-      const userRef = doc(firestore, "users", newUser.user.uid);
+      if (!userCredential) return;
+      const userRef = doc(firestore, "users", userCredential.user.uid);
       const userSnap = await getDoc(userRef);
 
-      const token = await createToken(newUser.user.uid, userSnap.data().role);
+      const token = await createToken(
+        userCredential.user.uid,
+        userSnap.data().role
+      );
       setCookie("token", token, {
         path: "/",
         maxAge: 60 * 60 * 24 * 7,
         secure: true,
       });
-
+      await new Promise((resolve) => setTimeout(resolve, 500)); // 延遲 500ms 讓 token 產生順利
       setIsLoading(false);
+
       router.push("/");
     } catch (error: any) {
       console.log(error.message);
