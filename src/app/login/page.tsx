@@ -28,7 +28,7 @@ const formSchema = z.object({
 });
 
 export default function Login() {
-  const [isLogged, setIsLogged] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const setting = useSubscribedSettings();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -41,7 +41,7 @@ export default function Login() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      setIsLogged(false);
+      setIsLoading(true);
       const credential = await signInWithEmailAndPassword(
         auth,
         values.email,
@@ -56,7 +56,7 @@ export default function Login() {
       });
 
       router.push("/");
-      setIsLogged(true);
+      setIsLoading(false);
     } catch (e) {
       showErrorToast((e as Error).message);
     }
@@ -104,7 +104,7 @@ export default function Login() {
                 )}
               />
               <Button className="w-full" type="submit">
-                {isLogged ? "登入中..." : "登入"}
+                {isLoading ? "登入中..." : "登入"}
               </Button>
             </form>
           </Form>
