@@ -1,4 +1,4 @@
-# HintCode - Your Personal Programming Teacher
+# HintCode - Your Personal Programming Teacher For Novice
 HintCode is an online coding practice platform integrating GPT-4o, specifically designed to provide reflective feedback for students, helping them continually grow throughout their programming journey. Currently, the platform supports Python and VB6, allowing students to practice various coding exercises.
 
 ### Development Stack:
