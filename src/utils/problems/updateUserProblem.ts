@@ -1,3 +1,4 @@
+import { BehaviorsState } from "@/atoms/behaviorsAtom";
 import { firestore } from "@/firebase/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
@@ -36,7 +37,7 @@ async function updateProblemRemainTimes(uid: string, problemId: string) {
 async function updateProblemBehaviors(
   uid: string,
   problemId: string,
-  newBehaviors: string[]
+  newBehaviors: BehaviorsState
 ) {
   try {
     const userProblemRef = doc(firestore, "users", uid, "problems", problemId);
