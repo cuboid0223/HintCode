@@ -1,7 +1,7 @@
 "use client";
 import { auth } from "../../firebase/firebase";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Image from "next/image";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";

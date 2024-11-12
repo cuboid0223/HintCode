@@ -1,0 +1,43 @@
+## 步驟 1：轉換 `weight` 和 `height` 資料型態
+
+由於 `weight` 和 `height` 參數可能會以字串的形式給予，我們首先需要將它們轉換成浮點數。
+
+```py {4} showLineNumbers title="pseudo code"
+# 將 str 轉換為浮點數
+str = "999"
+float_num = float(str) # 999.0
+```
+
+## 步驟 2：將身高從公分轉換為公尺
+
+BMI 計算需要的單位是公尺，因此我們需要將 `height{:.meta.object-literal.key}` 從公分轉換成公尺。這可以透過除以 100 來完成。
+
+```py showLineNumbers title="pseudo code"
+
+# 公分 轉換為公尺
+cm = 170
+m = cm / 100
+print(m) # 1.7
+```
+
+## 步驟 3：計算 BMI
+
+現在可以依據 BMI 的公式進行計算。
+公式為： 體重(公斤) / 身高(公尺)的平方
+
+```py showLineNumbers title="pseudo code" /a/#v
+# 平方
+a = 3
+b = a ** 2
+print(b) # 9
+```
+
+## 步驟 4：印出結果，取到小數點後一位
+
+利用 print 函數，並使用格式化字串 `f"{變數:.1f}"` 來控制輸出的小數點位數（此處取到小數點後一位）。
+
+```py showLineNumbers title="pseudo code"
+# 取到小數點後一位
+float_num = 3.14159
+print(f"{float_num:.1f}) # 3.1
+```

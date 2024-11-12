@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 
-export type BehaviorsState = string[];
+export type BehaviorsState = number[];
 
 export const behaviorsState = atom<BehaviorsState>({
   key: "behaviorsState",

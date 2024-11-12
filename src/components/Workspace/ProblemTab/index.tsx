@@ -17,6 +17,7 @@ import useGetUserInfo from "@/hooks/useGetUserInfo";
 import getUserProblemById from "@/utils/problems/getUserProblemById";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 import { updateProblemBehaviors } from "@/utils/problems/updateUserProblem";
+import StaticHint from "./StaticHint";
 
 type ProblemTabProps = {};
 
@@ -135,6 +136,12 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
               提示
             </TabsTrigger>
           )}
+          <TabsTrigger
+            value="staticHint"
+            className="rounded-t-lg text-gray-400  !shadow-none "
+          >
+            訣竅
+          </TabsTrigger>
         </TabsList>
 
         <div className="overflow-y-auto overflow-x-hidden">
@@ -152,6 +159,9 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
               setMessages={setMessages}
             />
           )}
+
+          {/* 靜態提示區 */}
+          {problemTab === "staticHint" && <StaticHint />}
         </div>
       </Tabs>
     </section>

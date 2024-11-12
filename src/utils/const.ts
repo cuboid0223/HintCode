@@ -55,28 +55,39 @@ export const NEXT_STEP = "nextStep";
 export const DEBUG_ERROR = "debugError";
 // export const PREV_HINT_NOT_HELP = "perviousHintNotHelp";
 
-export const ASK_CUSTOM_QUESTION_PROMPT = `
-但請不要透漏完整解法讓我複製，
-若我有需要範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。
-不需要給我應用到我的問題或範例的程式碼。
-請使用繁體中文回覆
-`;
+/*
+因為套用了 GPT-4o 蘇格拉底框架
+所以使用者輸入不需要 prompt
+*/
+// export const ASK_CUSTOM_QUESTION_PROMPT = `
+// 但請不要透漏完整解法讓我複製，
+// 若我有需要範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。
+// 不需要給我應用到我的問題或範例的程式碼。
+// 請使用繁體中文回覆
+// `;
 
-export const NEXT_STEP_PROMPT = `
-請告訴我下一步怎麼做，但請不要透漏正確且完整解法讓我複製，
-給我的範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。
-不需要給我應用到我的問題或範例的程式碼。
-請使用繁體中文回覆
-`;
-export const DEBUG_ERROR_PROMPT = `只能告訴我程式碼哪裡出錯，請不要透漏正確且完整解法讓我複製，其餘與錯誤無關的資訊也請不要透漏。
-  請給我的針對該錯誤的範例程式碼但不能是題目的答案，這可以幫助我思考其中的概念。
-  不需要給我應用到我的問題或範例的程式碼。
-  請使用繁體中文回覆`;
+export const ASK_CUSTOM_QUESTION_PROMPT = "";
+
+// export const NEXT_STEP_PROMPT = `
+// 請告訴我下一步怎麼做，但請不要透漏正確且完整解法讓我複製，
+// 給我的範例程式碼不能是題目的答案，這可以幫助我思考其中的概念。
+// 不需要給我應用到我的問題或範例的程式碼。
+// 請使用繁體中文回覆
+// `;
+export const NEXT_STEP_PROMPT =
+  "請告訴我下一步怎麼做，必要時請給我 pseudo code ，最後請使用繁體中文回覆";
+// export const DEBUG_ERROR_PROMPT = `只能告訴我程式碼哪裡出錯，請不要透漏正確且完整解法讓我複製，其餘與錯誤無關的資訊也請不要透漏。
+//   請給我的針對該錯誤的範例程式碼但不能是題目的答案，這可以幫助我思考其中的概念。
+//   不需要給我應用到我的問題或範例的程式碼。
+//   請使用繁體中文回覆`;
+export const DEBUG_ERROR_PROMPT =
+  "程式碼哪裡出錯? 必要時請給我 pseudo code ，最後請使用繁體中文回覆";
 
 // export const PREV_HINT_NOT_HELP_PROMPT = `
 // 上一個提示對我沒有幫助，請給我新的提示，但不要透漏正確且完整解法讓我複製。
 // 請使用繁體中文回覆
 // `;
+export const PREV_HINT_NOT_HELP_PROMPT = "";
 
 export const HELP_TYPE_OPTIONS = [
   {
@@ -115,16 +126,16 @@ export const LANGUAGE_IDS = {
 // ----------------------------------------------------------------
 // 這個變數，是為了監聽學生在解題的過程中，有沒有按照我們的預期行為
 // 目的是為了產生 行為轉換圖
-// 最終每題會產生一個 string array(e.g. ["1","3","4","2"....]) 透過 sliding window 來計算行為轉換的次數
+// 最終每題會產生一個 string array(e.g. ["1","3","4","2"....]) 接著 python 抓取資料庫資料，用 GSEQ 來計算行為轉換的次數和顯著性
 export const UPDATE_BEHAVIORS_EVERY_N_TIMES = 4; // 本地端每新增四次行為，更新資料庫，避免資料庫 loading 過重
 export const BEHAVIOR_IDS = {
-  NEXT_STEP: "1",
-  DEBUG_ERROR: "2",
+  NEXT_STEP: 1,
+  DEBUG_ERROR: 2,
   // PREV_HINT_NOT_HELP: "3",
   // ASK_CUSTOM_QUESTION: "4",
-  READ_QUESTION_AGAIN: "3",
-  EXECUTION_SUCCESS: "4",
-  EXECUTION_FAILURE: "5",
+  READ_QUESTION_AGAIN: 3,
+  EXECUTION_SUCCESS: 4,
+  EXECUTION_FAILURE: 5,
 };
 
 // ----------------------------------------------------------------
