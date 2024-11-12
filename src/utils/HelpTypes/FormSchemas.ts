@@ -3,7 +3,7 @@ import { SubmissionsState } from "@/atoms/submissionsDataAtom";
 
 export const FormSchema = z.object({
   helpType: z
-    .string({
+    .number({
       required_error: "您需要何種幫助",
     })
     .optional()

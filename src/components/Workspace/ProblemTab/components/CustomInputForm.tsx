@@ -74,7 +74,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-  const [selectedHelpType, setSelectedHelpType] = useState<string | null>(null);
+  const [selectedHelpType, setSelectedHelpType] = useState<number>(0);
   const [lang, setLang] = useLocalStorage("selectedLang", "py");
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
