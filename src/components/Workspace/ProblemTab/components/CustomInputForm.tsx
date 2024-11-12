@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { updateProblemRemainTimes } from "@/utils/problems/updateUserProblem";
 import { useParams } from "next/navigation";
-import { ASK_CUSTOM_QUESTION_PROMPT, BEHAVIOR_IDS } from "@/utils/const";
+import { ASK_CUSTOM_QUESTION_PROMPT, BEHAVIOR_IDS, REVERSE_BEHAVIOR_IDS } from "@/utils/const";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useLocalStorage } from "@uidotdev/usehooks";
@@ -96,10 +96,12 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
     form.reset(); // 清空輸入框
   };
 
+
+
   const processTextRequest = (data: z.infer<typeof FormSchema>) => {
     data.code = userCode;
     data.prompt = ASK_CUSTOM_QUESTION_PROMPT;
-    data.helpType = selectedHelpType;
+    data.helpType = REVERSE_BEHAVIOR_IDS[selectedHelpType] ;
     const promptTemplate = createPromptTemplate(
       data,
       problem.problemStatement,

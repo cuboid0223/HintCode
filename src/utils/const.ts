@@ -129,13 +129,18 @@ export const LANGUAGE_IDS = {
 // 最終每題會產生一個 string array(e.g. ["1","3","4","2"....]) 接著 python 抓取資料庫資料，用 GSEQ 來計算行為轉換的次數和顯著性
 export const UPDATE_BEHAVIORS_EVERY_N_TIMES = 4; // 本地端每新增四次行為，更新資料庫，避免資料庫 loading 過重
 export const BEHAVIOR_IDS = {
-  NEXT_STEP: 1,
-  DEBUG_ERROR: 2,
+  NEXT_STEP: 1, // NEXT_STEP 數字不能變動
+  DEBUG_ERROR: 2,// DEBUG_ERROR 數字不能變動
   // PREV_HINT_NOT_HELP: "3",
   // ASK_CUSTOM_QUESTION: "4",
   READ_QUESTION_AGAIN: 3,
   EXECUTION_SUCCESS: 4,
   EXECUTION_FAILURE: 5,
 };
+export const REVERSE_BEHAVIOR_IDS = {
+ 1: NEXT_STEP,
+ 2: DEBUG_ERROR,
+};
+
 
 // ----------------------------------------------------------------
