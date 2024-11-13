@@ -18,7 +18,6 @@ import { View } from "@/components/canvas/View";
 import { animated } from "react-spring";
 import Avatar from "@/components/Avatar";
 import { useUserTransitions } from "@/hooks/useUsers";
-import { orbitron600 as orbitron } from "@/utils/const";
 
 const Trophy = dynamic(
   () => import("@/components/canvas/Models").then((mod) => mod.Trophy),
@@ -99,14 +98,14 @@ function RankingList() {
                 ...styles,
               }}
             >
-              <TableCell className={orbitron.className}>
+              <TableCell className="font-['Orbitron']">
                 {user.completionRate}%
               </TableCell>
               <TableCell className="">{user.displayName}</TableCell>
               <TableCell className="flex place-content-center">
                 <Avatar svg={user?.thumbnail} />
               </TableCell>
-              <TableCell className={orbitron.className}>{index + 1}</TableCell>
+              <TableCell className="font-['Orbitron']">{index + 1}</TableCell>
             </animated.tr>
           ))}
         </TableBody>
@@ -138,7 +137,7 @@ function RankingList() {
                 ...styles,
               }}
             >
-              <TableCell className={`order-4 ${orbitron.className}`}>
+              <TableCell className={`order-4 font-['Orbitron']`}>
                 {user.completionRate}%
               </TableCell>
               <TableCell className="order-3">{user.displayName}</TableCell>
@@ -150,7 +149,7 @@ function RankingList() {
                   }}
                 ></div>
               </TableCell>
-              <TableCell className={orbitron.className}>{index + 6}</TableCell>
+              <TableCell className="font-['Orbitron']">{index + 6}</TableCell>
             </animated.tr>
           ))}
         </TableBody>

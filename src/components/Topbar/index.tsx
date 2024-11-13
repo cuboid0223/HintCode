@@ -20,7 +20,6 @@ import useGetProblems from "@/hooks/useGetProblems";
 import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import LogoutButton from "../Topbar/components/LogoutBtn";
-import { orbitron600 as orbitron } from "@/utils/const";
 
 import PersonalInfoDialog from "../Dialogs/PersonalInfoDialog";
 type TopBarProps = {
@@ -68,7 +67,7 @@ const TopBar: React.FC<TopBarProps> = ({
             width={45}
             priority
           />
-          <h1 className={orbitron.className}>HintCode</h1>
+          <h1 className={"font-['Orbitron'] font-semibold"}>HintCode</h1>
         </Link>
 
         {isProblemPage && (

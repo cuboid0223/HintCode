@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,6 +13,7 @@
 body {
   font-family:
     system-ui,
+    "Orbitron",
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
@@ -163,18 +165,6 @@ body {
   cursor: row-resize;
 }
 
-/* code {
-  border-radius: 5px;
-  border-width: 1px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.125rem;
-  letter-spacing: 1px;
-  white-space: pre-wrap;
-  border-color: rgba(247, 250, 255, 0.12);
-  color: rgba(239, 241, 246, 0.75);
-} */
-
 .transition-colors {
   transition-property: background-color;
   transition-timing-function: linear;
@@ -188,14 +178,22 @@ h3 code {
 
 pre {
   @apply !px-0 rounded-lg;
+  letter-spacing: 1px;
+  white-space: pre-wrap;
 }
 
 code {
+  /* 區塊程式碼 */
   @apply text-sm md:text-base !leading-loose;
 }
 
 pre > code {
-  counter-reset: line;
+  /* 區塊程式碼 */
+  /*  inline 被寫在 style 裡，所以一定用 important */
+  display: block !important;
+
+  content: counter(line);
+  @apply my-3;
 }
 
 code[data-theme*=" "],

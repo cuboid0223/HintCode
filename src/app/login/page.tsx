@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -21,6 +21,7 @@ import { showErrorToast } from "@/utils/Toast/message";
 import { Input } from "@/components/ui/input";
 import TopBar from "@/components/Topbar";
 import { useSubscribedSettings } from "@/hooks/useSettings";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const formSchema = z.object({
   password: z.string(),
@@ -28,6 +29,7 @@ const formSchema = z.object({
 });
 
 export default function Login() {
+  const [user] = useAuthState(auth);
   const [isLoading, setIsLoading] = useState(false);
   const setting = useSubscribedSettings();
   const router = useRouter();
@@ -61,6 +63,11 @@ export default function Login() {
       showErrorToast((e as Error).message);
     }
   }
+
+  useEffect(() => {
+    // 登入後不能看到登入頁面
+    if (user) router.push("/");
+  }, [user, router]);
 
   return (
     <>

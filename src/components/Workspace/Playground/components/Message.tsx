@@ -17,8 +17,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { getTextByType } from "@/utils/HelpTypes/getTextByType";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+
 type MessageProps = {
   theme: string;
   msg: MessageType;
@@ -121,6 +120,8 @@ const AssistantMessage: React.FC<MessageProps> = ({ msg, theme }) => {
   const [user] = useAuthState(auth);
   const params = useParams<{ pid: string }>();
   const [isLiked, setIsLiked] = useState(0);
+  const [mdxContent, setMdxContent] = useState<React.ReactNode>(null); // 新增狀態來存儲 MDX 內容
+
   const handleLiked = async (newLikeStatus: number) => {
     const msgRef = doc(
       firestore,

@@ -34,7 +34,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/firebase/firebase";
 import CountUp from "react-countup";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
-import { DIFFICULTY_CLASSES, orbitron400 as orbitron } from "@/utils/const";
+import { DIFFICULTY_CLASSES } from "@/utils/const";
 import createUserProblem from "@/utils/problems/createUserProblem";
 
 export default function Home() {
@@ -105,7 +105,7 @@ export default function Home() {
             >
               {({ countUpRef, start }) => (
                 <div>
-                  <span className={`${orbitron.className}`} ref={countUpRef} />
+                  <span className="font-['Orbitron']" ref={countUpRef} />
                 </div>
               )}
             </CountUp>
@@ -221,12 +221,12 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
         </Link>
       </TableCell>
       <TableCell
-        className={`${difficultyColor} ${orbitron.className}  tracking-widest`}
+        className={`${difficultyColor} font-['Orbitron']  tracking-widest`}
       >
         {problem.difficulty}
       </TableCell>
       <TableCell
-        className={` ${orbitron.className} dark:text-white tracking-widest`}
+        className={` font-['Orbitron'] dark:text-white tracking-widest`}
       >
         {problem.category}
       </TableCell>

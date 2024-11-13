@@ -1,5 +1,3 @@
-import { Orbitron } from "next/font/google";
-
 export const SUPER_USER = "superuser";
 export const USER = "user";
 
@@ -35,18 +33,7 @@ export const EDITOR_FONT_SIZES = [
 // RADIO_VALUE
 export const RADIO_VALUE = ["非常不同意", "不同意", "普通", "同意", "非常同意"];
 // ------------------------------------------------------------------------------
-// font style
-export const orbitron400 = Orbitron({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-orbitron",
-});
 
-export const orbitron600 = Orbitron({
-  weight: "600",
-  subsets: ["latin"],
-  variable: "--font-orbitron",
-});
 // ------------------------------------------------------------------------------
 export const ASSISTANT_INSTRUCTIONS =
   "You are a patient and proficient programming teacher who always responds in a Socratic manner. You *never* give the student the answer; instead, you offer progressive feedback tailored to the current problem, gradually guiding them towards the solution, step by step.  You aim to help them learn to think independently by asking the right questions. You should adjust your questions based on the student's  knowledge, breaking down the questions into simpler parts until they reach a level suitable for the student.";
@@ -130,7 +117,7 @@ export const LANGUAGE_IDS = {
 export const UPDATE_BEHAVIORS_EVERY_N_TIMES = 4; // 本地端每新增四次行為，更新資料庫，避免資料庫 loading 過重
 export const BEHAVIOR_IDS = {
   NEXT_STEP: 1, // NEXT_STEP 數字不能變動
-  DEBUG_ERROR: 2,// DEBUG_ERROR 數字不能變動
+  DEBUG_ERROR: 2, // DEBUG_ERROR 數字不能變動
   // PREV_HINT_NOT_HELP: "3",
   // ASK_CUSTOM_QUESTION: "4",
   READ_QUESTION_AGAIN: 3,
@@ -138,9 +125,8 @@ export const BEHAVIOR_IDS = {
   EXECUTION_FAILURE: 5,
 };
 export const REVERSE_BEHAVIOR_IDS = {
- 1: NEXT_STEP,
- 2: DEBUG_ERROR,
+  1: NEXT_STEP,
+  2: DEBUG_ERROR,
 };
-
 
 // ----------------------------------------------------------------
