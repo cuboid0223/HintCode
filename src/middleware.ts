@@ -4,7 +4,7 @@ import {
   redirectToHome,
   redirectToLogin,
 } from "next-firebase-auth-edge";
-import { clientConfig, serverConfig } from "@/config";
+import { authConfig, clientConfig, serverConfig } from "@/config";
 
 const PUBLIC_PATHS = ["/register", "/login", "/forget-password"];
 
@@ -18,12 +18,15 @@ export async function middleware(request: NextRequest) {
   return authMiddleware(request, {
     loginPath: "/api/login", // 這個 /api/login 並非自己建立的 api route ，是 next-firebase-auth-edge 設置的常數
     logoutPath: "/api/logout", // 這個 /api/logout 並非自己建立的 api route ，是 next-firebase-auth-edge 設置的常數
-    apiKey: clientConfig.apiKey,
-    cookieName: serverConfig.cookieName,
+    refreshTokenPath: "/api/refresh-token",
+    debug: authConfig.debug,
+    apiKey: authConfig.apiKey,
+    cookieName: authConfig.cookieName,
     cookieSignatureKeys: serverConfig.cookieSignatureKeys,
-    cookieSerializeOptions: serverConfig.cookieSerializeOptions,
-    serviceAccount: serverConfig.serviceAccount,
+    cookieSerializeOptions: authConfig.cookieSerializeOptions,
+    serviceAccount: authConfig.serviceAccount,
     handleValidToken: async ({ token, decodedToken }, headers) => {
+      // Authenticated user should not be able to access /login, /register, /forget-password
       if (PUBLIC_PATHS.includes(request.nextUrl.pathname)) {
         return redirectToHome(request);
       }
