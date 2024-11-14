@@ -99,7 +99,7 @@ function RankingList() {
               }}
             >
               <TableCell className="font-['Orbitron']">
-                {user.completionRate}%
+                {user.completionRate.toFixed(1)}%
               </TableCell>
               <TableCell className="">{user.displayName}</TableCell>
               <TableCell className="flex place-content-center">
@@ -138,7 +138,7 @@ function RankingList() {
               }}
             >
               <TableCell className={`order-4 font-['Orbitron']`}>
-                {user.completionRate}%
+                {user.completionRate.toFixed(1)}%
               </TableCell>
               <TableCell className="order-3">{user.displayName}</TableCell>
               <TableCell className="flex place-content-center order-2">
