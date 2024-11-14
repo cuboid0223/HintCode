@@ -173,7 +173,9 @@ function PersonalInfoDialog({
                     ...styles,
                   }}
                 >
-                  <TableCell className="">{user.completionRate} %</TableCell>
+                  <TableCell className="">
+                    {user.completionRate.toFixed(1)} %
+                  </TableCell>
                   <TableCell className="">{user.displayName}</TableCell>
                   <TableCell className="flex place-content-center">
                     <Avatar svg={user?.thumbnail} />
