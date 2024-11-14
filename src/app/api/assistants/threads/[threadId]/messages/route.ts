@@ -2,13 +2,20 @@ import { assistantId } from "@/utils/AI/assistant-config";
 import { openai } from "@/utils/AI/openai";
 import { NextResponse } from "next/server";
 
+/*
+https://vercel.com/docs/functions/configuring-functions/duration
+https://vercel.com/guides/what-can-i-do-about-vercel-serverless-functions-timing-out
+預設是 10 秒，但發現 production 模式 GPT 產字到一半會斷掉
+*/
+export const maxDuration = 15; // The function will run for a maximum of 15 seconds
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 // Send a new message to a thread
 export async function POST(request: Request, { params: { threadId } }) {
   try {
     const { content } = await request.json();
-    console.log(content);
+    // console.log(content);
     await openai.beta.threads.messages.create(threadId, {
       role: "user",
       content: content,
