@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   signInWithEmailAndPassword,
   UserCredential,
@@ -25,12 +24,10 @@ import { showErrorToast } from "@/utils/Toast/message";
 import { Input } from "@/components/ui/input";
 import TopBar from "@/components/Topbar";
 import { useSubscribedSettings } from "@/hooks/useSettings";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { useRedirectParam } from "@/hooks/useRedirectParam";
 import { useRedirectAfterLogin } from "@/hooks/useRedirectAfterLogin";
 import { loginWithCredential } from "@/utils/auth";
 import { useLoadingCallback } from "react-loading-hook";
-import { loginAction } from "@/actions/loginAction";
 import { appendRedirectParam } from "@/utils/redirect";
 
 const formSchema = z.object({
@@ -40,8 +37,6 @@ const formSchema = z.object({
 
 export default function Login() {
   const [hasLogged, setHasLogged] = useState(false);
-  const [shouldLoginWithAction, setShouldLoginWithAction] = useState(false);
-  let [isLoginActionPending, startTransition] = React.useTransition();
   const redirect = useRedirectParam();
   const redirectAfterLogin = useRedirectAfterLogin();
   const setting = useSubscribedSettings();
@@ -54,25 +49,24 @@ export default function Login() {
     },
   });
 
-  async function handleLogin(credential: UserCredential) {
-    await loginWithCredential(credential);
-    redirectAfterLogin();
-  }
+  const handleLogin = useCallback(
+    async (credential: UserCredential) => {
+      await loginWithCredential(credential);
+      redirectAfterLogin();
+    },
+    [redirectAfterLogin]
+  );
 
   const [handleLoginWithEmailAndPassword, isEmailLoading, emailPasswordError] =
     useLoadingCallback(
       async ({ email, password }: z.infer<typeof formSchema>) => {
         setHasLogged(false);
 
-        if (shouldLoginWithAction) {
-          startTransition(() => loginAction(email, password));
-        } else {
-          await handleLogin(
-            await signInWithEmailAndPassword(auth, email, password)
-          );
+        await handleLogin(
+          await signInWithEmailAndPassword(auth, email, password)
+        );
 
-          setHasLogged(true);
-        }
+        setHasLogged(true);
       }
     );
 
@@ -137,7 +131,7 @@ export default function Login() {
                 )}
               />
               <Button className="w-full" type="submit">
-                {isEmailLoading || isLoginActionPending ? "登入中..." : "登入"}
+                {isEmailLoading ? "登入中..." : "登入"}
               </Button>
             </form>
           </Form>

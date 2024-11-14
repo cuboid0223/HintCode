@@ -1,7 +1,7 @@
 "use client";
 import { auth } from "../../firebase/firebase";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Image from "next/image";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -20,8 +20,8 @@ import useGetProblems from "@/hooks/useGetProblems";
 import { useRecoilState } from "recoil";
 import { isPersonalInfoDialogOpenState } from "@/atoms/isPersonalInfoDialogOpen";
 import LogoutButton from "../Topbar/components/LogoutBtn";
-
 import PersonalInfoDialog from "../Dialogs/PersonalInfoDialog";
+
 type TopBarProps = {
   isProblemPage?: boolean;
   isLoginBtnHidden?: boolean;
@@ -32,9 +32,7 @@ const TopBar: React.FC<TopBarProps> = ({
   isLoginBtnHidden = false,
 }) => {
   const [user] = useAuthState(auth);
-
   const { setTheme } = useTheme();
-
   const [isPersonalInfoDialogOpen, setIsPersonalInfoDialogOpen] =
     useRecoilState(isPersonalInfoDialogOpenState);
   const [isProblemsLoading, setIsProblemsLoading] = useState(false);
@@ -44,6 +42,7 @@ const TopBar: React.FC<TopBarProps> = ({
   const togglePersonalInfoDialog = () => {
     setIsPersonalInfoDialogOpen(!isPersonalInfoDialogOpen);
   };
+
   const goToNextProblem = () => {
     handleProblemChange(true, user.uid);
   };
@@ -51,6 +50,21 @@ const TopBar: React.FC<TopBarProps> = ({
   const goToPreviousProblem = () => {
     handleProblemChange(false, user.uid);
   };
+
+  // 將 handleChange 定義為 useCallback
+  const handleChange = useCallback(
+    (event) => setTheme(event.matches ? "dark" : "light"),
+    [setTheme]
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    setTheme(mediaQuery.matches ? "light" : "dark");
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [setTheme, handleChange]);
 
   return (
     <nav className="relative flex h-[50px] w-full shrink-0 items-center px-5 dark:bg-dark-layer-1 bg-card text-dark-gray-7">
@@ -106,7 +120,7 @@ const TopBar: React.FC<TopBarProps> = ({
           )}
 
           <DropdownMenu>
-            <DropdownMenuTrigger asChild className="">
+            <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
                 <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -122,9 +136,10 @@ const TopBar: React.FC<TopBarProps> = ({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
           {isLoginBtnHidden && (
             <Link href="/login">
-              <button className="bg-dark-fill-3 py-1 px-2 cursor-pointer rounded ">
+              <button className="bg-dark-fill-3 py-1 px-2 cursor-pointer rounded">
                 登入
               </button>
             </Link>
@@ -136,7 +151,6 @@ const TopBar: React.FC<TopBarProps> = ({
               isPersonalInfoDialogOpen={isPersonalInfoDialogOpen}
             />
           )}
-
           {user && <LogoutButton />}
         </div>
       </div>

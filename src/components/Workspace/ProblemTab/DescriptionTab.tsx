@@ -99,17 +99,10 @@ const DescriptionTab = () => {
                 );
               },
               code({ children, className, node, ...rest }) {
-                // const match = /language-(\w+)/.exec(className || "");
                 return (
-                  // <code
-                  //   {...rest}
-                  //   className="text-white dark:text-black bg-red-400 px-1 w-full"
-                  // >
-                  //   {children}
-                  // </code>
                   <SyntaxHighlighter
                     PreTag="code"
-                    customStyle={{ display: "block", fontSize: "14px" }}
+                    customStyle={{ padding: "0.25rem" }}
                     style={resolvedTheme === "dark" ? a11yDark : docco}
                     language="python"
                   >

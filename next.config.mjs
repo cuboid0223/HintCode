@@ -13,16 +13,20 @@ const catppuccinLatteTheme = JSON.parse(
   )
 );
 
+const darkPlusTheme = JSON.parse(
+  readFileSync(new URL("./public/themes/dark-plus.json", import.meta.url))
+);
+
 /** @type {import('rehype-pretty-code').Options} */
 const options = {
   // See Options section below.
   theme: {
-    dark: catppuccinLatteTheme,
-    light: catppuccinLatteTheme,
+    dark: "vitesse-black",
+    light: "github-light",
   },
   keepBackground: false,
   defaultLang: {
-    block: "plaintext",
+    block: "py",
     inline: "plaintext",
   },
   bypassInlineCode: true,
