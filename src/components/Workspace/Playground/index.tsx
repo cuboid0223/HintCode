@@ -240,7 +240,10 @@ End Module`;
       if (isAllTestCasesAccepted(submissions) && solvedProblems.length !== 0) {
         const userRef = doc(firestore, "users", user.uid);
         await updateDoc(userRef, {
-          completionRate: percentage(solvedProblems.length, problems.length),
+          completionRate: percentage(
+            solvedProblems.length,
+            problems.length
+          ).toFixed(1),
         });
       }
     };
