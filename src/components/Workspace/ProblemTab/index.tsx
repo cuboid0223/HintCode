@@ -18,6 +18,11 @@ import getUserProblemById from "@/utils/problems/getUserProblemById";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 import { updateProblemBehaviors } from "@/utils/problems/updateUserProblem";
 import StaticHint from "./StaticHint";
+import useGroups from "@/hooks/useGroups";
+
+const DESCRIPTION = "description";
+const STATIC_HINT = "staticHint";
+const GET_HELP = "getHelp";
 
 type ProblemTabProps = {};
 
@@ -26,18 +31,22 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
   const [behaviors, setBehaviors] =
     useRecoilState<BehaviorsState>(behaviorsState);
   const [user] = useAuthState(auth);
+  const [controlGroup, experimentalGroup] = useGroups();
   const userData = useGetUserInfo();
 
   const [threadId, setThreadId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [problemTab, setProblemTab] = useState("description");
+  const [problemTab, setProblemTab] = useState(DESCRIPTION);
   const [remainTimes, setRemainTimes] = useState(20);
   const [isUserControlGroup, setIsUserControlGroup] = useState(false);
 
   const handleProblemTabChange = (value: string) => {
     setProblemTab(value);
-    if (value === "description")
+    if (value === DESCRIPTION)
       setBehaviors([...behaviors, BEHAVIOR_IDS.READ_QUESTION_AGAIN]);
+    if (value === STATIC_HINT)
+      // 靜態提示被我歸類在 "下一步"
+      setBehaviors([...behaviors, BEHAVIOR_IDS.NEXT_STEP]);
   };
 
   useEffect(() => {
@@ -118,39 +127,41 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
       <Tabs
         value={problemTab}
         onValueChange={handleProblemTabChange}
-        defaultValue="description"
+        defaultValue={DESCRIPTION}
         className="flex-1 flex flex-col items-stretch overflow-hidden "
       >
         <TabsList className="p-0 pt-3 h-fit flex justify-start ">
           <TabsTrigger
-            value="description"
+            value={DESCRIPTION}
             className="rounded-t-lg text-gray-400  !shadow-none "
           >
             問題描述
           </TabsTrigger>
           {!isUserControlGroup && problem.isHelpEnabled && (
             <TabsTrigger
-              value="getHelp"
+              value={GET_HELP}
               className="rounded-t-lg text-gray-400  !shadow-none"
             >
               提示
             </TabsTrigger>
           )}
-          <TabsTrigger
-            value="staticHint"
-            className="rounded-t-lg text-gray-400  !shadow-none "
-          >
-            訣竅
-          </TabsTrigger>
+          {isUserControlGroup && (
+            <TabsTrigger
+              value={STATIC_HINT}
+              className="rounded-t-lg text-gray-400  !shadow-none "
+            >
+              訣竅
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <div className="overflow-y-auto overflow-x-hidden">
           {/* 程式題目敘述區 */}
 
-          {problemTab === "description" && <DescriptionTab />}
+          {problemTab === DESCRIPTION && <DescriptionTab />}
 
           {/* GPT 提示區 */}
-          {problemTab === "getHelp" && (
+          {problemTab === GET_HELP && (
             <HelpTab
               remainTimes={remainTimes}
               setRemainTimes={setRemainTimes}
@@ -161,7 +172,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
           )}
 
           {/* 靜態提示區 */}
-          {problemTab === "staticHint" && <StaticHint />}
+          {problemTab === STATIC_HINT && <StaticHint />}
         </div>
       </Tabs>
     </section>

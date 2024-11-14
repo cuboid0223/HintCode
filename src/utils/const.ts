@@ -1,7 +1,7 @@
 export const SUPER_USER = "superuser";
 export const USER = "user";
 
-export const EXPERIMENTAL = "experimental";
+export const EXPERIMENTAL = "experimental_2";
 export const CONTROL = "control";
 
 // Auth Dialog

@@ -66,7 +66,7 @@ const useGetSubscribedUsers = () => {
   return subscribedUsers;
 };
 
-// handle row change animation
+// handle ranking row change animation
 const usersWithHeight = (users: User[]) => {
   const updatedUsers = users.map((user) => ({
     ...user,

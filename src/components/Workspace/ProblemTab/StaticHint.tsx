@@ -25,6 +25,7 @@ function StaticHint() {
   useEffect(() => {
     const fetchMDX = async () => {
       try {
+        //  static hint 是寫死的資料放在 public 內
         const response = await fetch(`/markdown/staticHint/${pid}.mdx`);
         if (!response.ok) throw new Error("MDX file not found");
         const text = await response.text();
@@ -33,7 +34,7 @@ function StaticHint() {
         );
         setContent(content);
       } catch (error) {
-        setContent("<h1>Problem file not found</h1>");
+        setContent("Problem file not found");
       }
     };
 
