@@ -8,11 +8,13 @@ import { useRecoilValue } from "recoil";
 import { problemDataState } from "@/atoms/ProblemData";
 import { Badge } from "@/components/ui/badge";
 import { EASY, HARD, MEDIUM } from "@/utils/const";
-import { LegacyRef, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Difficulty } from "@/types/problem";
+import { showWarningToast } from "@/utils/Toast/message";
 
 const DescriptionTab = () => {
   const problem = useRecoilValue(problemDataState);
+  const [showOverlay, setShowOverlay] = useState(false);
   const ref = useRef(null); // Update this if ref is really needed
   const { resolvedTheme } = useTheme();
 
@@ -29,11 +31,82 @@ const DescriptionTab = () => {
     }
   };
 
+  useEffect(() => {
+    // 禁止右鍵
+    const handleContextMenu = (event) => {
+      event.preventDefault();
+      showWarningToast("右鍵功能已被禁用！");
+    };
+
+    const disablePrintScreen = async (event) => {
+      if (event.key === "Meta") {
+        // windows + shift = Meta
+        try {
+          event.preventDefault();
+          setShowOverlay(true);
+          await navigator.clipboard.writeText("");
+        } catch (error) {
+          console.error("無法寫入剪貼簿：", error);
+        }
+      }
+    };
+
+    const disablePrtSc = (event) => {
+      if (event.key === "PrintScreen") {
+        setShowOverlay(true);
+      }
+    };
+
+    // const disableDevTools = (event) => {
+    //   if (
+    //     (event.ctrlKey || event.metaKey) &&
+    //     event.shiftKey &&
+    //     event.key === "I" // 禁止 Ctrl+Shift+I
+    //   ) {
+    //     event.preventDefault();
+    //     showWarningToast("開發者工具已被禁用！");
+    //   }
+
+    //   if (event.key === "F12") {
+    //     // 禁止 F12
+    //     event.preventDefault();
+    //     showWarningToast("開發者工具已被禁用！");
+    //   }
+    // };
+
+    // 添加事件監聽
+    document.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("keydown", disablePrintScreen);
+    // document.addEventListener("keydown", disableDevTools);
+
+    document.addEventListener("keyup", disablePrtSc);
+
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("keydown", disablePrintScreen);
+      document.removeEventListener("keyup", disablePrtSc);
+      // document.removeEventListener("keydown", disableDevTools);
+    };
+  }, []);
+
   return (
     <div className="flex px-5 py-4 overflow-y-auto">
-      <div className="flex-1">
+      <div className="flex-1 relative">
+        {showOverlay && (
+          <div className="absolute z-10 top-0 bottom-0 left-0 right-0 flex items-center justify-center backdrop-blur-lg rounded-md">
+            <h2>請重整頁面</h2>
+          </div>
+        )}
+
         {/* Problem heading */}
-        <div className="w-full">
+        <div
+          className="w-full "
+          style={{
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            msUserSelect: "none",
+          }}
+        >
           <h1 className="mr-2 text-lg font-medium">{problem?.title}</h1>
           <Badge className={`my-2 ${handleBadgeColor(problem?.difficulty)}`}>
             {problem?.difficulty}
