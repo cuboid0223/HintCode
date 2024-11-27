@@ -138,7 +138,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>字體大小</AlertDialogTitle>
                   <AlertDialogDescription className="flex justify-between items-center">
-                    <h3 className="">選擇編輯器字體大小</h3>
+                    選擇編輯器字體大小
                     <Select onValueChange={handleSelectedFontSize}>
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder={fontSize} />
@@ -155,9 +155,7 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>取消</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleRecoveryInitCode}>
-                    確定
-                  </AlertDialogAction>
+                  <AlertDialogAction>確定</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

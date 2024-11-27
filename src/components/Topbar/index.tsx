@@ -70,7 +70,7 @@ const TopBar: React.FC<TopBarProps> = ({
     <nav className="relative flex h-[50px] w-full shrink-0 items-center px-5 dark:bg-dark-layer-1 bg-card text-dark-gray-7">
       <div
         className={`flex w-full items-center justify-between ${
-          !isProblemPage ? "max-w-[1200px] mx-auto" : ""
+          !isProblemPage ? "container mx-auto" : ""
         }`}
       >
         <Link href="/" className="h-[45px] flex-1 flex items-center">
