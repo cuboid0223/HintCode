@@ -78,7 +78,7 @@ const Workspace = ({}) => {
         <Split
           key={resolvedTheme} // 使用 theme 作為 key 以強制重新渲染
           ref={splitRef}
-          className="flex  overflow-hidden"
+          className="flex h-full overflow-hidden"
           minSize={0}
           gutter={(_, direction) => {
             const gutter = document.createElement("div");
