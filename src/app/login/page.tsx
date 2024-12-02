@@ -90,10 +90,10 @@ export default function Login() {
   }
 
   return (
-    <>
+    <main className="h-screen overflow-hidden">
       <TopBar />
-      <main className="grid grid-cols-4 grid-rows-4">
-        <section className="col-start-2 col-span-2 row-start-2 row-span-2 p-2 flex flex-col space-y-5 border-4  dark:border-none  ">
+      <section className="grid grid-cols-4 grid-rows-4 ">
+        <div className="col-start-2 col-span-2 row-start-2 row-span-2 p-2 flex flex-col space-y-5 border-4  dark:border-none  ">
           <h3 className="text-xl font-medium text-white">登入 Hint Code</h3>
           <Form {...form}>
             <form
@@ -157,8 +157,8 @@ export default function Login() {
               </Link>
             )}
           </section>
-        </section>
-      </main>
-    </>
+        </div>
+      </section>
+    </main>
   );
 }

@@ -209,11 +209,11 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
               ? "#"
               : `/problems/${problem.id}?userId=${userId}`
           }
-          onClick={(e) => {
-            if (userProblem?.isLocked) {
-              e.preventDefault();
-            }
-          }}
+          // onClick={(e) => {
+          //   if (userProblem?.isLocked) {
+          //     e.preventDefault();
+          //   }
+          // }}
         >
           <p className="place-content-center hover:text-blue-600  sm:text-xs md:text-base	">
             {problem.title}

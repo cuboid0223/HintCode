@@ -75,11 +75,13 @@ const DescriptionTab = () => {
     // };
 
     // 添加事件監聽
-    document.addEventListener("contextmenu", handleContextMenu);
-    document.addEventListener("keydown", disablePrintScreen);
+    document.addEventListener("contextmenu", handleContextMenu, {
+      passive: true,
+    });
+    document.addEventListener("keydown", disablePrintScreen, { passive: true });
     // document.addEventListener("keydown", disableDevTools);
 
-    document.addEventListener("keyup", disablePrtSc);
+    document.addEventListener("keyup", disablePrtSc, { passive: true });
 
     return () => {
       document.removeEventListener("contextmenu", handleContextMenu);
@@ -92,6 +94,7 @@ const DescriptionTab = () => {
   return (
     <div className="flex px-5 py-4 overflow-y-auto">
       <div className="flex-1 relative">
+        {/* 截圖防範 模糊題目敘述 */}
         {showOverlay && (
           <div className="absolute z-10 top-0 bottom-0 left-0 right-0 flex items-center justify-center backdrop-blur-lg rounded-md">
             <h2>請重整頁面</h2>
