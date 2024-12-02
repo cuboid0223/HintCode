@@ -98,7 +98,9 @@ export default function Home() {
           <h1 className="text-xl font-extrabold tracking-tight lg:text-base">
             <CountUp
               start={0}
-              end={userInfo ? userInfo.completionRate : 0}
+              end={
+                userInfo ? parseFloat(userInfo.completionRate.toFixed(1)) : 0
+              }
               duration={2}
               separator=" "
               suffix="%"
