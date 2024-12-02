@@ -128,7 +128,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
         value={problemTab}
         onValueChange={handleProblemTabChange}
         defaultValue={DESCRIPTION}
-        className="flex-1 flex flex-col items-stretch overflow-hidden "
+        className="flex-1 flex flex-col items-stretch  overflow-y-auto"
       >
         <TabsList className="p-0 pt-3 h-fit flex justify-start ">
           <TabsTrigger

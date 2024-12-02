@@ -34,7 +34,7 @@ const DescriptionTab = () => {
   useEffect(() => {
     // 禁止右鍵
     const handleContextMenu = (event) => {
-      event.preventDefault();
+      // event.preventDefault();
       showWarningToast("右鍵功能已被禁用！");
     };
 

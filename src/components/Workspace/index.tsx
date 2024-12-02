@@ -70,15 +70,15 @@ const Workspace = ({}) => {
   return (
     <>
       {/* 手機 layout */}
-      <section className=" md:hidden">
+      <section className="flex-1 md:hidden overflow-y-auto">
         <ProblemTab />
       </section>
       {/* 電腦 layout */}
-      <section className="hidden md:block h-full">
+      <section className="hidden md:flex md:flex-col md:flex-1 overflow-hidden">
         <Split
           key={resolvedTheme} // 使用 theme 作為 key 以強制重新渲染
           ref={splitRef}
-          className="split flex-1 overflow-hidden h-screen"
+          className="flex  overflow-hidden"
           minSize={0}
           gutter={(_, direction) => {
             const gutter = document.createElement("div");
