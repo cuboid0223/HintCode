@@ -263,7 +263,7 @@ End Module`;
   }, [user, localCurrentCode, problem.starterCode, selectedLang, setUserCode]);
 
   return (
-    <div className="flex flex-col relative overflow-x-hidden ">
+    <section className="hidden md:flex flex-col relative overflow-x-hidden ">
       <PreferenceNav
         settings={settings}
         setSettings={setSettings}
@@ -389,7 +389,7 @@ End Module`;
         isLoading={isLoading}
         setSuccess={setSuccess}
       />
-    </div>
+    </section>
   );
 };
 

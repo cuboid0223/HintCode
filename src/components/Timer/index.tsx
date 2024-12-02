@@ -115,7 +115,7 @@ const Timer: React.FC<TimerProps> = () => {
   }, [user.uid, params.pid]);
 
   return (
-    <div>
+    <section className="hidden md:block">
       {showTimer ? (
         <div className="flex items-center space-x-2 bg-dark-fill-3 p-1.5 cursor-pointer rounded hover:bg-dark-fill-2">
           <div>{formatTime(elapsedTime)}</div>
@@ -128,7 +128,7 @@ const Timer: React.FC<TimerProps> = () => {
           {/* Timer icon SVG */}
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

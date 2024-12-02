@@ -91,11 +91,11 @@ export default function Home() {
   return (
     <>
       <Topbar />
-      <main className="container relative overflow-x-auto mx-auto grid gap-6 grid-cols-1">
+      <main className="container relative mx-auto ">
         {loadingProblems && <LoadingTableSkeleton />}
         {/* 完成進度條 */}
         <section className="flex items-center gap-3 mt-3">
-          <h1 className=" text-xl font-extrabold tracking-tight lg:text-base">
+          <h1 className="text-xl font-extrabold tracking-tight lg:text-base">
             <CountUp
               start={0}
               end={userInfo ? userInfo.completionRate : 0}
@@ -117,12 +117,12 @@ export default function Home() {
         <Table className="">
           {!loadingProblems && (
             <TableHeader>
-              <TableRow className="grid grid-cols-5 gap-4">
+              <TableRow className="grid gap-3 grid-cols-3  md:grid-cols-5 md:gap-4 ">
                 <TableHead className="w-[100px]">狀態</TableHead>
                 <TableHead>標題</TableHead>
                 <TableHead>難易度</TableHead>
-                <TableHead>類別</TableHead>
-                <TableHead>提示</TableHead>
+                <TableHead className="md:block  hidden">類別</TableHead>
+                <TableHead className="md:block  hidden">提示</TableHead>
               </TableRow>
             </TableHeader>
           )}
@@ -186,7 +186,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
     <TableRow
       key={problem.id}
       //${Math.floor(idx / 2) % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1 " : ""}
-      className={`grid grid-cols-5 gap-4 text-foreground ${Math.floor(idx / 2) % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1 " : ""} `}
+      className={`grid gap-3 grid-cols-3  md:grid-cols-5 md:gap-4  text-foreground ${Math.floor(idx / 2) % 2 === 1 ? "bg-slate-200 dark:bg-dark-layer-1 " : ""} `}
     >
       <TableCell className="font-medium whitespace-nowrap">
         {userProblem?.is_solved ? (
@@ -215,7 +215,7 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
             }
           }}
         >
-          <p className="place-content-center hover:text-blue-600">
+          <p className="place-content-center hover:text-blue-600  sm:text-xs md:text-base	">
             {problem.title}
           </p>
         </Link>
@@ -226,11 +226,11 @@ const ProblemRow: React.FC<ProblemRowProps> = ({
         {problem.difficulty}
       </TableCell>
       <TableCell
-        className={` font-['Orbitron'] dark:text-white tracking-widest`}
+        className={` font-['Orbitron'] dark:text-white tracking-widest md:block hidden`}
       >
         {problem.category}
       </TableCell>
-      <TableCell className="dark:text-white">
+      <TableCell className="dark:text-white md:block hidden">
         {problem.isHelpEnabled ? <BotMessageSquare /> : <BotOff />}
       </TableCell>
     </TableRow>

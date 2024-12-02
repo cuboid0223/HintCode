@@ -84,7 +84,7 @@ function RankingList() {
   }, []);
 
   return (
-    <div className="grid grid-cols-3 grid-rows-1 min-h-[400px] mt-5 container">
+    <div className="grid  md:grid-cols-3 md:grid-rows-1 h-full mt-5 container">
       {/* 1 - 5 名的 table */}
       <Table className="h-full text-center ">
         <TableBody className="relative">
@@ -98,11 +98,13 @@ function RankingList() {
                 ...styles,
               }}
             >
-              <TableCell className="font-['Orbitron']">
+              <TableCell className="font-['Orbitron'] order-4 md:order-none">
                 {user.completionRate.toFixed(1)}%
               </TableCell>
-              <TableCell className="">{user.displayName}</TableCell>
-              <TableCell className="flex place-content-center">
+              <TableCell className="order-3 md:order-none">
+                {user.displayName}
+              </TableCell>
+              <TableCell className="flex place-content-center  order-2 md:order-none">
                 <Avatar svg={user?.thumbnail} />
               </TableCell>
               <TableCell className="font-['Orbitron']">{index + 1}</TableCell>
@@ -111,8 +113,8 @@ function RankingList() {
         </TableBody>
       </Table>
       {/* 3D 獎盃 */}
-      <div className="">
-        <View orbit className="relative h-full  sm:w-full">
+      <section className="hidden md:block">
+        <View orbit className="relative h-[400px] ">
           <Suspense fallback={null}>
             <Trophy
               scale={0.75}
@@ -123,7 +125,7 @@ function RankingList() {
             <Common color={resolvedTheme === "dark" ? "#030711" : "#f6f6f6"} />
           </Suspense>
         </View>
-      </div>
+      </section>
       {/* 6 - 10 名的 table */}
       <Table className="h-full text-center ">
         <TableBody className="relative">
@@ -142,12 +144,7 @@ function RankingList() {
               </TableCell>
               <TableCell className="order-3">{user.displayName}</TableCell>
               <TableCell className="flex place-content-center order-2">
-                <div
-                  className="rounded-full h-8 w-8"
-                  dangerouslySetInnerHTML={{
-                    __html: user.thumbnail || "<div className='h-8 w-8'></div>",
-                  }}
-                ></div>
+                <Avatar svg={user?.thumbnail} />
               </TableCell>
               <TableCell className="font-['Orbitron']">{index + 6}</TableCell>
             </animated.tr>

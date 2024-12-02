@@ -123,7 +123,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
   }, [userData]);
 
   return (
-    <section className="relative flex flex-col ">
+    <section className="relative flex flex-col">
       <Tabs
         value={problemTab}
         onValueChange={handleProblemTabChange}

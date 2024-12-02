@@ -69,25 +69,33 @@ const Workspace = ({}) => {
 
   return (
     <>
-      <Split
-        key={resolvedTheme} // 使用 theme 作為 key 以強制重新渲染
-        ref={splitRef}
-        className="split flex-1 overflow-hidden "
-        minSize={0}
-        gutter={(_, direction) => {
-          const gutter = document.createElement("div");
-          gutter.className = `gutter gutter-${direction} ${
-            resolvedTheme === "dark" ? "bg-gray-600" : "bg-gray-300 "
-          } `;
-          return gutter;
-        }}
-      >
-        {/* 左半 程式題目敘述區與 GPT 提示區 */}
+      {/* 手機 layout */}
+      <section className=" md:hidden">
         <ProblemTab />
+      </section>
+      {/* 電腦 layout */}
+      <section className="hidden md:block h-full">
+        <Split
+          key={resolvedTheme} // 使用 theme 作為 key 以強制重新渲染
+          ref={splitRef}
+          className="split flex-1 overflow-hidden h-screen"
+          minSize={0}
+          gutter={(_, direction) => {
+            const gutter = document.createElement("div");
+            gutter.className = `gutter gutter-${direction} ${
+              resolvedTheme === "dark" ? "bg-gray-600" : "bg-gray-300 "
+            } `;
+            return gutter;
+          }}
+        >
+          {/* 左半 程式題目敘述區與 GPT 提示區 */}
+          <ProblemTab />
 
-        {/* 右半 程式碼輸入區與測試資料區 */}
-        <Playground setSuccess={setSuccess} setSolved={setSolved} />
-      </Split>
+          {/* 右半 程式碼輸入區與測試資料區 */}
+          <Playground setSuccess={setSuccess} setSolved={setSolved} />
+        </Split>
+      </section>
+
       {/* 提示有用問卷 */}
       {/* !isPersonalInfoDialogOpen -> 處理 Modal 同時顯示的問題 */}
       {success && !isPersonalInfoDialogOpen && isHelpEnabled && (

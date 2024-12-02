@@ -67,7 +67,7 @@ const TopBar: React.FC<TopBarProps> = ({
   }, [setTheme, handleChange]);
 
   return (
-    <nav className="relative flex h-[50px] w-full shrink-0 items-center px-5 dark:bg-dark-layer-1 bg-card text-dark-gray-7">
+    <nav className="relative flex h-[50px] w-full shrink-0 items-center  dark:bg-dark-layer-1 bg-card text-dark-gray-7">
       <div
         className={`flex w-full items-center justify-between ${
           !isProblemPage ? "container mx-auto" : ""
@@ -85,7 +85,7 @@ const TopBar: React.FC<TopBarProps> = ({
         </Link>
 
         {isProblemPage && (
-          <div className="flex items-center gap-4 flex-1 justify-center">
+          <div className=" items-center gap-4 flex-1 justify-center hidden md:flex">
             <div
               className="flex items-center justify-center rounded bg-dark-fill-3 hover:bg-dark-fill-2 h-8 w-8 cursor-pointer"
               onClick={goToPreviousProblem}
@@ -121,7 +121,7 @@ const TopBar: React.FC<TopBarProps> = ({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" className="hidden md:flex">
                 <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                 <span className="sr-only">Toggle theme</span>

@@ -101,11 +101,13 @@ const DescriptionTab = () => {
         {/* Problem heading */}
         <div
           className="w-full "
-          style={{
-            userSelect: "none",
-            WebkitUserSelect: "none",
-            msUserSelect: "none",
-          }}
+          style={
+            {
+              // userSelect: "none",
+              // WebkitUserSelect: "none",
+              // msUserSelect: "none",
+            }
+          }
         >
           <h1 className="mr-2 text-lg font-medium">{problem?.title}</h1>
           <Badge className={`my-2 ${handleBadgeColor(problem?.difficulty)}`}>
