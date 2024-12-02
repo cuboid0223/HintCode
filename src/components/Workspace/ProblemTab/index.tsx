@@ -145,7 +145,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
               提示
             </TabsTrigger>
           )}
-          {isUserControlGroup && (
+          {isUserControlGroup && problem.isHelpEnabled && (
             <TabsTrigger
               value={STATIC_HINT}
               className="rounded-t-lg text-gray-400  !shadow-none "
@@ -172,7 +172,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
           )}
 
           {/* 靜態提示區 */}
-          {problemTab === STATIC_HINT && <StaticHint />}
+          {problemTab === STATIC_HINT && <StaticHint problem={problem} />}
         </div>
       </Tabs>
     </section>

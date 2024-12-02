@@ -174,7 +174,7 @@ function PersonalInfoDialog({
                   }}
                 >
                   <TableCell className="">
-                    {user.completionRate.toFixed(1)} %
+                    {user.completionRate.toFixed()} %
                   </TableCell>
                   <TableCell className="">{user.displayName}</TableCell>
                   <TableCell className="flex place-content-center">

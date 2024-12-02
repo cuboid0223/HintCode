@@ -1,51 +1,46 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { MDXProvider } from "@mdx-js/react";
 import { useParams } from "next/navigation";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import rehypePrettyCode from "rehype-pretty-code";
+import rehypeRaw from "rehype-raw";
+import ReactMarkdown from "react-markdown";
 
-function StaticHint() {
+function StaticHint({ problem }) {
   const { pid } = useParams<{ pid: string }>();
   const [content, setContent] = useState("");
 
   async function compileMDXToComponent(mdxString: string) {
     const file = await unified()
       .use(remarkParse)
-      .use(remarkRehype)
+      .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypePrettyCode)
       .use(rehypeStringify)
       .process(mdxString);
-    return file;
+    return String(file);
   }
 
   useEffect(() => {
-    const fetchMDX = async () => {
+    const handleMDXToComponent = async () => {
       try {
-        //  static hint 是寫死的資料放在 public 內
-        const response = await fetch(`/markdown/staticHint/${pid}.mdx`);
-        if (!response.ok) throw new Error("MDX file not found");
-        const text = await response.text();
-        const content = await compileMDXToComponent(text).then((file) =>
-          String(file)
-        );
+        const content = await compileMDXToComponent(problem.staticHint["py"]);
         setContent(content);
       } catch (error) {
-        setContent("Problem file not found");
+        setContent("Problem static hint not found");
       }
     };
 
-    fetchMDX();
-  }, [pid]);
+    handleMDXToComponent();
+  }, [pid, problem.staticHint]);
 
   return (
     <main>
       <div className="prose prose-invert p-4 sm:p-6 md:p-8 mx-auto relative z-1">
         <article>
-          <MDXProvider
+          <ReactMarkdown
             components={{
               h1: (props) => (
                 <Heading
@@ -73,7 +68,6 @@ function StaticHint() {
               ),
               h5: (props) => <Heading level={5} {...props} />,
               h6: (props) => <Heading level={6} {...props} />,
-              //   code: (props) => <Code code="`const numbers = [1, 2, 3]{:js}`" />,
               p: (props) => (
                 <p
                   className="leading-7 [&:not(:first-child)]:mt-6"
@@ -90,9 +84,10 @@ function StaticHint() {
                 <ul className="my-6 ml-6 list-disc [&>li]:mt-2" {...props}></ul>
               ),
             }}
+            rehypePlugins={[rehypeRaw]}
           >
-            {<div dangerouslySetInnerHTML={{ __html: content }} />}
-          </MDXProvider>
+            {content}
+          </ReactMarkdown>
         </article>
       </div>
     </main>

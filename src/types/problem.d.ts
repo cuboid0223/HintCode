@@ -37,6 +37,11 @@ export type Problem = {
   isPublished: boolean;
   isHelpEnabled: boolean;
   isLocked: boolean;
+  staticHint: {
+    py: string;
+    vb: string;
+    [key: string]: string;
+  };
 };
 
 // user -> problem
