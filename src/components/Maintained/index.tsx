@@ -6,7 +6,7 @@ export default async function MaintainedPage() {
     <main className="h-screen flex flex-col">
       <TopBar />
       <section className="flex-grow flex justify-center items-center h-full">
-        <h1 className={`font-['Orbitron'] font-semibold text-2xl`}>
+        <h1 className={`font-['Orbitron'] font-semibold  text-lg  md:text-2xl`}>
           System maintenance in progress
         </h1>
       </section>
