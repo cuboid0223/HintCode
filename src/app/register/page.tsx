@@ -159,7 +159,7 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
     <main className="h-screen overflow-hidden">
       <TopBar isLoginBtnHidden={true} />
       <section className="grid grid-flow-col grid-cols-5 grid-rows-12  md:grid-cols-4  md:grid-rows-12 h-full ">
-        <div className="col-start-2  col-span-3 row-start-2 row-end-12 md:col-start-2 md:col-end-4 md:row-start-2 md:row-end-12 p-2 flex flex-col space-y-5   dark:border-none overflow-hidden">
+        <div className="col-start-2  col-span-3 row-start-2 row-end-12 md:col-start-2 md:col-end-4 md:row-start-2 md:row-end-12 p-2 flex flex-col space-y-5  dark:border-none overflow-hidden">
           <h2 className="md:text-2xl font-medium dark:text-white mb-3">
             創造屬於你的 HintCode 角色 !
           </h2>
