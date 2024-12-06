@@ -5,10 +5,8 @@ import {
   DEFAULT_LANGUAGE_ID,
   IN_QUEUE_STATUS_ID,
   LANGUAGE_IDS,
-  LANGUAGE_PYTHON_ID,
   PROCESSING_STATUS_ID,
 } from "@/utils/const";
-import { encodeBase64, decodeBase64 } from "@/utils/testCases/base64";
 import base64ToString from "@/utils/testCases/base64ToString";
 import { validateAuthToken } from "@/utils/testCases/judge0Service";
 import stringToBase64 from "@/utils/testCases/stringToBase64";
