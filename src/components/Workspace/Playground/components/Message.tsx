@@ -42,7 +42,7 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
 
   return (
     <Card
-      className={` h-fit max-w-2xl p-2 justify-self-end dark:text-white overflow-x-auto `}
+      className={` h-fit max-w-2xl p-2 md:justify-self-end dark:text-white overflow-x-auto `}
     >
       {/* 
       --> str.replace(/^"(.*)"$/, '$1');  
@@ -147,7 +147,7 @@ const AssistantMessage: React.FC<MessageProps> = ({ msg, theme }) => {
   }, [msg?.isLiked]);
 
   return (
-    <div className={`h-fit max-w-xl min-w-xl `}>
+    <div className={`h-fit max-w-xl`}>
       <Card
         className={` p-2 dark:text-white dark:bg-[#083344] bg-blue-50 rounded-br-none rounded-bl-none`}
       >

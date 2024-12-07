@@ -239,7 +239,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={`flex w-full items-center space-x-2 bg-card ${isHidden && "hidden"}`}
+        className={`flex w-full items-center space-x-2  ${isHidden && "hidden"}`}
       >
         <FormField
           control={form.control}
@@ -273,21 +273,21 @@ export const SelectForm: React.FC<SelectFormProps> = ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger
-              className="font-bold mr-3"
+              className="font-bold p-2 hover:-rotate-45 transform transition duration-300"
               type="submit"
               disabled={isHelpBtnDisable}
             >
               {isGPTTextReady ? (
                 <RingLoader color="#36d7b7" size={27} />
               ) : (
-                <Send />
+                <Send className="" />
               )}
             </TooltipTrigger>
-            <TooltipContent>
-              {isHelpBtnDisable && (
-                <p>您已通過所有測試資料或是提示次數已用完</p>
-              )}
-            </TooltipContent>
+            {isHelpBtnDisable && (
+              <TooltipContent className="">
+                <p className="">您已通過所有測試資料或是提示次數已用完</p>
+              </TooltipContent>
+            )}
           </Tooltip>
         </TooltipProvider>
       </form>

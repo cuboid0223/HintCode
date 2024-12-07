@@ -28,7 +28,7 @@ import { useRedirectParam } from "@/hooks/useRedirectParam";
 import { useRedirectAfterLogin } from "@/hooks/useRedirectAfterLogin";
 import { loginWithCredential } from "@/utils/auth";
 import { useLoadingCallback } from "react-loading-hook";
-import { appendRedirectParam } from "@/utils/redirect";
+import { appendRedirectParam } from "@/utils/auth/redirect";
 
 const formSchema = z.object({
   password: z.string(),

@@ -123,7 +123,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
   }, [userData]);
 
   return (
-    <section className="relative flex flex-col">
+    <section className="relative flex flex-col h-full">
       <Tabs
         value={problemTab}
         onValueChange={handleProblemTabChange}
@@ -140,7 +140,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
           {!isUserControlGroup && problem.isHelpEnabled && (
             <TabsTrigger
               value={GET_HELP}
-              className="rounded-t-lg text-gray-400  !shadow-none hidden md:block"
+              className="rounded-t-lg text-gray-400  !shadow-none "
             >
               提示
             </TabsTrigger>
@@ -155,7 +155,7 @@ const ProblemTab: React.FC<ProblemTabProps> = ({}) => {
           )}
         </TabsList>
 
-        <div className="overflow-y-auto overflow-x-hidden">
+        <div className="overflow-y-auto overflow-x-hidden h-full">
           {/* 程式題目敘述區 */}
 
           {problemTab === DESCRIPTION && <DescriptionTab />}

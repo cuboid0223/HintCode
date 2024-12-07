@@ -67,9 +67,9 @@ const TopBar: React.FC<TopBarProps> = ({
   }, [setTheme, handleChange]);
 
   return (
-    <nav className="relative flex h-[50px] w-full shrink-0 items-center  dark:bg-dark-layer-1 bg-card text-dark-gray-7">
+    <nav className="relative flex h-[50px] w-full shrink-0 items-center  dark:bg-dark-layer-1 bg-card text-dark-gray-7 ">
       <div
-        className={`flex w-full items-center justify-between ${
+        className={`flex w-full items-center justify-between px-2 md:px-0 ${
           !isProblemPage ? "container mx-auto" : ""
         }`}
       >
@@ -151,7 +151,11 @@ const TopBar: React.FC<TopBarProps> = ({
               isPersonalInfoDialogOpen={isPersonalInfoDialogOpen}
             />
           )}
-          {user && <LogoutButton />}
+          {user && (
+            <div className="hidden md:block">
+              <LogoutButton />
+            </div>
+          )}
         </div>
       </div>
     </nav>

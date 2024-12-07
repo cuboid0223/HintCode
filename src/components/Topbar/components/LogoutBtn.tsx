@@ -24,8 +24,11 @@ const LogoutButton: React.FC = () => {
   return (
     <>
       <Dialog>
-        <DialogTrigger>
-          <FiLogOut />
+        <DialogTrigger className="bg-red-600 md:bg-transparent   p-2 rounded-md flex-1">
+          <div className="hidden md:block">
+            <FiLogOut />
+          </div>
+          <p className="md:hidden">登出</p>
         </DialogTrigger>
         <DialogContent aria-describedby={undefined}>
           <DialogHeader>
@@ -34,7 +37,7 @@ const LogoutButton: React.FC = () => {
               className="bg-dark-fill-3 py-1.5 px-3 cursor-pointer rounded text-brand-orange"
               onClick={handleLogout}
             >
-              登出
+              確定
             </Button>
           </DialogHeader>
         </DialogContent>

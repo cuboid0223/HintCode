@@ -31,6 +31,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+import LogoutButton from "../Topbar/components/LogoutBtn";
 
 function PersonalInfoDialog({
   isPersonalInfoDialogOpen,
@@ -104,7 +105,7 @@ function PersonalInfoDialog({
         aria-describedby={undefined}
       >
         <DialogHeader>
-          <DialogTitle className=" flex justify-between items-center">
+          <DialogTitle className="flex gap-4  md:justify-between md:gap-0 items-center">
             <p> {targetUser?.displayName}</p>
             <p className="mr-4">{targetUser?.unit.id.toUpperCase()}</p>
           </DialogTitle>
@@ -156,9 +157,11 @@ function PersonalInfoDialog({
           <Table className=" text-center  ">
             {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
             <TableHeader className="">
-              <TableRow className="grid grid-cols-3">
+              <TableRow className="grid  grid-cols-2 md:grid-cols-3">
                 <TableHead className="p-0 text-center">完成率</TableHead>
-                <TableHead className="p-0 text-center">名字</TableHead>
+                <TableHead className="p-0 text-center hidden md:block">
+                  名字
+                </TableHead>
                 <TableHead className="p-0 text-center">頭像</TableHead>
                 {/* <TableHead className="p-0 text-center">排名</TableHead> */}
               </TableRow>
@@ -166,7 +169,7 @@ function PersonalInfoDialog({
             <TableBody className="relative">
               {transitionsNearbyUsers((styles, user, state, index) => (
                 <animated.tr
-                  className="grid grid-cols-3  absolute w-full  border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                  className="grid  grid-cols-2  md:grid-cols-3  absolute w-full  border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                   style={{
                     zIndex: 5 - index,
                     willChange: "transform, height, opacity",
@@ -176,7 +179,9 @@ function PersonalInfoDialog({
                   <TableCell className="">
                     {user.completionRate.toFixed(1)} %
                   </TableCell>
-                  <TableCell className="">{user.displayName}</TableCell>
+                  <TableCell className="hidden md:block">
+                    {user.displayName}
+                  </TableCell>
                   <TableCell className="flex place-content-center">
                     <Avatar svg={user?.thumbnail} />
                   </TableCell>
@@ -187,6 +192,9 @@ function PersonalInfoDialog({
               ))}
             </TableBody>
           </Table>
+        </div>
+        <div className="md:hidden flex justify-center">
+          <LogoutButton />
         </div>
       </DialogContent>
     </Dialog>

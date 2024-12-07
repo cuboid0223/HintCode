@@ -201,7 +201,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     // 當提示次數用盡或是該題已經解決則關閉傳送訊息按鈕
     const handleHelpBtnIsDisable = async () => {
       const userProblem = await getUserProblemById(user?.uid, problem.id);
-      if (userProblem.remainTimes === 0 || userProblem.is_solved) {
+      if (userProblem?.remainTimes === 0 || userProblem?.is_solved) {
         setIsHelpBtnDisable(true);
       }
     };
@@ -225,27 +225,32 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
   if (!isMounted) return null;
 
   return (
-    <section className="flex-1 px-5 flex flex-col ">
+    <main className="flex-1 px-2 flex flex-col relative h-full">
       {/* GPT output */}
-      <div className="flex-1">
+      <section className="flex-1">
         <div
           className={`grid gap-4 justify-items-stretch ${messages.length === 0 ? "overflow-hidden" : "overflow-y-auto"} `}
         >
           {messages.map((msg, index) => (
             <Message key={index} msg={msg} theme={resolvedTheme} />
           ))}
+          {messages.length === 0 && (
+            <h1 className="text-center md:hidden ">你還沒開始任何提示</h1>
+          )}
         </div>
-      </div>
+      </section>
       {/* GPT response Loader */}
-      <div className="bg-red-500 w-full h-full flex items-center justify-center">
+      <div className=" w-full h-full flex items-center justify-center">
         <PropagateLoader color="#36cf47" size={10} loading={isGPTTextReady} />
       </div>
 
       {/* 聊天記錄底部 */}
-      {messages.length !== 0 && <div className="h-48" ref={messagesEndRef} />}
+      {messages.length !== 0 && (
+        <div className="h-3 md:h-48" ref={messagesEndRef} />
+      )}
 
-      <section className="absolute bottom-0 left-0 z-50 w-full flex flex-col gap-3 p-2 bg-[#030711]  bg-opacity-40 backdrop-blur-lg">
-        {/* 客製化對話框 - 實驗組 */}
+      <section className="sticky w-full bottom-0 left-0  hidden md:flex flex-col gap-3 p-2   bg-opacity-40 backdrop-blur-lg ">
+        {/* 客製化對話框 - 實驗組 2 */}
         <CustomInputForm
           messages={messages}
           setMessages={setMessages}
@@ -257,7 +262,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
           isHidden={!showCustomInput}
         />
 
-        {/* 選擇幫助類型表單 - 對照組  */}
+        {/* 選擇幫助類型表單 - 實驗組 1  */}
         <SelectForm
           messages={messages}
           setMessages={setMessages}
@@ -270,7 +275,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
           isHidden={showCustomInput}
         />
       </section>
-    </section>
+    </main>
   );
 };
 

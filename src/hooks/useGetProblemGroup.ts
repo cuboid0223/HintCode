@@ -15,8 +15,10 @@ function useGetProblemGroup() {
         tmp.push({ id: doc.id, ...doc.data() });
       });
       const ids: string[] = tmp[0]?.matrix.map((item) => item.id);
-      const chunkedArr = chunkArray(ids, 2);
-      setProblemGroup(chunkedArr);
+      // [1,2,3,4,5,6]
+      //[[1,2],[3,4],[5,6]]
+      const problemGroupsMatrix = chunkArray(ids, 2);
+      setProblemGroup(problemGroupsMatrix);
     };
 
     getProblemGroup();

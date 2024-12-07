@@ -26,7 +26,11 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { updateProblemRemainTimes } from "@/utils/problems/updateUserProblem";
 import { useParams } from "next/navigation";
-import { ASK_CUSTOM_QUESTION_PROMPT, BEHAVIOR_IDS, REVERSE_BEHAVIOR_IDS } from "@/utils/const";
+import {
+  ASK_CUSTOM_QUESTION_PROMPT,
+  BEHAVIOR_IDS,
+  REVERSE_BEHAVIOR_IDS,
+} from "@/utils/const";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useLocalStorage } from "@uidotdev/usehooks";
@@ -96,12 +100,10 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
     form.reset(); // 清空輸入框
   };
 
-
-
   const processTextRequest = (data: z.infer<typeof FormSchema>) => {
     data.code = userCode;
     data.prompt = ASK_CUSTOM_QUESTION_PROMPT;
-    data.helpType = REVERSE_BEHAVIOR_IDS[selectedHelpType] ;
+    data.helpType = REVERSE_BEHAVIOR_IDS[selectedHelpType];
     const promptTemplate = createPromptTemplate(
       data,
       problem.problemStatement,
@@ -132,7 +134,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   };
 
   return (
-    <div className={`${isHidden && "hidden"}`}>
+    <div className={`flex flex-col gap-2  ${isHidden && "hidden"}`}>
       {/* helpType 標籤選擇區 */}
       <section className="flex gap-3">
         <TooltipProvider>
@@ -178,7 +180,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className={`flex w-full items-center p-2  `}
+          className={`flex w-full items-center`}
         >
           <FormField
             control={form.control}
@@ -205,7 +207,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger
-                className="font-bold px-2"
+                className="font-bold px-2 hover:-rotate-45 transform transition duration-300 h-full "
                 type="submit"
                 disabled={isHelpBtnDisable}
               >
@@ -215,11 +217,11 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
                   <Send />
                 )}
               </TooltipTrigger>
-              <TooltipContent>
-                {isHelpBtnDisable && (
+              {isHelpBtnDisable && (
+                <TooltipContent>
                   <p>您已通過所有測試資料或是提示次數已用完</p>
-                )}
-              </TooltipContent>
+                </TooltipContent>
+              )}
             </Tooltip>
           </TooltipProvider>
         </form>

@@ -44,15 +44,6 @@ export const submitUserCodeForTesting = async (codeInfo: CodeInfo) => {
       expected_output: stringToBase64(expectedOutput),
     }),
   };
-  console.log(
-    JSON.stringify({
-      language_id: LANGUAGE_IDS[selectedLang] || DEFAULT_LANGUAGE_ID,
-      source_code: stringToBase64(userCode),
-      stdin: "",
-      memory_limit: memoryLimit,
-      expected_output: stringToBase64(expectedOutput),
-    })
-  );
 
   try {
     const response = await fetch(
@@ -75,7 +66,6 @@ export const getSubmissionData = async (token: string) => {
       const response = await fetch(url, { method: "GET", headers: HEADERS });
       const result = await response.json();
       const { stdout, stderr, message, compile_output, status } = result;
-      console.log(result);
 
       if (
         status.id === IN_QUEUE_STATUS_ID ||
