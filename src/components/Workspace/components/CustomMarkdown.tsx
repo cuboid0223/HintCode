@@ -33,7 +33,7 @@ const CustomMarkdown: React.FC<CustomMarkdownType> = ({
     if (theme === "dark" && lang === "py") return a11yDark;
     if (theme === "light" && lang === "py") return docco;
     if (theme === "dark" && lang === "vb") return androidstudio;
-    return androidstudio; // 默认样式
+    return androidstudio;
   };
 
   return (

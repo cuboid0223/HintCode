@@ -62,7 +62,7 @@ const UserMessage: React.FC<MessageProps> = ({ msg, theme }) => {
 
       <section className={`flex ${result && "justify-between items-center"} `}>
         <p>{getTextByType(type)}</p>
-        <p>{text}</p>
+        <p className="flex-1 text-left">{text}</p>
         <div className="flex justify-end space-x-3 mt-3">
           {result && (
             <Popover>

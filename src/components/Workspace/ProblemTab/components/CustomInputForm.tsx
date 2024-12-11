@@ -43,6 +43,7 @@ import { FormSchema } from "@/utils/HelpTypes/FormSchemas";
 
 import { Button } from "@/components/ui/button";
 import { userCodeState } from "@/atoms/userCodeAtom";
+import { SubmissionsState } from "@/atoms/submissionsDataAtom";
 
 type CustomInputFormProps = {
   messages: Message[];
@@ -57,6 +58,7 @@ type CustomInputFormProps = {
     setIsGPTTextReady: Dispatch<SetStateAction<boolean>>
   ) => Promise<void>;
   threadId: string;
+  submissions: SubmissionsState;
 };
 
 const CustomInputForm: React.FC<CustomInputFormProps> = ({
@@ -68,6 +70,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
   sendMessageToGPT,
   isHidden,
   threadId,
+  submissions,
 }) => {
   const [user] = useAuthState(auth);
   const { pid } = useParams<{ pid: string }>();
@@ -111,7 +114,7 @@ const CustomInputForm: React.FC<CustomInputFormProps> = ({
     );
 
     sendMessageToGPT(promptTemplate, threadId, setIsGPTTextReady);
-    addUserMessage(data, null);
+    addUserMessage(data, submissions);
     setBehaviors([...behaviors, selectedHelpType]);
     setSelectedHelpType(null);
   };

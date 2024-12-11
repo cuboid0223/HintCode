@@ -235,19 +235,18 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
             <Message key={index} msg={msg} theme={resolvedTheme} />
           ))}
           {messages.length === 0 && (
-            <h1 className="text-center md:hidden ">你還沒開始任何提示</h1>
+            <h1 className="text-center md:hidden">你還沒開始任何提示</h1>
           )}
         </div>
+        {/* GPT response Loader */}
+        <div className=" w-full h-10 flex items-center justify-center">
+          <PropagateLoader color="#36cf47" size={10} loading={isGPTTextReady} />
+        </div>
+        {/* 聊天記錄底部 */}
+        {/* {messages.length !== 0 && (
+          <div className="h-3 md:h-48" ref={messagesEndRef} />
+        )} */}
       </section>
-      {/* GPT response Loader */}
-      <div className=" w-full h-full flex items-center justify-center">
-        <PropagateLoader color="#36cf47" size={10} loading={isGPTTextReady} />
-      </div>
-
-      {/* 聊天記錄底部 */}
-      {messages.length !== 0 && (
-        <div className="h-3 md:h-48" ref={messagesEndRef} />
-      )}
 
       <section className="sticky w-full bottom-0 left-0  hidden md:flex flex-col gap-3 p-2   bg-opacity-40 backdrop-blur-lg ">
         {/* 客製化對話框 - 實驗組 2 */}
@@ -260,6 +259,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
           threadId={threadId}
           sendMessageToGPT={sendMessageToGPT}
           isHidden={!showCustomInput}
+          submissions={submissions}
         />
 
         {/* 選擇幫助類型表單 - 實驗組 1  */}
