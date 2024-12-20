@@ -41,24 +41,24 @@ export default function Home() {
   const [user] = useAuthState(auth);
   const userInfo = useGetUserInfo();
   const [loadingProblems, setLoadingProblems] = useState(true);
-  const [progressValue, setProgressValue] = useState(0);
+  // const [progressValue, setProgressValue] = useState(0);
   const { problems } = useGetProblems(setLoadingProblems);
   const userProblems = useSubscribedUserProblems();
   const [submissions, setSubmissions] =
     useRecoilState<SubmissionsState>(submissionsState);
 
-  useEffect(() => {
-    setSubmissions([]);
-    const solvedProblems = (problems: UserProblem[]) => {
-      return problems.filter((p) => {
-        return p.is_solved;
-      });
-    };
+  // useEffect(() => {
+  //   setSubmissions([]);
+  //   const solvedProblems = (problems: UserProblem[]) => {
+  //     return problems.filter((p) => {
+  //       return p.is_solved;
+  //     });
+  //   };
 
-    setProgressValue(
-      percentage(solvedProblems(userProblems).length, problems.length)
-    );
-  }, [setSubmissions, userProblems, problems.length]);
+  //   setProgressValue(
+  //     percentage(solvedProblems(userProblems).length, problems.length)
+  //   );
+  // }, [setSubmissions, userProblems, problems.length]);
 
   useEffect(() => {
     const findMissingProblems = (
@@ -112,7 +112,7 @@ export default function Home() {
               )}
             </CountUp>
           </h1>
-          <Progress value={progressValue} max={100} />
+          <Progress value={userInfo?.completionRate} max={100} />
         </section>
 
         {/* 問題列表 */}

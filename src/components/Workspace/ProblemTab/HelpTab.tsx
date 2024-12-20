@@ -243,9 +243,9 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
           <PropagateLoader color="#36cf47" size={10} loading={isGPTTextReady} />
         </div>
         {/* 聊天記錄底部 */}
-        {/* {messages.length !== 0 && (
-          <div className="h-3 md:h-48" ref={messagesEndRef} />
-        )} */}
+        {messages.length !== 0 && (
+          <div className="h-3 md:h-6" ref={messagesEndRef} />
+        )}
       </section>
 
       <section className="sticky w-full bottom-0 left-0  hidden md:flex flex-col gap-3 p-2   bg-opacity-40 backdrop-blur-lg ">

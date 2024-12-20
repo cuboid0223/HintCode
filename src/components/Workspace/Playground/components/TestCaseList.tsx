@@ -11,6 +11,7 @@ import { ACCEPTED_STATUS_ID } from "@/utils/const";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { useTheme } from "next-themes";
 import { a11yDark, docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import isAllTestCasesAccepted from "@/utils/testCases/isAllTestCasesAccepted";
 
 type TestCaseListProps = {
   isTestResult?: boolean;
@@ -36,6 +37,14 @@ const TestCaseList: React.FC<TestCaseListProps> = ({
     } else {
       setActiveTestCaseId(wrongSubmissionId);
     }
+  }, [submissions]);
+
+  const scrollToBottom = () => {
+    testCaseEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (!isAllTestCasesAccepted(submissions)) scrollToBottom();
   }, [submissions]);
 
   return (
