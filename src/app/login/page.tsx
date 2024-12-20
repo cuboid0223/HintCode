@@ -75,10 +75,10 @@ export default function Login() {
       const credential = await getRedirectResult(auth);
       if (credential?.user) {
         await handleLogin(credential);
-        setHasLogged(true);
       }
     }
     handleLoginWithRedirect();
+    setHasLogged(true);
   }, [handleLogin]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -99,9 +99,11 @@ export default function Login() {
   return (
     <main className="h-screen overflow-hidden">
       <TopBar />
-      <section className="grid grid-cols-4 grid-rows-4 ">
-        <div className="col-start-2 col-span-2 row-start-2 row-span-2 p-2 flex flex-col space-y-5 border-4  dark:border-none  ">
-          <h3 className="text-xl font-medium text-white">登入 Hint Code</h3>
+      <section className="grid md:grid-cols-4 grid-rows-4 ">
+        <div className=" md:col-start-2 md:col-span-2 row-start-2 row-span-2 p-2 flex flex-col space-y-5">
+          <h3 className="text-xl font-medium dark:text-white">
+            登入 Hint Code
+          </h3>
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -137,7 +139,10 @@ export default function Login() {
                   </FormItem>
                 )}
               />
-              <Button className="w-full" type="submit">
+              <Button
+                className="w-full bg-slate-400 dark:bg-primary"
+                type="submit"
+              >
                 {isEmailLoading && !hasLogged ? "登入中..." : "登入"}
               </Button>
             </form>
