@@ -77,8 +77,8 @@ export default function Login() {
         await handleLogin(credential);
       }
     }
-    handleLoginWithRedirect();
     setHasLogged(true);
+    handleLoginWithRedirect();
   }, [handleLogin]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
