@@ -112,14 +112,14 @@ export default function Home() {
               )}
             </CountUp>
           </h1>
-          <Progress className="" value={progressValue} max={100} />
+          <Progress value={progressValue} max={100} />
         </section>
 
         {/* 問題列表 */}
-        <Table className="">
+        <Table>
           {!loadingProblems && (
             <TableHeader>
-              <TableRow className="grid gap-3 grid-cols-3  md:grid-cols-5 md:gap-4 ">
+              <TableRow className="grid gap-3 grid-cols-3  md:grid-cols-5 md:gap-4">
                 <TableHead className="w-[100px]">狀態</TableHead>
                 <TableHead>標題</TableHead>
                 <TableHead>難易度</TableHead>

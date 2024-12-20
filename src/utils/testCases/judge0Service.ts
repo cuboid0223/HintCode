@@ -14,17 +14,17 @@ export const validateAuthToken = async () => {
     });
 
     if (response.ok) {
-      console.log("API Token is valid");
+      console.log("JUDGE0 API Token is valid");
       return true;
     } else if (response.status === 401) {
-      console.error("Invalid API Token");
+      console.error("Invalid JUDGE0 API Token");
       return false;
     } else {
-      console.error("Unexpected response:", response.status);
+      console.error("JUDGE0: Unexpected response:", response.status);
       return false;
     }
   } catch (error) {
-    console.error("Failed to validate API Token:", error);
+    console.error("Failed to validate JUDGE0 API Token:", error);
     return false;
   }
 };

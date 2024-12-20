@@ -32,6 +32,7 @@ import { useParams } from "next/navigation";
 import { BEHAVIOR_IDS } from "@/utils/const";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 import { userCodeState } from "@/atoms/userCodeAtom";
+import { Problem, UserProblem } from "@/types/problem";
 
 type PlaygroundProps = {
   setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
@@ -233,20 +234,31 @@ End Module`;
   }, [submissions, setBehaviors]);
 
   useEffect(() => {
+    if (!user || !problems || problems.length === 0) return;
     // 如果全部測資都通過且按了繳交按鈕 則重新計算使用者完成率
-    const updateUserCompletionRate = async () => {
-      if (!user) return;
-      const solvedProblems = userProblems.filter((p) => p.is_solved === true);
-      if (isAllTestCasesAccepted(submissions) && solvedProblems.length !== 0) {
+    const updateUserCompletionRate = async (
+      solvedProblems: Problem[],
+      publishedProblems: Problem[]
+    ) => {
+      if (isAllTestCasesAccepted(submissions)) {
         const userRef = doc(firestore, "users", user.uid);
+
         await updateDoc(userRef, {
-          completionRate: percentage(solvedProblems.length, problems.length),
+          completionRate: percentage(
+            solvedProblems.length,
+            publishedProblems.length
+          ),
         });
       }
     };
 
-    updateUserCompletionRate();
-  }, [userProblems, user, submissions, problems.length]);
+    const solvedUserProblems = userProblems.filter((p) => p.is_solved === true);
+    const solvedPublishedProblems = problems.filter((p: Problem) =>
+      solvedUserProblems.some((solved) => solved.id === p.id)
+    );
+
+    updateUserCompletionRate(solvedPublishedProblems, problems);
+  }, [userProblems, user, submissions, problems]);
 
   useEffect(() => {
     const handleStorageUserCode = () => {

@@ -176,9 +176,7 @@ function PersonalInfoDialog({
                     ...styles,
                   }}
                 >
-                  <TableCell className="">
-                    {user.completionRate.toFixed(1)} %
-                  </TableCell>
+                  <TableCell>{user.completionRate.toFixed(1)} %</TableCell>
                   <TableCell className="hidden md:block">
                     {user.displayName}
                   </TableCell>
