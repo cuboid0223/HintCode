@@ -20,7 +20,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { showErrorToast } from "@/utils/Toast/message";
+import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
 import { Input } from "@/components/ui/input";
 import TopBar from "@/components/Topbar";
 import { useSubscribedSettings } from "@/hooks/useSettings";
@@ -89,6 +89,13 @@ export default function Login() {
     }
   }
 
+  useEffect(() => {
+    if (emailPasswordError?.message.includes("auth/invalid-login-credentials"))
+      showErrorToast("帳號或密碼錯誤");
+    if (emailPasswordError?.message.includes("auth/too-many-requests"))
+      showErrorToast("目前人流眾多請稍後再試一次");
+  }, [emailPasswordError]);
+
   return (
     <main className="h-screen overflow-hidden">
       <TopBar />
@@ -131,7 +138,7 @@ export default function Login() {
                 )}
               />
               <Button className="w-full" type="submit">
-                {isEmailLoading ? "登入中..." : "登入"}
+                {isEmailLoading && !hasLogged ? "登入中..." : "登入"}
               </Button>
             </form>
           </Form>
