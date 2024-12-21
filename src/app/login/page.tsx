@@ -75,15 +75,16 @@ export default function Login() {
       const credential = await getRedirectResult(auth);
       if (credential?.user) {
         await handleLogin(credential);
+        setHasLogged(true);
       }
     }
-    setHasLogged(true);
+
     handleLoginWithRedirect();
   }, [handleLogin]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      handleLoginWithEmailAndPassword(values);
+      await handleLoginWithEmailAndPassword(values);
     } catch (e) {
       showErrorToast((e as Error).message);
     }
