@@ -182,7 +182,7 @@ End Module`;
           expectedOutput: testCase.output,
           selectedLang: selectedLang,
         });
-        if (!token) throw new Error("或許你用到流量上限了!!");
+        if (!token) throw new Error("你忘記改 IP 了齁");
 
         const data = (await getSubmissionData(token)) as Submission;
         if (data?.stderr) {
