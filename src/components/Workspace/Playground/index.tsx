@@ -192,7 +192,10 @@ End Module`;
         temp.push(data);
       }
     } catch (e) {
-      if (e instanceof Error) console.log(e.message);
+      if (e instanceof Error) {
+        showErrorToast(e.message);
+        console.log(e.message);
+      }
     }
 
     setLocalLatestTestCode(userCode);

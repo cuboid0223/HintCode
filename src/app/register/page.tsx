@@ -34,6 +34,7 @@ import { Button } from "@/components/ui/button";
 import { showErrorToast, showLoadingToast } from "@/utils/Toast/message";
 import TopBar from "@/components/Topbar";
 import Link from "next/link";
+import useGetUnits from "@/hooks/useGetUnits";
 
 const formSchema = z.object({
   password: z.string(),
@@ -61,7 +62,7 @@ type SignupProps = {
 
 const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
   const [name, setName] = useState("");
-  const [units, setUnits] = useState([]);
+  const units = useGetUnits();
   const [thumbnail, setThumbnail] = useState("");
   const handleChangeDialogs = () => {
     setAuthDialog((prev) => ({ ...prev, type: "login" }));
@@ -131,20 +132,6 @@ const Signup: React.FC<SignupProps> = ({ setAuthDialog }) => {
       toast.dismiss("loadingToast");
     }
   };
-
-  useEffect(() => {
-    const getUnits = async () => {
-      const q = query(collection(firestore, "units"));
-      const querySnapshot = await getDocs(q);
-      const tmp = [];
-      querySnapshot.forEach((doc) => {
-        tmp.push({ id: doc.id, ...doc.data() });
-      });
-
-      setUnits(tmp);
-    };
-    getUnits();
-  }, []);
 
   useEffect(() => {
     if (error) alert(error.message);

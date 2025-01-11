@@ -14,6 +14,7 @@ import {
   FormDescription,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -47,11 +48,13 @@ import {
 import { getPromptByType } from "@/utils/HelpTypes/getTextByType";
 import { showErrorToast, showWarningToast } from "@/utils/Toast/message";
 import { updateProblemRemainTimes } from "@/utils/problems/updateUserProblem";
-import { Send } from "lucide-react";
+import { BugOff, MessageCircleQuestion, Send } from "lucide-react";
 import { Languages } from "@/types/global";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 import createPromptTemplate from "@/utils/HelpTypes/createPromptTemplate";
 import { v4 as uuidv4 } from "uuid";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 // const FormSchema = z.object({
 //   helpType: z.string({
@@ -65,9 +68,9 @@ const FormSchema = z
   .object({
     helpType: z
       .string({
-        required_error: "您需要何種幫助",
+        required_error: "選擇你想尋求幫助的類型",
       })
-      .optional(),
+      .min(1),
     text: z
       .string({
         required_error: "請輸入問題",
@@ -140,7 +143,9 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       return;
     }
     updateProblemRemainTimes(user?.uid, pid);
+    console.log(data);
     processHelpRequest(data);
+    form.resetField("helpType");
   };
 
   const processHelpRequest = (data: z.infer<typeof FormSchema>) => {
@@ -246,25 +251,60 @@ export const SelectForm: React.FC<SelectFormProps> = ({
           name="helpType"
           render={({ field }) => (
             <FormItem className="flex-1">
-              {/* <FormLabel>Email</FormLabel> */}
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="幫助類型" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {HELP_TYPE_OPTIONS.map((option) => (
-                    <SelectItem key={option.type} value={option.type}>
-                      {option.text}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                選擇你想尋求幫助的類型
-                {/* <Link href="/examples/forms">email settings</Link>. */}
-              </FormDescription>
+              <FormControl>
+                <RadioGroup
+                  className="flex justify-around "
+                  onValueChange={field.onChange}
+                  // defaultValue={HELP_TYPE_OPTIONS[0].text}
+                >
+                  {/* 我不知道下一步要怎麼做? */}
+                  <div
+                    className={`flex items-center gap-1 flex-grow  p-2 ${
+                      field.value === HELP_TYPE_OPTIONS[0].type
+                        ? "text-green-500"
+                        : ""
+                    }`}
+                  >
+                    <RadioGroupItem
+                      value={HELP_TYPE_OPTIONS[0].type}
+                      id={HELP_TYPE_OPTIONS[0].type}
+                      className={`${
+                        field.value === HELP_TYPE_OPTIONS[0].type
+                          ? "text-green-500"
+                          : ""
+                      }`}
+                    />
+                    <Label htmlFor={HELP_TYPE_OPTIONS[0].type}>
+                      <p className="flex items-center gap-1 cursor-pointer">
+                        <MessageCircleQuestion /> {HELP_TYPE_OPTIONS[0].text}
+                      </p>
+                    </Label>
+                  </div>
+                  {/* 輸出報錯了，哪裡有問題? */}
+                  <div
+                    className={`flex items-center gap-1 flex-grow p-2 ${
+                      field.value === HELP_TYPE_OPTIONS[1].type
+                        ? "text-green-500"
+                        : ""
+                    }`}
+                  >
+                    <RadioGroupItem
+                      value={HELP_TYPE_OPTIONS[1].type}
+                      id={HELP_TYPE_OPTIONS[1].type}
+                      className={`${
+                        field.value === HELP_TYPE_OPTIONS[1].type
+                          ? "text-green-500"
+                          : ""
+                      }`}
+                    />
+                    <Label htmlFor={HELP_TYPE_OPTIONS[1].type}>
+                      <p className="flex items-center gap-1 cursor-pointer">
+                        <BugOff /> {HELP_TYPE_OPTIONS[1].text}
+                      </p>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
