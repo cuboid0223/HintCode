@@ -47,18 +47,9 @@ export default function Home() {
   const [submissions, setSubmissions] =
     useRecoilState<SubmissionsState>(submissionsState);
 
-  // useEffect(() => {
-  //   setSubmissions([]);
-  //   const solvedProblems = (problems: UserProblem[]) => {
-  //     return problems.filter((p) => {
-  //       return p.is_solved;
-  //     });
-  //   };
-
-  //   setProgressValue(
-  //     percentage(solvedProblems(userProblems).length, problems.length)
-  //   );
-  // }, [setSubmissions, userProblems, problems.length]);
+  useEffect(() => {
+    setSubmissions([]);
+  }, [setSubmissions]);
 
   useEffect(() => {
     const findMissingProblems = (

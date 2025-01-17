@@ -29,7 +29,7 @@ import useGetProblems from "@/hooks/useGetProblems";
 import { percentage } from "@/utils/percentage";
 import { Languages, Settings } from "@/types/global";
 import { useParams } from "next/navigation";
-import { BEHAVIOR_IDS } from "@/utils/const";
+import { BEHAVIOR_IDS, WRONG_ANSWER_STATUS_ID } from "@/utils/const";
 import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 import { userCodeState } from "@/atoms/userCodeAtom";
 import { Problem, UserProblem } from "@/types/problem";
@@ -187,8 +187,17 @@ End Module`;
         const data = (await getSubmissionData(token)) as Submission;
         if (data?.stderr) {
           temp.push(data);
-          throw new Error("當第一個測資發生錯誤後應停止後續的測資繼續進行");
+          // 代表使用者的 code 有語法上的錯誤
+          throw new Error("當第一個測資發生語法錯誤後應停止後續的測資繼續進行");
+        
         }
+        // if (data?.status.id === WRONG_ANSWER_STATUS_ID) {
+        //   temp.push(data);
+        //   // 代表使用者的 code 有語法上的錯誤
+        //   throw new Error("當某一個測資發生輸出錯誤後應停止後續的測資繼續進行");
+        
+        // }
+
         temp.push(data);
       }
     } catch (e) {
@@ -224,17 +233,16 @@ End Module`;
 
   useEffect(() => {
     // 確認是否全部測資都通過
-    if (submissions.length === 0) return;
-
+    if (submissions.length === 0 || isLoading) return;
     const allTestsPassed = isAllTestCasesAccepted(submissions);
-    const newBehavior = allTestsPassed
-      ? BEHAVIOR_IDS.EXECUTION_SUCCESS
-      : BEHAVIOR_IDS.EXECUTION_FAILURE;
+    const newBehaviorID = allTestsPassed
+      ? BEHAVIOR_IDS.EXECUTION_SUCCESS // 4
+      : BEHAVIOR_IDS.EXECUTION_FAILURE; // 5
 
-    setBehaviors((prevBehaviors) => [...prevBehaviors, newBehavior]);
+    setBehaviors((prevBehaviors) => [...prevBehaviors, newBehaviorID]);
 
     setIsAccepted(allTestsPassed);
-  }, [submissions, setBehaviors]);
+  }, [submissions]);
 
   useEffect(() => {
     if (!user || !problems || problems.length === 0) return;
@@ -273,6 +281,11 @@ End Module`;
     };
     handleStorageUserCode();
   }, [user, localCurrentCode, problem.starterCode, selectedLang, setUserCode]);
+
+
+  // useEffect(()=>{
+  //   console.log(`行為: ${behaviors}`);
+  // },[behaviors])
 
   return (
     <section className="hidden md:flex flex-col relative overflow-x-hidden ">

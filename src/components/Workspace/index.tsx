@@ -19,6 +19,7 @@ import { useParams } from "next/navigation";
 import useGetProblems from "@/hooks/useGetProblems";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
+import { BehaviorsState, behaviorsState } from "@/atoms/behaviorsAtom";
 
 const Workspace = ({}) => {
   const [user] = useAuthState(auth);
@@ -34,6 +35,12 @@ const Workspace = ({}) => {
   const { problemGroup } = useGetProblemGroup();
   const [isHelpEnabled, setIsHelpEnabled] = useState(false);
   const { problems, handleProblemChange } = useGetProblems();
+  const [behaviors, setBehaviors] =
+  useRecoilState<BehaviorsState>(behaviorsState);
+
+  useEffect(()=>{
+    setBehaviors([])
+  },[])
 
   useEffect(() => {
     // ***

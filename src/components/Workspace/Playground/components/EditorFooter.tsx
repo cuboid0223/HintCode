@@ -87,7 +87,7 @@ const EditorFooter: React.FC<EditorFooterProps> = ({
         </div>
 
         <div className="ml-auto flex items-center space-x-4">
-          <Button className="" onClick={() => handleExecution()}>
+          <Button className="" onClick={() => handleExecution()} disabled={isLoading}>
             {isLoading ? (
               <p className="flex place-items-center">
                 <DotLoader color="#36d7b7" size={27} />
