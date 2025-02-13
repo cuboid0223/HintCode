@@ -105,6 +105,8 @@ export default function Login() {
     async (credential: UserCredential) => {
       await loginWithCredential(credential);
       redirectAfterLogin();
+      console.log("轉址");
+      setHasLogged(true);
     },
     [redirectAfterLogin]
   );
@@ -120,7 +122,6 @@ export default function Login() {
           password
         );
         await handleLogin(credential);
-        setHasLogged(true);
       }
     );
 
@@ -164,7 +165,7 @@ export default function Login() {
     if (emailPasswordError?.message.includes("auth/invalid-login-credentials"))
       showErrorToast("帳號或密碼錯誤");
     if (emailPasswordError?.message.includes("auth/too-many-requests"))
-      showErrorToast("目前人流眾多請稍後再試一次");
+      showErrorToast("目前人流眾多請稍後 1 至 2 分鐘後再試一次");
   }, [emailPasswordError]);
 
   return (

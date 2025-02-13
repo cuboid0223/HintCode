@@ -27,9 +27,7 @@ const HEADERS = {
 export const submitUserCodeForTesting = async (codeInfo: CodeInfo) => {
   const isTokenValid = await validateAuthToken();
   if (!isTokenValid) {
-    throw new Error(
-      "Cannot submit code. Invalid API Token. 你可能忘記開 EC2 了"
-    );
+    throw new Error("目前測資服務關閉，請通知我開啟服務 !");
   }
 
   const { userCode, expectedOutput, selectedLang } = codeInfo;
