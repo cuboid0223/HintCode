@@ -106,7 +106,7 @@ export default function Login() {
       await loginWithCredential(credential);
       redirectAfterLogin()
    
-      setHasLogged(true);
+      // setHasLogged(true);
     },
     [redirectAfterLogin]
   );
