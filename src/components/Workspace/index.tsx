@@ -39,8 +39,14 @@ const Workspace = ({}) => {
   useRecoilState<BehaviorsState>(behaviorsState);
 
   useEffect(()=>{
+    // 清空 behaviors
     setBehaviors([])
-  },[])
+  },[setBehaviors])
+
+
+  useEffect(()=>{
+    console.log(behaviors)
+  },[behaviors])
 
   useEffect(() => {
     // ***

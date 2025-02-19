@@ -70,7 +70,7 @@ const FormSchema = z
       .string({
         required_error: "選擇你想尋求幫助的類型",
       })
-      .min(1),
+      .min(1,{ message: "選擇你想尋求幫助的類型" }),
     text: z
       .string({
         required_error: "請輸入問題",
@@ -135,6 +135,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: { helpType: "" },
   });
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
@@ -146,17 +147,18 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     console.log(data);
     processHelpRequest(data);
     form.resetField("helpType");
+    // form.reset()
   };
 
   const processHelpRequest = (data: z.infer<typeof FormSchema>) => {
     switch (data.helpType) {
       case NEXT_STEP:
-        setBehaviors([...behaviors, BEHAVIOR_IDS.NEXT_STEP]);
         handleNextStep(data);
+       
         break;
       case DEBUG_ERROR:
-        setBehaviors([...behaviors, BEHAVIOR_IDS.DEBUG_ERROR]);
         handleDebugError(data, submissions);
+        
         break;
       // case PREV_HINT_NOT_HELP:
       //   // setBehaviors([...behaviors, BEHAVIOR_IDS.PREV_HINT_NOT_HELP]);
@@ -178,6 +180,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
     sendMessageToGPT(finalPrompt, threadId, setIsGPTTextReady);
     addUserMessage(data, null);
+    setBehaviors([...behaviors, BEHAVIOR_IDS.NEXT_STEP]);
   };
 
   const handleDebugError = (
@@ -189,6 +192,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       showWarningToast("沒有執行結果，請按下執行按鈕");
       return;
     }
+  
     data.code = localLatestTestCode;
     data.prompt = DEBUG_ERROR_PROMPT;
     const promptTemplate = createPromptTemplate(
@@ -200,6 +204,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
 
     sendMessageToGPT(promptTemplate, threadId, setIsGPTTextReady);
     addUserMessage(data, submissions);
+    setBehaviors([...behaviors, BEHAVIOR_IDS.DEBUG_ERROR]);
   };
 
   const handlePrevHintNotHelp = () => {
@@ -255,6 +260,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
                 <RadioGroup
                   className="flex justify-around "
                   onValueChange={field.onChange}
+                  value={field.value}
                   // defaultValue={HELP_TYPE_OPTIONS[0].text}
                 >
                   {/* 我不知道下一步要怎麼做? */}
@@ -324,8 +330,9 @@ export const SelectForm: React.FC<SelectFormProps> = ({
               )}
             </TooltipTrigger>
             {isHelpBtnDisable && (
-              <TooltipContent className="">
-                <p className="">您已通過所有測試資料或是提示次數已用完</p>
+              <TooltipContent className="-translate-x-14">
+                <p className="">已通過所有測試資料</p>
+                <p>或是提示次數已用完</p>
               </TooltipContent>
             )}
           </Tooltip>
