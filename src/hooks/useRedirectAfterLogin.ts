@@ -7,6 +7,6 @@ export function useRedirectAfterLogin() {
 
   return function () {
     router.push(redirect ?? "/");
-    router.refresh();
+    // router.refresh();
   };
 }
