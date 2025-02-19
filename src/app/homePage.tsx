@@ -83,9 +83,9 @@ export default function Home() {
 
 
 
-  useEffect(()=>{
-    if(!user) router.push("/login")
-  },[router,user])
+  // useEffect(()=>{
+  //   if(!user) router.push("/login")
+  // },[router,user])
   return (
     <>
       <Topbar />
