@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import TopBar from "@/components/Topbar";
 import { useSubscribedSettings } from "@/hooks/useSettings";
 import { useRedirectParam } from "@/hooks/useRedirectParam";
-// import { useRedirectAfterLogin } from "@/hooks/useRedirectAfterLogin";
+import { useRedirectAfterLogin } from "@/hooks/useRedirectAfterLogin";
 import { loginWithCredential } from "@/utils/auth";
 import { useLoadingCallback } from "react-loading-hook";
 import { appendRedirectParam } from "@/utils/auth/redirect";
@@ -37,8 +37,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useGetUnits from "@/hooks/useGetUnits";
-import { useRouter } from "next/navigation";
-
 /**
  * 定義表單驗證：
  * - 若 unit === "ntcu"，只驗證 studentId 必填 (email 不必填)。
@@ -81,11 +79,10 @@ const formSchema = z
   });
 
 export default function Login() {
-  const router = useRouter();
   const [hasLogged, setHasLogged] = useState(false);
   const units = useGetUnits(); // 取得單位列表
   const redirect = useRedirectParam(); // 取得登入後欲導向的網址
-  // const redirectAfterLogin = useRedirectAfterLogin();
+  const redirectAfterLogin = useRedirectAfterLogin();
   const setting = useSubscribedSettings();
 
   // 建立 react-hook-form
@@ -107,11 +104,11 @@ export default function Login() {
     async (credential: UserCredential) => {
 
       await loginWithCredential(credential);
-      router.push("/")
+      redirectAfterLogin()
    
       setHasLogged(true);
     },
-    [router]
+    [redirectAfterLogin]
   );
 
 
