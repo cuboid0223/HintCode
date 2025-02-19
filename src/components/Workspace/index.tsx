@@ -44,9 +44,9 @@ const Workspace = ({}) => {
   },[setBehaviors])
 
 
-  useEffect(()=>{
-    console.log(behaviors)
-  },[behaviors])
+  // useEffect(()=>{
+  //   console.log(behaviors)
+  // },[behaviors])
 
   useEffect(() => {
     // ***
