@@ -8,6 +8,7 @@ import { getTokens } from "next-firebase-auth-edge";
 import { SUPER_USER } from "@/utils/const";
 import { notFound } from "next/navigation";
 import { clientConfig, serverConfig } from "@/config";
+import Login from "./login/page";
 
 export default async function Page() {
   const tokens = await getTokens(cookies(), {
@@ -19,7 +20,7 @@ export default async function Page() {
 
   const userInfo = await fetchUserById(tokens.decodedToken.uid);
 
-  if (!tokens) notFound();
+  if (!tokens) <Login />;
 
   if (await shouldShowMaintainedPage(userInfo)) return <MaintainedPage />;
 
