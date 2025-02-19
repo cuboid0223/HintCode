@@ -55,7 +55,7 @@ const formSchema = z
     // studentId 與 email 都先標為 optional，
     // 實際必填與否透過 superRefine 動態判斷
     studentId: z.string().optional(),
-    email: z.string().email({ message: "email 格式錯誤" }).optional(),
+    email: z.preprocess((val) => (val === "" ? undefined : val), z.string().email({ message: "email 格式錯誤" }).optional()),
   })
   .superRefine((data, ctx) => {
     if (data.unit === "ntcu") {
@@ -139,10 +139,12 @@ export default function Login() {
 
   // 表單送出
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("Click")
     try {
       if (values.unit === "ntcu") {
         // ntcu => 根據 studentId 自動組出 email (studentId + "@mail.ntcu.edu.tw")
         const email = values.studentId + "@mail.ntcu.edu.tw";
+       
         await handleLoginWithEmailAndPassword({
           email,
           password: values.password,
@@ -150,6 +152,7 @@ export default function Login() {
       } else {
         // 其他單位 => 直接用 email 登入
         const email = values.email ?? "";
+        console.log(email)
         await handleLoginWithEmailAndPassword({
           email,
           password: values.password,
@@ -269,6 +272,7 @@ export default function Login() {
               <Button
                 className="w-full bg-slate-400 dark:bg-primary"
                 type="submit"
+                disabled={isEmailLoading && !hasLogged}
               >
                 {isEmailLoading && !hasLogged ? "登入中..." : "登入"}
               </Button>
