@@ -36,8 +36,10 @@ import CountUp from "react-countup";
 import useGetUserInfo from "@/hooks/useGetUserInfo";
 import { DIFFICULTY_CLASSES } from "@/utils/const";
 import createUserProblem from "@/utils/problems/createUserProblem";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   const [user] = useAuthState(auth);
   const userInfo = useGetUserInfo();
   const [loadingProblems, setLoadingProblems] = useState(true);
@@ -79,6 +81,11 @@ export default function Home() {
     createMissingUserProblems(user?.uid, problems, userProblems);
   }, [user?.uid, problems, userProblems]);
 
+
+
+  useEffect(()=>{
+    if(!user) router.push("/login")
+  },[router,user])
   return (
     <>
       <Topbar />
