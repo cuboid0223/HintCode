@@ -139,12 +139,10 @@ export default function Login() {
 
   // 表單送出
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Click")
     try {
       if (values.unit === "ntcu") {
         // ntcu => 根據 studentId 自動組出 email (studentId + "@mail.ntcu.edu.tw")
         const email = values.studentId + "@mail.ntcu.edu.tw";
-       
         await handleLoginWithEmailAndPassword({
           email,
           password: values.password,
@@ -152,7 +150,6 @@ export default function Login() {
       } else {
         // 其他單位 => 直接用 email 登入
         const email = values.email ?? "";
-        console.log(email)
         await handleLoginWithEmailAndPassword({
           email,
           password: values.password,
