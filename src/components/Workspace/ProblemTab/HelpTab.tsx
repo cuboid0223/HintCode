@@ -81,8 +81,6 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
       handleReadableStream(stream);
     } catch (error) {
       console.error("Error sending message to GPT:", error);
-    } finally {
-      setIsGPTTextReady(false);
     }
   };
 
@@ -105,6 +103,7 @@ const HelpTab: React.FC<ProblemHelpProps> = ({
     if (delta.value != null) {
       appendToLastMessage(delta.value);
       setFinalText((prevText) => prevText + delta.value);
+      setIsGPTTextReady(false);
     }
   };
 

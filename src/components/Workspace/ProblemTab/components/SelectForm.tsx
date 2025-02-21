@@ -70,7 +70,7 @@ const FormSchema = z
       .string({
         required_error: "選擇你想尋求幫助的類型",
       })
-      .min(1,{ message: "選擇你想尋求幫助的類型" }),
+      .min(1, { message: "選擇你想尋求幫助的類型" }),
     text: z
       .string({
         required_error: "請輸入問題",
@@ -146,19 +146,18 @@ export const SelectForm: React.FC<SelectFormProps> = ({
     updateProblemRemainTimes(user?.uid, pid);
     console.log(data);
     processHelpRequest(data);
-    form.resetField("helpType");
-    // form.reset()
+    form.setValue("helpType", undefined); // 用 reset 沒用 所以手動強制清空
   };
 
   const processHelpRequest = (data: z.infer<typeof FormSchema>) => {
     switch (data.helpType) {
       case NEXT_STEP:
         handleNextStep(data);
-       
+
         break;
       case DEBUG_ERROR:
         handleDebugError(data, submissions);
-        
+
         break;
       // case PREV_HINT_NOT_HELP:
       //   // setBehaviors([...behaviors, BEHAVIOR_IDS.PREV_HINT_NOT_HELP]);
@@ -192,7 +191,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
       showWarningToast("沒有執行結果，請按下執行按鈕");
       return;
     }
-  
+
     data.code = localLatestTestCode;
     data.prompt = DEBUG_ERROR_PROMPT;
     const promptTemplate = createPromptTemplate(
@@ -260,7 +259,7 @@ export const SelectForm: React.FC<SelectFormProps> = ({
                 <RadioGroup
                   className="flex justify-around "
                   onValueChange={field.onChange}
-                  value={field.value}
+                  value={field.value ?? ""} // 確保它不會是 undefined
                   // defaultValue={HELP_TYPE_OPTIONS[0].text}
                 >
                   {/* 我不知道下一步要怎麼做? */}
