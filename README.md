@@ -22,5 +22,3 @@ HintCode aims to be the best partner for students learning to code, providing a 
 ![Screenshot of App](./public/screenshot1.png)
 
 # [Demo](https://youtu.be/igqiduZR-Gg)
-
----
